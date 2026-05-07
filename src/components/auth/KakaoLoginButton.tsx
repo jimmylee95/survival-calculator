@@ -1,56 +1,22 @@
 'use client'
+import { useState } from 'react'
 
-import { useState, useEffect } from 'react'
-
-export default function KakaoLoginButton() {
+export default function KakaoLoginButton({
+  redirectTo = '/'
+}: {
+  redirectTo?: string
+}) {
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const loadKakaoSDK = () => {
-      console.log('현재 JS KEY:', process.env.NEXT_PUBLIC_KAKAO_JS_KEY?.slice(0, 8))
-      console.log('현재 REST KEY:', process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY?.slice(0, 8))
-
-      if (window.Kakao) {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY!)
-          console.log('Kakao initialized:', window.Kakao.isInitialized())
-        }
-        return
-      }
-
-      const script = document.createElement('script')
-      script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js'
-      script.integrity = 'sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4'
-      script.crossOrigin = 'anonymous'
-      script.async = true
-      script.onload = () => {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY!)
-          console.log('Kakao SDK loaded and initialized')
-        }
-      }
-      document.head.appendChild(script)
-    }
-    loadKakaoSDK()
-  }, [])
-
-  const handleLogin = async () => {
+  const handleLogin = () => {
     setLoading(true)
-    try {
-      if (!window.Kakao?.isInitialized()) {
-        alert('카카오 SDK 초기화 중입니다. 잠시 후 다시 시도해주세요.')
-        setLoading(false)
-        return
-      }
-      // client_id는 Kakao.init() 시 바인딩된 키가 자동으로 사용됨
-      window.Kakao.Auth.authorize({
-        redirectUri: `${window.location.origin}/api/auth/callback/kakao`,
-        scope: 'profile_nickname,profile_image',
-      })
-    } catch (err) {
-      console.error('카카오 로그인 실패:', err)
-      setLoading(false)
-    }
+
+    const REST_API_KEY = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY
+    const REDIRECT_URI = `${window.location.origin}/api/auth/callback/kakao`
+
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,profile_image&state=${encodeURIComponent(redirectTo)}`
+
+    window.location.href = kakaoAuthUrl
   }
 
   return (
