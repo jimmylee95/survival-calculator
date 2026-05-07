@@ -7,11 +7,13 @@ export default function KakaoLoginButton() {
 
   useEffect(() => {
     const loadKakaoSDK = () => {
+      console.log('현재 JS KEY:', process.env.NEXT_PUBLIC_KAKAO_JS_KEY?.slice(0, 8))
+      console.log('현재 REST KEY:', process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY?.slice(0, 8))
+
       if (window.Kakao) {
         if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY!)
+          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY!)
           console.log('Kakao initialized:', window.Kakao.isInitialized())
-          console.log('JS Key:', process.env.NEXT_PUBLIC_KAKAO_JS_KEY?.slice(0, 8))
         }
         return
       }
@@ -23,7 +25,7 @@ export default function KakaoLoginButton() {
       script.async = true
       script.onload = () => {
         if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY!)
+          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY!)
           console.log('Kakao SDK loaded and initialized')
         }
       }
@@ -40,6 +42,7 @@ export default function KakaoLoginButton() {
         setLoading(false)
         return
       }
+      // client_id는 Kakao.init() 시 바인딩된 키가 자동으로 사용됨
       window.Kakao.Auth.authorize({
         redirectUri: `${window.location.origin}/api/auth/callback/kakao`,
         scope: 'profile_nickname,profile_image',
