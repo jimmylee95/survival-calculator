@@ -17,7 +17,6 @@ export default function KakaoLoginButton({
       provider: 'kakao',
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback?next=${redirectTo}`,
-        scopes: 'profile_nickname profile_image',
       },
     })
     setLoading(false)
