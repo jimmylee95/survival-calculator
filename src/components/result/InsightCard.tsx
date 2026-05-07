@@ -1,5 +1,3 @@
-import { formatWon } from '@/utils/calculate'
-
 interface InsightItem {
   icon:  string
   text:  string
