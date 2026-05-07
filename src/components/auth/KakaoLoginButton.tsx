@@ -26,7 +26,7 @@ export default function KakaoLoginButton({
     setLoading(true)
     try {
       window.Kakao.Auth.authorize({
-        redirectUri: `${window.location.origin}/api/auth/callback/kakao`,
+        redirectUri: `${window.location.origin}/api/auth/callback/kakao?next=${redirectTo}`,
         scope: 'profile_nickname,profile_image',
       })
     } catch (err) {
