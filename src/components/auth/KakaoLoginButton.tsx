@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function KakaoLoginButton({
   redirectTo = '/',
@@ -9,17 +9,32 @@ export default function KakaoLoginButton({
   redirectTo?: string
 }) {
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js'
+    script.integrity = 'sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4'
+    script.crossOrigin = 'anonymous'
+    script.onload = () => {
+      if (window.Kakao && !window.Kakao.isInitialized()) {
+        window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY!)
+      }
+    }
+    document.head.appendChild(script)
+  }, [])
 
   const handleLogin = async () => {
     setLoading(true)
-    const supabase = createClient()
-    await supabase.auth.signInWithOAuth({
-      provider: 'kakao',
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=${redirectTo}`,
-      },
-    })
-    setLoading(false)
+    try {
+      window.Kakao.Auth.authorize({
+        redirectUri: `${window.location.origin}/api/auth/callback/kakao`,
+        scope: 'profile_nickname,profile_image',
+      })
+    } catch (err) {
+      console.error('카카오 로그인 실패:', err)
+      setLoading(false)
+    }
   }
 
   return (
@@ -41,10 +56,8 @@ export default function KakaoLoginButton({
         fontWeight:     700,
         color:          '#000000',
         opacity:        loading ? 0.7 : 1,
-        transition:     'opacity 0.2s',
       }}
     >
-      {/* 카카오 로고 SVG */}
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path
           fillRule="evenodd"

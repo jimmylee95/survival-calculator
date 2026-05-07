@@ -10,6 +10,10 @@ declare global {
       Share: {
         sendDefault: (options: KakaoShareOptions) => void
       }
+      Auth: {
+        authorize: (options: { redirectUri: string; scope?: string }) => void
+        login:     (options: { scope?: string; success: (auth: unknown) => void; fail: (err: unknown) => void }) => void
+      }
     }
   }
 }
