@@ -11,6 +11,7 @@ import {
   formatDays,
   calculateFreelancerRunway,
 } from '@/utils/calculate'
+import { useKakaoShare }     from '@/hooks/useKakaoShare'
 import { CountUpNumber }    from '@/components/result/CountUpNumber'
 import { ScenarioCard }     from '@/components/result/ScenarioCard'
 import { InsightCard }      from '@/components/result/InsightCard'
@@ -35,6 +36,7 @@ export default function ResultPage() {
     useCalculatorStore()
 
   const [toastVisible, setToastVisible] = useState(false)
+  const { shareViaKakao, isKakaoReady }  = useKakaoShare()
 
   // 결과 없으면 입력 페이지로
   useEffect(() => {
@@ -149,21 +151,25 @@ export default function ResultPage() {
 
   async function handleShare() {
     const text = getShareText()
-    if (navigator.share) {
-      try {
-        await navigator.share({ text })
-        return
-      } catch {
-        // 취소 등 — 클립보드로 폴백
-      }
+    const url  = typeof window !== 'undefined' ? window.location.origin : ''
+
+    // 1순위: 카카오톡 공유
+    if (isKakaoReady()) {
+      const ok = shareViaKakao(text, url)
+      if (ok) return
     }
+
+    // 2순위: 네이티브 Web Share API (모바일)
+    if (navigator.share) {
+      try { await navigator.share({ text }); return } catch { /* 취소 */ }
+    }
+
+    // 3순위: 클립보드 복사
     try {
       await navigator.clipboard.writeText(text)
       setToastVisible(true)
       setTimeout(() => setToastVisible(false), 2500)
-    } catch {
-      // ignore
-    }
+    } catch { /* ignore */ }
   }
 
   // ── 메인 헤더 텍스트 ──────────────────────────────────

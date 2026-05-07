@@ -3,25 +3,60 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F8F9FB;
+  --foreground: #1A1F5E;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 다크모드 비활성화 — 계산기 특성상 고정 색상 사용 */
+/* @media (prefers-color-scheme: dark) { ... } */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+html {
+  /* iOS Safari 바운스 스크롤 방지 */
+  overscroll-behavior: none;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color:       var(--foreground);
+  background:  var(--background);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont,
+               'Segoe UI', sans-serif;
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 모바일 텍스트 크기 자동 조정 방지 */
+  -webkit-text-size-adjust: 100%;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* 태블릿/데스크탑에서 모바일 카드처럼 중앙 정렬 */
+@media (min-width: 431px) {
+  body {
+    background: #EAECF5;
   }
+}
+
+/* 버튼 기본 스타일 초기화 */
+button {
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 입력 필드 자동완성 배경 제거 */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset;
+}
+
+/* 스크롤바 얇게 (데스크탑) */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
 }
