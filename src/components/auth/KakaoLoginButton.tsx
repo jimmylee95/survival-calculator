@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-export default function KakaoLoginButton({
-  redirectTo = '/',
-}: {
-  redirectTo?: string
-}) {
+export default function KakaoLoginButton() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -26,7 +22,7 @@ export default function KakaoLoginButton({
     setLoading(true)
     try {
       window.Kakao.Auth.authorize({
-        redirectUri: `${window.location.origin}/api/auth/callback/kakao?next=${redirectTo}`,
+        redirectUri: `${window.location.origin}/api/auth/callback/kakao`,
         scope: 'profile_nickname,profile_image',
       })
     } catch (err) {

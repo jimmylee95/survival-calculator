@@ -41,7 +41,7 @@ export default function LoginPage() {
         </p>
 
         {/* 카카오 로그인 버튼 */}
-        <KakaoLoginButton redirectTo="/" />
+        <KakaoLoginButton />
 
         {/* 구분선 */}
         <div style={{
