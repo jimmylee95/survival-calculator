@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function KakaoLoginButton({
   redirectTo = '/',
@@ -9,7 +8,6 @@ export default function KakaoLoginButton({
   redirectTo?: string
 }) {
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     const script = document.createElement('script')
