@@ -9,7 +9,7 @@ export default function KakaoLoginButton() {
     const loadKakaoSDK = () => {
       if (window.Kakao) {
         if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY)
+          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY!)
           console.log('Kakao initialized:', window.Kakao.isInitialized())
           console.log('JS Key:', process.env.NEXT_PUBLIC_KAKAO_JS_KEY?.slice(0, 8))
         }
@@ -23,7 +23,7 @@ export default function KakaoLoginButton() {
       script.async = true
       script.onload = () => {
         if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY)
+          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY!)
           console.log('Kakao SDK loaded and initialized')
         }
       }
