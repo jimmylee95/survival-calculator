@@ -9,7 +9,6 @@ import {
   type DangerLevel,
   formatWon,
   formatDays,
-  calculateFreelancerRunway,
 } from '@/utils/calculate'
 import { useKakaoShare }     from '@/hooks/useKakaoShare'
 import { CountUpNumber }    from '@/components/result/CountUpNumber'
@@ -18,6 +17,7 @@ import { InsightCard }      from '@/components/result/InsightCard'
 import { PrescriptionCard } from '@/components/result/PrescriptionCard'
 import { CostSlider }       from '@/components/result/CostSlider'
 import { BenchmarkCard }    from '@/components/result/BenchmarkCard'
+import { FreelancerSlider } from '@/components/result/FreelancerSlider'
 
 const DANGER_COLORS: Record<DangerLevel, string> = {
   critical: '#FC8181',
@@ -29,7 +29,7 @@ const DANGER_COLORS: Record<DangerLevel, string> = {
 
 const MODE_META = {
   business:   { bg: '#1A1F5E', label: '사장님 생존 계산기' },
-  freelancer: { bg: '#FF6B35', label: '직장인 독립 계산기' },
+  freelancer: { bg: '#FF6B35', label: '직장인 탈출 계산기' },
 }
 
 export default function ResultPage() {
@@ -91,32 +91,28 @@ export default function ResultPage() {
       ]
     : freeResult
     ? (() => {
-        const gap            = Math.max(freeResult.independenceIncome - freelancerInput.sideIncome, 0)
-        const increaseAmount = 500_000
-        const newRunway      = freelancerInput.sideIncome + increaseAmount >= freeResult.totalMonthlyExpense
-          ? Infinity
-          : calculateFreelancerRunway({
-              ...freelancerInput,
-              sideIncome: freelancerInput.sideIncome + increaseAmount,
-            }).realisticRunwayDays
-        const monthsAdvanced = isFinite(realisticDays) && isFinite(newRunway)
-          ? Math.round((newRunway - realisticDays) / 30)
-          : null
+        const savings = freeResult.monthlySavings
+        const remaining = freeResult.remainingAmount
+        const rate = freeResult.savingsRate
 
         return [
           {
-            icon: '💡', text: '월',
-            value: `${formatWon(freeResult.independenceIncome)} 벌면 퇴사 가능해요`,
-            sub: '생활비 + 이자 전액 커버 기준',
+            icon: '💰', text: '매달',
+            value: savings > 0 ? `${formatWon(savings)}씩 모이고 있어요` : '저축이 안 되고 있어요',
+            sub: savings > 0 ? `저축률 ${rate}%` : '지출을 줄이거나 수입을 늘려야 해요',
           },
           {
-            icon: '📅',
-            text: `부업 수입을 ${formatWon(increaseAmount)} 늘리면`,
-            value: monthsAdvanced && monthsAdvanced > 0
-              ? `독립이 ${monthsAdvanced}개월 앞당겨져요`
-              : '흑자 전환이 가능해요',
-            sub: gap > 0 ? `목표까지 월 ${formatWon(gap)} 더 필요해요` : undefined,
+            icon: '🎯', text: '목표까지',
+            value: remaining > 0 ? `${formatWon(remaining)} 남았어요` : '이미 달성했어요!',
+            sub: remaining > 0 && savings > 0
+              ? `현재 속도로 약 ${Math.ceil(remaining / savings)}개월`
+              : undefined,
           },
+          ...(savings > 0 ? [{
+            icon: '🚀', text: '부업으로 월 50만원 추가하면',
+            value: remaining > 0 ? `${Math.ceil(remaining / (savings + 500_000))}개월로 단축` : '더 빨리 달성!',
+            sub: remaining > 0 ? `${Math.ceil(remaining / savings) - Math.ceil(remaining / (savings + 500_000))}개월 앞당겨져요` : undefined,
+          }] : []),
         ]
       })()
     : []
@@ -127,7 +123,7 @@ export default function ResultPage() {
     const url  = typeof window !== 'undefined' ? window.location.origin : ''
     return isBusiness
       ? `나의 사업 런웨이는 D-${days}일!\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
-      : `나는 지금 퇴사해도 ${days}일을 버틸 수 있어!\n직장인 독립 계산기로 확인해보세요\n👉 ${url}`
+      : `나의 퇴사까지 D-${days}일!\n직장인 탈출 계산기로 확인해보세요\n👉 ${url}`
   }
 
   async function handleShare() {
@@ -150,14 +146,16 @@ export default function ResultPage() {
     } catch { /* ignore */ }
   }
 
-  const mainLabel = isBusiness ? '현실 런웨이' : '독립 가능 기간'
+  const mainLabel = isBusiness ? '현실 런웨이' : '탈출까지'
   const mainSub   = isBusiness
     ? isFinite(realisticDays)
       ? `지금 이대로면 ${formatDays(realisticDays)} 후 자금이 바닥나요`
       : '현재 매출이 지출을 초과하고 있어요 🎉'
+    : realisticDays === 0
+    ? '이미 목표 금액을 달성했어요! 🎉'
     : isFinite(realisticDays)
-    ? `지금 퇴사해도 ${formatDays(realisticDays)}을 버틸 수 있어요`
-    : '부업 수입이 생활비를 초과하고 있어요 🎉'
+    ? `현재 속도로 ${formatDays(realisticDays)} 후 퇴사 가능해요`
+    : '저축이 안 되고 있어요. 지출을 줄여보세요'
 
   return (
     <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -198,7 +196,7 @@ export default function ResultPage() {
             {mainLabel}
           </p>
 
-          {isBusiness && isFinite(realisticDays) && (
+          {isFinite(realisticDays) && realisticDays > 0 && (
             <p style={{
               fontSize: 16, fontWeight: 800,
               color: 'rgba(255,255,255,0.7)', margin: '0 0 -4px',
@@ -247,6 +245,11 @@ export default function ResultPage() {
           {/* ★ 런웨이 시뮬레이터 - 와우 포인트 (자영업자만) */}
           {isBusiness && (
             <CostSlider input={businessInput} currentDays={realisticDays} />
+          )}
+
+          {/* ★ 독립 시뮬레이터 (직장인만) */}
+          {!isBusiness && (
+            <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
           )}
 
           <PrescriptionCard level={dangerLevel} />

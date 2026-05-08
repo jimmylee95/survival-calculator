@@ -61,10 +61,12 @@ export interface BusinessInput {
 }
 
 export interface FreelancerInput {
-  assets:         number
-  monthlyExpense: number
-  loanInterest:   number
-  sideIncome:     number
+  assets:         number  // 현재 자산
+  salary:         number  // 월급
+  monthlyExpense: number  // 월 생활비
+  loanInterest:   number  // 대출이자
+  sideIncome:     number  // 부업 수입
+  targetAmount:   number  // 목표 금액 (이 금액 모으면 퇴사)
 }
 
 // ── 결과 타입 ─────────────────────────────────────────────
@@ -79,12 +81,16 @@ export interface BusinessResult {
 }
 
 export interface FreelancerResult {
-  totalMonthlyExpense:  number
-  monthlyNetLoss:       number
-  worstRunwayDays:      number
-  realisticRunwayDays:  number
-  independenceIncome:   number
-  dangerLevel:          DangerLevel
+  monthlySavings:      number  // 월 저축액
+  remainingAmount:     number  // 목표까지 남은 금액
+  escapeDays:          number  // 탈출까지 남은 일수
+  savingsRate:         number  // 저축률 (%)
+  totalMonthlyExpense: number  // 월 총지출
+  monthlyNetLoss:      number  // (호환용) 역으로 사용
+  worstRunwayDays:     number  // (호환용)
+  realisticRunwayDays: number  // (호환용) = escapeDays
+  independenceIncome:  number  // (호환용)
+  dangerLevel:         DangerLevel
 }
 
 export type CalcResult = BusinessResult | FreelancerResult
@@ -132,24 +138,63 @@ export function simulateBusinessRunway(
   return { days: (input.balance / monthlyNet) * 30, monthlyNet }
 }
 
-// ── 2. 직장인 독립 계산 ───────────────────────────────────
+// ── 1-2. 직장인 시뮬레이션용 계산 (슬라이더) ──────────────
+export function simulateFreelancerRunway(
+  input: FreelancerInput,
+  overrides: { expenseChange?: number; sideIncomeAdd?: number; targetChange?: number }
+): { days: number; monthlySavings: number } {
+  const adjustedExpense = input.monthlyExpense * (1 + (overrides.expenseChange ?? 0))
+  const adjustedSide    = input.sideIncome + (overrides.sideIncomeAdd ?? 0)
+  const adjustedTarget  = input.targetAmount + (overrides.targetChange ?? 0)
+  const totalExpense    = adjustedExpense + input.loanInterest
+  const monthlySavings  = (input.salary - totalExpense) + adjustedSide
+  const remaining       = Math.max(adjustedTarget - input.assets, 0)
+
+  if (remaining <= 0) return { days: 0, monthlySavings }
+  if (monthlySavings <= 0) return { days: Infinity, monthlySavings }
+  return { days: (remaining / monthlySavings) * 30, monthlySavings }
+}
+
+// ── 2. 직장인 탈출 계산 ───────────────────────────────────
 export function calculateFreelancerRunway(input: FreelancerInput): FreelancerResult {
   const totalMonthlyExpense = input.monthlyExpense + input.loanInterest
-  const monthlyNetLoss      = totalMonthlyExpense - input.sideIncome
-
-  const worstRunwayDays = input.assets > 0
-    ? (input.assets / totalMonthlyExpense) * 30
+  const monthlySavings      = (input.salary - totalMonthlyExpense) + input.sideIncome
+  const remainingAmount     = Math.max(input.targetAmount - input.assets, 0)
+  const savingsRate         = input.salary > 0
+    ? Math.round((monthlySavings / input.salary) * 100)
     : 0
 
-  const realisticRunwayDays = monthlyNetLoss <= 0
-    ? Infinity
-    : (input.assets / monthlyNetLoss) * 30
+  // 이미 목표 달성
+  if (remainingAmount <= 0) {
+    return {
+      monthlySavings, remainingAmount: 0, escapeDays: 0, savingsRate,
+      totalMonthlyExpense, monthlyNetLoss: 0,
+      worstRunwayDays: 0, realisticRunwayDays: 0,
+      independenceIncome: totalMonthlyExpense,
+      dangerLevel: 'safe',
+    }
+  }
+
+  // 저축 불가능 (적자)
+  if (monthlySavings <= 0) {
+    return {
+      monthlySavings, remainingAmount, escapeDays: Infinity, savingsRate,
+      totalMonthlyExpense, monthlyNetLoss: Math.abs(monthlySavings),
+      worstRunwayDays: Infinity, realisticRunwayDays: Infinity,
+      independenceIncome: totalMonthlyExpense,
+      dangerLevel: 'critical',
+    }
+  }
+
+  // 탈출까지 남은 일수
+  const escapeDays = (remainingAmount / monthlySavings) * 30
 
   return {
-    totalMonthlyExpense, monthlyNetLoss,
-    worstRunwayDays, realisticRunwayDays,
+    monthlySavings, remainingAmount, escapeDays, savingsRate,
+    totalMonthlyExpense, monthlyNetLoss: 0,
+    worstRunwayDays: escapeDays, realisticRunwayDays: escapeDays,
     independenceIncome: totalMonthlyExpense,
-    dangerLevel: getDangerLevel(realisticRunwayDays),
+    dangerLevel: getEscapeLevel(escapeDays),
   }
 }
 
@@ -189,4 +234,14 @@ export function getDangerLevel(days: number): DangerLevel {
   if (days > 60)  return 'caution'
   if (days > 30)  return 'warning'
   return 'critical'
+}
+
+// ── 5. 탈출 위험도 (직장인 — 짧을수록 좋음) ──────────────
+export function getEscapeLevel(days: number): DangerLevel {
+  if (!isFinite(days)) return 'critical'     // 저축 불가
+  if (days <= 0)       return 'safe'         // 이미 달성
+  if (days <= 365)     return 'safe'         // 1년 이내
+  if (days <= 730)     return 'caution'      // 1~2년
+  if (days <= 1825)    return 'warning'      // 2~5년
+  return 'critical'                          // 5년 이상
 }

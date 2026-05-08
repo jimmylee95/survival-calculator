@@ -44,9 +44,11 @@ const DEFAULT_BUSINESS: BusinessInput = {
 
 const DEFAULT_FREELANCER: FreelancerInput = {
   assets:          0,
+  salary:          0,
   monthlyExpense:  0,
   loanInterest:    0,
   sideIncome:      0,
+  targetAmount:    0,
 }
 
 const DEFAULT_PERSISTED: PersistedState = {
