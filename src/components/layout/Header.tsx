@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { type User } from '@supabase/supabase-js'
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
+  const pathname = usePathname()
+
+  // 어드민 페이지에서는 헤더 숨김
+  if (pathname?.startsWith('/admin')) return null
 
   useEffect(() => {
     const supabase = createClient()

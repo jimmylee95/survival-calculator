@@ -68,6 +68,16 @@ export async function GET(request: Request) {
       console.error('Create user error:', createError)
     }
 
+    // 신규 가입 이벤트 추적
+    if (!createError) {
+      try {
+        await adminSupabase.from('events').insert({
+          event_type: 'signup',
+          event_data: { provider: 'kakao', kakao_id: kakaoId },
+        })
+      } catch {}
+    }
+
     // 4. 로그인 처리 (세션 생성)
     const supabase = await createClient()
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({

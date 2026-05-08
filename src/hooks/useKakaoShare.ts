@@ -48,12 +48,18 @@ export function useKakaoShare() {
     if (typeof window === 'undefined') return false
     if (!window.Kakao?.Share) return false
     try {
+      // 공유 URL에 레퍼럴 파라미터 추가
+      const shareUrl = url.includes('?') ? `${url}&ref=kakao` : `${url}?ref=kakao`
       window.Kakao.Share.sendDefault({
         objectType:  'text',
         text,
-        link: { mobileWebUrl: url, webUrl: url },
+        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         buttonTitle: '계산해보기',
       })
+      // 카카오 공유 이벤트 추적
+      import('@/lib/supabase/events').then(({ trackEvent }) => {
+        trackEvent('kakao_share', { url: shareUrl }).catch(() => {})
+      }).catch(() => {})
       return true
     } catch {
       return false

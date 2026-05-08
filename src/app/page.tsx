@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 
 const CARDS = [
@@ -29,10 +29,21 @@ const CARDS = [
 
 export default function HomePage() {
   const router   = useRouter()
+  const searchParams = useSearchParams()
   const { setMode, _hydrated, businessInput, freelancerInput, lastUpdated } =
     useCalculatorStore()
 
   const [hasSaved, setHasSaved] = useState(false)
+
+  // 레퍼럴 추적 (카카오 공유로 유입)
+  useEffect(() => {
+    const ref = searchParams.get('ref')
+    if (ref === 'kakao') {
+      import('@/lib/supabase/events').then(({ trackEvent }) => {
+        trackEvent('referral_visit', { source: 'kakao' }).catch(() => {})
+      }).catch(() => {})
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (!_hydrated) return
