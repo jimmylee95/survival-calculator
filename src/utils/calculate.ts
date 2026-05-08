@@ -1,46 +1,89 @@
 // ── 업종별 변동비율 ────────────────────────────────────────
 export const VARIABLE_RATE: Record<string, number> = {
-  restaurant:  0.40, // 음식점
-  cafe:        0.35, // 카페
-  retail:      0.50, // 소매/유통
-  service:     0.20, // 서비스업
-  delivery:    0.45, // 배달전문
-  other:       0.35, // 기타
+  restaurant:  0.40,
+  cafe:        0.35,
+  retail:      0.50,
+  service:     0.20,
+  delivery:    0.45,
+  other:       0.35,
+}
+
+// ── 업종별 평균 벤치마크 데이터 ────────────────────────────
+export interface IndustryBenchmark {
+  label:        string
+  emoji:        string
+  fixedCost:    number
+  variableCost: number
+  revenue:      number
+  avgRunway:    number
+}
+
+export const INDUSTRY_BENCHMARKS: Record<keyof typeof VARIABLE_RATE, IndustryBenchmark> = {
+  restaurant: {
+    label: '음식점', emoji: '🍽️',
+    fixedCost: 3_500_000, variableCost: 2_000_000,
+    revenue: 18_000_000, avgRunway: 75,
+  },
+  cafe: {
+    label: '카페', emoji: '☕',
+    fixedCost: 2_500_000, variableCost: 1_200_000,
+    revenue: 10_000_000, avgRunway: 65,
+  },
+  retail: {
+    label: '소매/유통', emoji: '🛒',
+    fixedCost: 3_000_000, variableCost: 2_500_000,
+    revenue: 15_000_000, avgRunway: 80,
+  },
+  service: {
+    label: '서비스업', emoji: '💇',
+    fixedCost: 2_000_000, variableCost: 800_000,
+    revenue: 8_000_000, avgRunway: 90,
+  },
+  delivery: {
+    label: '배달전문', emoji: '🛵',
+    fixedCost: 1_800_000, variableCost: 1_500_000,
+    revenue: 12_000_000, avgRunway: 55,
+  },
+  other: {
+    label: '기타', emoji: '🏢',
+    fixedCost: 2_500_000, variableCost: 1_500_000,
+    revenue: 10_000_000, avgRunway: 70,
+  },
 }
 
 // ── 입력 타입 ─────────────────────────────────────────────
 export interface BusinessInput {
-  balance:       number // 현재 잔고 (원)
-  monthlyRevenue: number // 월 매출 (원)
-  fixedCost:     number // 월 고정비 (원)
-  loanInterest:  number // 월 이자 (원)
-  industryType:  keyof typeof VARIABLE_RATE
+  balance:        number
+  monthlyRevenue: number
+  fixedCost:      number
+  loanInterest:   number
+  industryType:   keyof typeof VARIABLE_RATE
 }
 
 export interface FreelancerInput {
-  assets:         number // 총 자산 (원)
-  monthlyExpense: number // 월 생활비 (원)
-  loanInterest:   number // 월 이자 (원)
-  sideIncome:     number // 월 부업 수입 (원)
+  assets:         number
+  monthlyExpense: number
+  loanInterest:   number
+  sideIncome:     number
 }
 
 // ── 결과 타입 ─────────────────────────────────────────────
 export interface BusinessResult {
-  variableCost:       number  // 변동비 (원)
-  totalMonthlyExpense: number // 월 총지출 (원)
-  monthlyNetLoss:     number  // 월 순손실 (원, 양수면 적자)
-  worstRunwayDays:    number  // 최악 런웨이 (일)
-  realisticRunwayDays: number // 현실 런웨이 (일)
-  breakEvenRevenue:   number  // 손익분기 매출 (원)
-  dangerLevel:        DangerLevel
+  variableCost:        number
+  totalMonthlyExpense: number
+  monthlyNetLoss:      number
+  worstRunwayDays:     number
+  realisticRunwayDays: number
+  breakEvenRevenue:    number
+  dangerLevel:         DangerLevel
 }
 
 export interface FreelancerResult {
-  totalMonthlyExpense:  number // 월 총지출 (원)
-  monthlyNetLoss:       number // 월 순손실 (원)
-  worstRunwayDays:      number // 최악 런웨이 (일)
-  realisticRunwayDays:  number // 현실 런웨이 (일)
-  independenceIncome:   number // 독립 가능 월 수입 (원)
+  totalMonthlyExpense:  number
+  monthlyNetLoss:       number
+  worstRunwayDays:      number
+  realisticRunwayDays:  number
+  independenceIncome:   number
   dangerLevel:          DangerLevel
 }
 
@@ -49,33 +92,44 @@ export type DangerLevel = 'critical' | 'warning' | 'caution' | 'safe' | 'infinit
 
 // ── 1. 자영업자 런웨이 계산 ───────────────────────────────
 export function calculateBusinessRunway(input: BusinessInput): BusinessResult {
-  const variableRate   = VARIABLE_RATE[input.industryType] ?? 0.35
-  const variableCost   = input.monthlyRevenue * variableRate
+  const variableRate        = VARIABLE_RATE[input.industryType] ?? 0.35
+  const variableCost        = input.monthlyRevenue * variableRate
   const totalMonthlyExpense = input.fixedCost + input.loanInterest + variableCost
-  const monthlyNetLoss = totalMonthlyExpense - input.monthlyRevenue
+  const monthlyNetLoss      = totalMonthlyExpense - input.monthlyRevenue
 
-  // 최악: 매출 0, 고정비+이자만 소진
-  const worstRunwayDays = input.balance > 0
+  const worstRunwayDays = input.balance > 0 && (input.fixedCost + input.loanInterest) > 0
     ? (input.balance / (input.fixedCost + input.loanInterest)) * 30
     : 0
 
-  // 현실: 실제 순손실 기준
   const realisticRunwayDays = monthlyNetLoss <= 0
     ? Infinity
     : (input.balance / monthlyNetLoss) * 30
 
-  // 손익분기 매출 = (고정비 + 이자) / (1 - 변동비율)
-  const breakEvenRevenue = (input.fixedCost + input.loanInterest) / (1 - variableRate)
+  const breakEvenRevenue = (1 - variableRate) > 0
+    ? (input.fixedCost + input.loanInterest) / (1 - variableRate)
+    : 0
 
   return {
-    variableCost,
-    totalMonthlyExpense,
-    monthlyNetLoss,
-    worstRunwayDays,
-    realisticRunwayDays,
-    breakEvenRevenue,
+    variableCost, totalMonthlyExpense, monthlyNetLoss,
+    worstRunwayDays, realisticRunwayDays, breakEvenRevenue,
     dangerLevel: getDangerLevel(realisticRunwayDays),
   }
+}
+
+// ── 1-1. 시뮬레이션용 계산 (슬라이더) ─────────────────────
+export function simulateBusinessRunway(
+  input: BusinessInput,
+  overrides: { fixedCostChange?: number; revenueChange?: number }
+): { days: number; monthlyNet: number } {
+  const variableRate    = VARIABLE_RATE[input.industryType] ?? 0.35
+  const adjustedFixed   = input.fixedCost * (1 + (overrides.fixedCostChange ?? 0))
+  const adjustedRevenue = input.monthlyRevenue * (1 + (overrides.revenueChange ?? 0))
+  const variableCost    = adjustedRevenue * variableRate
+  const totalExpense    = adjustedFixed + input.loanInterest + variableCost
+  const monthlyNet      = totalExpense - adjustedRevenue
+
+  if (monthlyNet <= 0) return { days: Infinity, monthlyNet }
+  return { days: (input.balance / monthlyNet) * 30, monthlyNet }
 }
 
 // ── 2. 직장인 독립 계산 ───────────────────────────────────
@@ -91,14 +145,10 @@ export function calculateFreelancerRunway(input: FreelancerInput): FreelancerRes
     ? Infinity
     : (input.assets / monthlyNetLoss) * 30
 
-  const independenceIncome = totalMonthlyExpense
-
   return {
-    totalMonthlyExpense,
-    monthlyNetLoss,
-    worstRunwayDays,
-    realisticRunwayDays,
-    independenceIncome,
+    totalMonthlyExpense, monthlyNetLoss,
+    worstRunwayDays, realisticRunwayDays,
+    independenceIncome: totalMonthlyExpense,
     dangerLevel: getDangerLevel(realisticRunwayDays),
   }
 }
@@ -111,7 +161,7 @@ export function formatWon(amount: number): string {
   }
   if (amount >= 10_000) {
     const man = amount / 10_000
-    return `${man % 1 === 0 ? man : man.toFixed(1)}만원`
+    return `${man % 1 === 0 ? man : man.toFixed(0)}만원`
   }
   return `${amount.toLocaleString()}원`
 }
@@ -120,14 +170,14 @@ export function formatDays(days: number): string {
   if (!isFinite(days)) return '∞'
   const d = Math.floor(days)
   if (d >= 365) {
-    const years = Math.floor(d / 365)
-    const rem   = d % 365
-    return rem === 0 ? `${years}년` : `${years}년 ${rem}일`
+    const y = Math.floor(d / 365)
+    const r = d % 365
+    return r === 0 ? `${y}년` : `${y}년 ${r}일`
   }
   if (d >= 30) {
-    const months = Math.floor(d / 30)
-    const rem    = d % 30
-    return rem === 0 ? `${months}개월` : `${months}개월 ${rem}일`
+    const m = Math.floor(d / 30)
+    const r = d % 30
+    return r === 0 ? `${m}개월` : `${m}개월 ${r}일`
   }
   return `${d}일`
 }
