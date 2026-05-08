@@ -146,16 +146,27 @@ export default function ResultPage() {
     } catch { /* ignore */ }
   }
 
+  // ── 감정적 리액션 ──────────────────────────────────────
+  type Reaction = { emoji: string; label: string; sub: string; bg: string }
+  
+  const bizReactions: Record<DangerLevel, Reaction> = {
+    critical: { emoji: '😱', label: '사장님, 비상입니다', sub: '통장이 비명을 지르고 있어요', bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)' },
+    warning:  { emoji: '😰', label: '위험 신호 감지', sub: '아직 늦지 않았어요. 하지만 빨리요.', bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)' },
+    caution:  { emoji: '😐', label: '아슬아슬한 줄타기', sub: '괜찮아 보이지만... 방심하면 안 돼요', bg: 'linear-gradient(135deg, #1A1F5E 0%, #2D3399 100%)' },
+    safe:     { emoji: '😊', label: '아직은 괜찮아요', sub: '여유 있을 때 다음 수를 준비하세요', bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)' },
+    infinite: { emoji: '🤑', label: '사장님이 이 구역의 미친존재', sub: '흑자 운영 중! 확장을 고민할 때예요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)' },
+  }
+  
+  const freeReactions: Record<DangerLevel, Reaction> = {
+    critical: { emoji: '💀', label: '퇴사는... 다음 생에?', sub: '현재 속도로는 탈출이 요원해요', bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)' },
+    warning:  { emoji: '😤', label: '멀지만 보이긴 해요', sub: '부업 하나면 확 당겨질 수 있어요', bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)' },
+    caution:  { emoji: '👀', label: '출구가 보이기 시작했다!', sub: '조금만 더! 터널 끝에 빛이 보여요', bg: 'linear-gradient(135deg, #FF6B35 0%, #E8590C 100%)' },
+    safe:     { emoji: '🔥', label: '곧이에요! 사직서 준비!', sub: '1년 안에 탈출 가능! 플랜B를 세우세요', bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)' },
+    infinite: { emoji: '🏆', label: '이미 자유인이시네요!', sub: '목표 달성! 이제 회사가 당신을 필요로 해요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)' },
+  }
+
+  const reaction = isBusiness ? bizReactions[dangerLevel] : freeReactions[dangerLevel]
   const mainLabel = isBusiness ? '현실 런웨이' : '탈출까지'
-  const mainSub   = isBusiness
-    ? isFinite(realisticDays)
-      ? `지금 이대로면 ${formatDays(realisticDays)} 후 자금이 바닥나요`
-      : '현재 매출이 지출을 초과하고 있어요 🎉'
-    : realisticDays === 0
-    ? '이미 목표 금액을 달성했어요! 🎉'
-    : isFinite(realisticDays)
-    ? `현재 속도로 ${formatDays(realisticDays)} 후 퇴사 가능해요`
-    : '저축이 안 되고 있어요. 지출을 줄여보세요'
 
   return (
     <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -163,8 +174,9 @@ export default function ResultPage() {
 
         {/* ── 히어로 ─────────────────────────────────── */}
         <div style={{
-          background: meta.bg, padding: '52px 24px 40px',
+          background: reaction.bg, padding: '48px 24px 40px',
           textAlign: 'center', position: 'relative', overflow: 'hidden',
+          transition: 'background 0.5s',
         }}>
           <div style={{
             position: 'absolute', top: -60, right: -60,
@@ -189,10 +201,21 @@ export default function ResultPage() {
             ← 수정
           </button>
 
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontWeight: 600, margin: '0 0 20px' }}>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontWeight: 600, margin: '0 0 12px' }}>
             {meta.label}
           </p>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', fontWeight: 700, margin: '0 0 8px' }}>
+
+          {/* 감정 이모지 */}
+          <div style={{ fontSize: 48, marginBottom: 8, filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }}>
+            {reaction.emoji}
+          </div>
+
+          {/* 감정 라벨 */}
+          <p style={{ fontSize: 16, fontWeight: 800, color: 'rgba(255,255,255,0.9)', margin: '0 0 16px', letterSpacing: '-0.3px' }}>
+            {reaction.label}
+          </p>
+
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontWeight: 700, margin: '0 0 8px' }}>
             {mainLabel}
           </p>
 
@@ -220,10 +243,11 @@ export default function ResultPage() {
           )}
 
           <p style={{
-            fontSize: 14, color: 'rgba(255,255,255,0.8)',
+            fontSize: 14, color: 'rgba(255,255,255,0.85)',
             margin: '16px 0 0', lineHeight: 1.6,
+            fontWeight: 600,
           }}>
-            {mainSub}
+            {reaction.sub}
           </p>
         </div>
 
@@ -252,7 +276,7 @@ export default function ResultPage() {
             <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
           )}
 
-          <PrescriptionCard level={dangerLevel} />
+          <PrescriptionCard level={dangerLevel} mode={mode} />
 
           {/* ── 하단 버튼 ───────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>

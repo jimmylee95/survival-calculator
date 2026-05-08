@@ -92,7 +92,6 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
       ? calculateBusinessRunway(businessInput)
       : calculateFreelancerRunway(freelancerInput)
     set({ result, lastUpdated: new Date() })
-    import("@/lib/supabase/data").then(({ saveCalculation }) => { saveCalculation({ mode, input: mode === "business" ? businessInput : freelancerInput, result }).catch(() => {}) }).catch(() => {})
     _persist(get)
   },
 
