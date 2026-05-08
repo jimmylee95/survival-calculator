@@ -21,6 +21,8 @@
 html {
   /* iOS Safari 바운스 스크롤 방지 */
   overscroll-behavior: none;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -32,6 +34,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   /* 모바일 텍스트 크기 자동 조정 방지 */
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* 태블릿/데스크탑에서 모바일 카드처럼 중앙 정렬 */

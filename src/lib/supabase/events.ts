@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 
-export type EventType = 'kakao_share' | 'referral_visit' | 'signup' | 'calculation'
+export type EventType = 'kakao_share' | 'referral_visit' | 'signup' | 'calculation' | 'page_visit'
 
 export async function trackEvent(eventType: EventType, eventData?: Record<string, unknown>) {
   try {

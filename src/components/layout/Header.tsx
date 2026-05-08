@@ -11,9 +11,6 @@ export default function Header() {
   const router = useRouter()
   const pathname = usePathname()
 
-  // 어드민 페이지에서는 헤더 숨김
-  if (pathname?.startsWith('/admin')) return null
-
   useEffect(() => {
     const supabase = createClient()
 
@@ -27,6 +24,9 @@ export default function Header() {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  // 어드민 페이지에서는 헤더 숨김
+  if (pathname?.startsWith('/admin')) return null
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -60,7 +60,7 @@ export default function Header() {
         alignItems:     'center',
         gap:            6,
       }}>
-        ⚡ 생존 계산기
+        🫧 현대인 생존 계산기
       </Link>
 
       {user ? (

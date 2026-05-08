@@ -44,10 +44,14 @@ export async function GET(request: Request) {
     const { data: calcsRaw } = await supabase.from('calculations').select('created_at, mode').gte('created_at', fourteenDaysAgo.toISOString())
 
     const dailyEvents: Record<string, { calculations: number; kakao_shares: number; referral_visits: number; signups: number }> = {}
+    const dailyCalcsByMode: Record<string, { biz: number; free: number }> = {}
     calcsRaw?.forEach(r => {
       const d = new Date(r.created_at).toISOString().slice(0, 10)
       if (!dailyEvents[d]) dailyEvents[d] = { calculations: 0, kakao_shares: 0, referral_visits: 0, signups: 0 }
       dailyEvents[d].calculations++
+      if (!dailyCalcsByMode[d]) dailyCalcsByMode[d] = { biz: 0, free: 0 }
+      if (r.mode === 'business') dailyCalcsByMode[d].biz++
+      else dailyCalcsByMode[d].free++
     })
     eventsRaw?.forEach(r => {
       const d = new Date(r.created_at).toISOString().slice(0, 10)
@@ -67,6 +71,15 @@ export async function GET(request: Request) {
     const { count: yesterShares }   = await supabase.from('events').select('*', { count: 'exact', head: true }).eq('event_type', 'kakao_share').gte('created_at', yesterday.toISOString()).lt('created_at', today.toISOString())
     const { count: yesterReferrals } = await supabase.from('events').select('*', { count: 'exact', head: true }).eq('event_type', 'referral_visit').gte('created_at', yesterday.toISOString()).lt('created_at', today.toISOString())
     const { count: yesterSignups }  = await supabase.from('events').select('*', { count: 'exact', head: true }).eq('event_type', 'signup').gte('created_at', yesterday.toISOString()).lt('created_at', today.toISOString())
+
+    // ══ 유입 경로 집계 ══
+    const { data: visitEvents } = await supabase.from('events').select('event_data').eq('event_type', 'page_visit')
+    const trafficSources = { direct: 0, kakao_share: 0, search: 0, external: 0 }
+    visitEvents?.forEach(r => {
+      const src = (r.event_data as Record<string, string> | null)?.source ?? 'direct'
+      if (src in trafficSources) trafficSources[src as keyof typeof trafficSources]++
+      else trafficSources.external++
+    })
 
     // ══ 리텐션 데이터 ══
     // 7일 이내 가입한 유저 중 재방문 비율
@@ -99,9 +112,12 @@ export async function GET(request: Request) {
       today:     { total: todayTotal ?? 0, biz: todayBiz ?? 0, free: todayFree ?? 0, users: todayUsers, shares: todayShares ?? 0, referrals: todayReferrals ?? 0, signups: todaySignups ?? 0 },
       yesterday: { total: yesterTotal ?? 0, users: yesterUsers, shares: yesterShares ?? 0, referrals: yesterReferrals ?? 0, signups: yesterSignups ?? 0 },
       events:    { totalShares: totalShares ?? 0, totalReferrals: totalReferrals ?? 0, totalSignups: totalSignups ?? 0 },
+      trafficSources,
       dailyEvents,
+      dailyCalcsByMode,
       retention: { returningUsers, oneTimeUsers, recentSignupCount, totalRegistered: uniqueUsers, avgCalcsPerUser },
       conversion: { totalUsers: uniqueUsers, paidUsers: 0, paidRate: 0, totalCalcs: totalCalcs ?? 0 },
+      funnel: { visits: totalCalcs ?? 0, calculations: totalCalcs ?? 0, signups: totalSignups ?? 0, purchases: 0 },
       recentCalcs: recentCalcs ?? [],
     })
   } catch (err) {

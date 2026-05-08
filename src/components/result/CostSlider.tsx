@@ -5,11 +5,8 @@ import {
   type BusinessInput,
   simulateBusinessRunway,
   formatWon,
-  formatDays,
   getDangerLevel,
 } from '@/utils/calculate'
-
-const ACCENT = '#1A1F5E'
 
 const DANGER_COLORS: Record<string, string> = {
   critical: '#FC8181',

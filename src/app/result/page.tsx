@@ -8,7 +8,6 @@ import {
   type FreelancerResult,
   type DangerLevel,
   formatWon,
-  formatDays,
 } from '@/utils/calculate'
 import { useKakaoShare }     from '@/hooks/useKakaoShare'
 import { CountUpNumber }    from '@/components/result/CountUpNumber'
@@ -169,8 +168,8 @@ export default function ResultPage() {
   const mainLabel = isBusiness ? '현실 런웨이' : '탈출까지'
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '100%', maxWidth: 430 }}>
+    <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', width: '100%' }}>
+      <div style={{ width: '100%', maxWidth: 430, overflowX: 'hidden' }}>
 
         {/* ── 히어로 ─────────────────────────────────── */}
         <div style={{

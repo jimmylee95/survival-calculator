@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 
@@ -27,23 +27,56 @@ const CARDS = [
   },
 ]
 
-export default function HomePage() {
-  const router   = useRouter()
+// useSearchParams()는 Suspense 경계 안에서만 사용 가능
+function VisitTracker() {
   const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (sessionStorage.getItem('visit_tracked')) return
+
+    const ref = searchParams.get('ref')
+    const referrer = document.referrer
+
+    let source: string
+    let extra: Record<string, string> = {}
+
+    if (ref === 'kakao') {
+      source = 'kakao_share'
+    } else if (referrer) {
+      try {
+        const host = new URL(referrer).hostname
+        if (/google\./.test(host))      { source = 'search'; extra = { engine: 'google', referrer } }
+        else if (/naver\./.test(host))  { source = 'search'; extra = { engine: 'naver', referrer } }
+        else if (/daum\./.test(host))   { source = 'search'; extra = { engine: 'daum', referrer } }
+        else if (/bing\./.test(host))   { source = 'search'; extra = { engine: 'bing', referrer } }
+        else                            { source = 'external'; extra = { domain: host, referrer } }
+      } catch {
+        source = 'direct'
+      }
+    } else {
+      source = 'direct'
+    }
+
+    sessionStorage.setItem('visit_tracked', '1')
+
+    import('@/lib/supabase/events').then(({ trackEvent }) => {
+      trackEvent('page_visit', { source, ...extra }).catch(() => {})
+      if (ref === 'kakao') {
+        trackEvent('referral_visit', { source: 'kakao' }).catch(() => {})
+      }
+    }).catch(() => {})
+  }, [searchParams])
+
+  return null
+}
+
+export default function HomePage() {
+  const router = useRouter()
   const { setMode, _hydrated, businessInput, freelancerInput, lastUpdated } =
     useCalculatorStore()
 
   const [hasSaved, setHasSaved] = useState(false)
-
-  // 레퍼럴 추적 (카카오 공유로 유입)
-  useEffect(() => {
-    const ref = searchParams.get('ref')
-    if (ref === 'kakao') {
-      import('@/lib/supabase/events').then(({ trackEvent }) => {
-        trackEvent('referral_visit', { source: 'kakao' }).catch(() => {})
-      }).catch(() => {})
-    }
-  }, [searchParams])
 
   useEffect(() => {
     if (!_hydrated) return
@@ -72,27 +105,28 @@ export default function HomePage() {
       flexDirection:   'column',
       alignItems:      'center',
       padding:         '0 0 40px',
+      overflowX:       'hidden',
+      width:           '100%',
     }}>
-      <div style={{ width: '100%', maxWidth: 430 }}>
+      <Suspense fallback={null}>
+        <VisitTracker />
+      </Suspense>
+
+      <div style={{ width: '100%', maxWidth: 430, overflowX: 'hidden' }}>
 
         {/* 상단 헤더 */}
-        <div style={{ padding: '56px 24px 12px', textAlign: 'center' }}>
-          <div style={{ fontSize: 42, marginBottom: 12 }}>⚡</div>
-          <h1 style={{
-            fontSize:   26,
-            fontWeight: 900,
-            color:      '#1A1F5E',
-            margin:     '0 0 10px',
-            letterSpacing: '-0.5px',
-          }}>
-            생존 계산기
-          </h1>
+        <div style={{ padding: '24px 24px 12px', textAlign: 'center' }}>
           <p style={{
-            fontSize: 15, color: '#64748B', margin: 0, lineHeight: 1.7,
-            fontWeight: 500,
+            fontSize: 22, color: '#64748B', margin: '0 0 6px', lineHeight: 1.5,
+            fontWeight: 800,
           }}>
-            아무도 안 알려주는 내 돈의 유통기한<br />
-            <span style={{ color: '#1A1F5E', fontWeight: 700 }}>30초면 현실이 보입니다</span>
+            아무도 안 알려주는 내 돈의 유통기한
+          </p>
+          <p style={{
+            fontSize: 20, color: '#1A1F5E', margin: 0, lineHeight: 1.5,
+            fontWeight: 900,
+          }}>
+            30초면 현실이 보입니다
           </p>
         </div>
 

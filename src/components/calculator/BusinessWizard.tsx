@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
-import { VARIABLE_RATE, INDUSTRY_BENCHMARKS, formatWon } from '@/utils/calculate'
+import { INDUSTRY_BENCHMARKS, formatWon } from '@/utils/calculate'
 
 const ACCENT = '#1A1F5E'
 const STEPS  = ['업종 · 잔고', '월 지출', '월 매출']
@@ -152,8 +152,9 @@ export function BusinessWizard() {
     <div style={{
       minHeight: '100dvh', background: '#F8F9FB',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
+      overflowX: 'hidden', width: '100%',
     }}>
-      <div style={{ width: '100%', maxWidth: 430, display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+      <div style={{ width: '100%', maxWidth: 430, display: 'flex', flexDirection: 'column', minHeight: '100dvh', overflowX: 'hidden' }}>
 
         {/* ── 헤더 + 프로그레스 ───────────────────────── */}
         <div style={{
@@ -233,7 +234,6 @@ export function BusinessWizard() {
           {step === 0 && <Step1Industry
             input={businessInput}
             update={updateBusinessInput}
-            benchmark={benchmark}
           />}
           {step === 1 && <Step2Expense
             input={businessInput}
@@ -290,13 +290,13 @@ export function BusinessWizard() {
    Step 1 — 업종 선택 + 현재 잔고
    ═══════════════════════════════════════════════════════════ */
 function Step1Industry({
-  input, update, benchmark,
+  input, update,
 }: {
   input: { industryType: string; balance: number }
   update: (p: Record<string, unknown>) => void
-  benchmark: { label: string; emoji: string }
 }) {
-  const industries = Object.entries(INDUSTRY_BENCHMARKS) as [string, typeof benchmark & { fixedCost: number; revenue: number }][]
+  type IndustryData = { label: string; emoji: string; fixedCost: number; revenue: number }
+  const industries = Object.entries(INDUSTRY_BENCHMARKS) as [string, IndustryData][]
 
   return (
     <div>

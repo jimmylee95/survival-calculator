@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const NAV_BG = '#1B1E28'
 const ACCENT = '#3182F6'
@@ -24,9 +24,12 @@ interface AdminData {
   today: { total: number; biz: number; free: number; users: number; shares: number; referrals: number; signups: number }
   yesterday: { total: number; users: number; shares: number; referrals: number; signups: number }
   events: { totalShares: number; totalReferrals: number; totalSignups: number }
+  trafficSources: { direct: number; kakao_share: number; search: number; external: number }
   dailyEvents: Record<string, { calculations: number; kakao_shares: number; referral_visits: number; signups: number }>
   retention: { returningUsers: number; oneTimeUsers: number; recentSignupCount: number; totalRegistered: number; avgCalcsPerUser: number }
   conversion: { totalUsers: number; paidUsers: number; paidRate: number; totalCalcs: number }
+  dailyCalcsByMode: Record<string, { biz: number; free: number }>
+  funnel: { visits: number; calculations: number; signups: number; purchases: number }
   recentCalcs: { id: string; user_id: string | null; mode: string; industry_type: string | null; result_days: number | null; danger_level: string; monthly_net_loss: number | null; monthly_savings: number | null; created_at: string }[]
 }
 
@@ -37,16 +40,44 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [activeNav, setActiveNav] = useState('home')
+  const [initializing, setInitializing] = useState(true)
 
   const fetchData = useCallback(async (pw: string) => {
     setLoading(true); setError('')
     try {
       const res = await fetch(`/api/admin?secret=${encodeURIComponent(pw)}`)
-      if (!res.ok) { setError('인증 실패'); setLoading(false); return }
+      if (!res.ok) {
+        sessionStorage.removeItem('admin_secret')
+        setError('인증 실패'); setLoading(false); return
+      }
+      sessionStorage.setItem('admin_secret', pw)
       setData(await res.json()); setAuth(true)
     } catch { setError('서버 오류') }
     setLoading(false)
   }, [])
+
+  const logout = useCallback(() => {
+    sessionStorage.removeItem('admin_secret')
+    setAuth(false); setData(null); setSecret('')
+  }, [])
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('admin_secret')
+    if (stored) {
+      setSecret(stored)
+      fetchData(stored).finally(() => setInitializing(false))
+    } else {
+      setInitializing(false)
+    }
+  }, [fetchData])
+
+  if (initializing) {
+    return (
+      <div style={{ minHeight: '100dvh', background: '#F5F6F8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ fontSize: 14, color: '#8B95A1', fontWeight: 600 }}>로딩 중...</p>
+      </div>
+    )
+  }
 
   if (!authenticated) {
     return (
@@ -67,7 +98,7 @@ export default function AdminPage() {
     )
   }
   if (!data) return null
-  const { overview: ov, today: td, yesterday: yd, events: ev, dailyEvents, retention: ret, conversion: conv, recentCalcs } = data
+  const { overview: ov, today: td, yesterday: yd, events: ev, trafficSources: ts, dailyEvents, dailyCalcsByMode, funnel: fn, retention: ret, conversion: conv, recentCalcs } = data
 
   const retentionRate = ret.totalRegistered > 0 ? Math.round((ret.returningUsers / ret.totalRegistered) * 100) : 0
 
@@ -85,9 +116,11 @@ export default function AdminPage() {
           </NGroup>
           <NGroup label="분석">
             <NItem icon="📈" label="기간별 분석" id="analytics" active={activeNav} onClick={setActiveNav} />
+            <NItem icon="💰" label="매출 분석" id="revenue" active={activeNav} onClick={setActiveNav} />
             <NItem icon="🔗" label="바이럴 현황" id="viral" active={activeNav} onClick={setActiveNav} />
+            <NItem icon="📊" label="퍼널 분석" id="funnel-nav" active={activeNav} onClick={setActiveNav} />
             <NItem icon="👤" label="유저 리텐션" id="retention" active={activeNav} onClick={setActiveNav} />
-            <NItem icon="💰" label="유료 전환율" id="conversion" active={activeNav} onClick={setActiveNav} />
+            <NItem icon="💸" label="유료 전환율" id="conversion" active={activeNav} onClick={setActiveNav} />
           </NGroup>
           <NGroup label="관리">
             <NItem icon="👤" label="고객 관리" id="users" active={activeNav} onClick={setActiveNav} badge="Soon" />
@@ -96,10 +129,13 @@ export default function AdminPage() {
           </NGroup>
         </nav>
         <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
             <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2D3143', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👤</div>
             <div><p style={{ fontSize: 12, fontWeight: 700, color: '#fff', margin: 0 }}>관리자</p><p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', margin: 0 }}>admin@survival.app</p></div>
           </div>
+          <button onClick={logout} style={{ width: '100%', padding: '8px 0', borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <span>🚪</span> 로그아웃
+          </button>
         </div>
       </aside>
 
@@ -229,7 +265,12 @@ export default function AdminPage() {
               <MiniCard emoji="🔗" label="공유 유입" total={ev.totalReferrals} today={td.referrals} delta={td.referrals - yd.referrals} />
               <MiniCard emoji="✅" label="신규 가입" total={ev.totalSignups} today={td.signups} delta={td.signups - yd.signups} />
             </div>
-            <WCard title="일별 바이럴 추이"><DailyTable dailyEvents={dailyEvents} /></WCard>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+              <WCard title="유입 경로 분석" sub="전체 누적">
+                <TrafficSourcesCard sources={ts} />
+              </WCard>
+              <WCard title="일별 바이럴 추이"><DailyTable dailyEvents={dailyEvents} /></WCard>
+            </div>
           </>}
           {activeNav === 'retention' && <>
             <SectionHead title="👤 유저 리텐션 분석" />
@@ -343,6 +384,66 @@ export default function AdminPage() {
                   ))}
                 </div>
               </div>
+            </WCard>
+          </>}
+
+
+          {activeNav === 'revenue' && <>
+            <SectionHead title="💰 매출 분석" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
+              <StatCard label="전체 계산 수" value={ov.totalCalcs.toLocaleString()} color={ACCENT} icon="📊" />
+              <StatCard label="사장님 계산기" value={ov.bizCount.toLocaleString()} color={ACCENT} icon="🏪" />
+              <StatCard label="탈출 계산기" value={ov.freeCount.toLocaleString()} color={ORANGE} icon="🚀" />
+              <StatCard label="오늘 계산" value={td.total.toLocaleString()} color="#1B1E28" icon="📅" />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginBottom: 20 }}>
+              <BigCard>
+                <p style={{ fontSize: 13, color: '#8B95A1', fontWeight: 600, margin: '0 0 20px' }}>계산기 이용 비율</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+                  <RevenueDonut biz={ov.bizCount} free={ov.freeCount} total={ov.totalCalcs} />
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <RevenueRow label="사장님 계산기" value={ov.bizCount} total={ov.totalCalcs} color={ACCENT} />
+                    <RevenueRow label="탈출 계산기" value={ov.freeCount} total={ov.totalCalcs} color={ORANGE} />
+                  </div>
+                </div>
+              </BigCard>
+              <WCard title="일별 이용 현황" sub="최근 14일">
+                <StackedBarChart data={dailyCalcsByMode} />
+              </WCard>
+            </div>
+          </>}
+
+          {activeNav === 'funnel-nav' && <>
+            <SectionHead title="📊 퍼널 분석" />
+            <div style={{
+              background: 'linear-gradient(135deg, #1A1F5E 0%, #2D3399 100%)',
+              borderRadius: 16, padding: '28px 32px', marginBottom: 20,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 8px' }}>계산 → 회원가입 전환율</p>
+                <p style={{ fontSize: 52, fontWeight: 900, color: '#fff', margin: '0 0 4px', letterSpacing: '-2px', lineHeight: 1 }}>
+                  {fn.calculations > 0 ? ((fn.signups / fn.calculations) * 100).toFixed(1) : '0.0'}%
+                </p>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', margin: 0 }}>
+                  {fn.signups.toLocaleString()}명 가입 / {fn.calculations.toLocaleString()}건 계산
+                </p>
+              </div>
+              <div style={{ fontSize: 64 }}>📊</div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
+              <FunnelStageCard step={1} label="방문" value={fn.visits} convRate={null} icon="👀" color={ACCENT} />
+              <FunnelStageCard step={2} label="계산 완료" value={fn.calculations} convRate={fn.visits > 0 ? Math.round((fn.calculations / fn.visits) * 100) : 0} icon="✅" color={ACCENT} />
+              <FunnelStageCard step={3} label="회원가입" value={fn.signups} convRate={fn.calculations > 0 ? Math.round((fn.signups / fn.calculations) * 100) : 0} icon="👤" color={PURPLE} />
+              <FunnelStageCard step={4} label="구독 완료" value={fn.purchases} convRate={fn.signups > 0 ? Math.round((fn.purchases / fn.signups) * 100) : 0} icon="💳" color={GREEN} />
+            </div>
+            <WCard title="퍼널 시각화" sub="각 단계별 이탈률">
+              <FunnelBarChart stages={[
+                { label: '방문 (계산 이용)', value: fn.visits, color: ACCENT },
+                { label: '계산 완료', value: fn.calculations, color: ACCENT },
+                { label: '회원가입', value: fn.signups, color: PURPLE },
+                { label: '구독 완료', value: fn.purchases, color: GREEN },
+              ]} />
             </WCard>
           </>}
 
@@ -617,4 +718,200 @@ function ConversionFunnel({ totalCalcs, totalUsers, paidUsers }: { totalCalcs: n
       </div>
     })}
   </div>
+}
+
+/* ── 매출 도넛 차트 ── */
+function RevenueDonut({ biz, free, total }: { biz: number; free: number; total: number }) {
+  const r = 44, stroke = 11, circ = 2 * Math.PI * r
+  const bizArc = total > 0 ? circ * (biz / total) : 0
+  const freeArc = total > 0 ? circ * (free / total) : 0
+  return (
+    <svg width={110} height={110} viewBox="0 0 110 110">
+      <circle cx={55} cy={55} r={r} fill="none" stroke="#F2F4F6" strokeWidth={stroke} />
+      <circle cx={55} cy={55} r={r} fill="none" stroke={ACCENT} strokeWidth={stroke}
+        strokeDasharray={`${bizArc} ${circ}`} strokeDashoffset={0}
+        strokeLinecap="butt" transform="rotate(-90 55 55)" style={{ transition: 'stroke-dasharray 0.5s' }} />
+      <circle cx={55} cy={55} r={r} fill="none" stroke={ORANGE} strokeWidth={stroke}
+        strokeDasharray={`${freeArc} ${circ}`} strokeDashoffset={-bizArc}
+        strokeLinecap="butt" transform="rotate(-90 55 55)" style={{ transition: 'stroke-dasharray 0.5s' }} />
+      <text x={55} y={50} textAnchor="middle" style={{ fontSize: 18, fontWeight: 900, fill: '#1B1E28' }}>{total}</text>
+      <text x={55} y={66} textAnchor="middle" style={{ fontSize: 9, fill: '#8B95A1' }}>전체 계산</text>
+    </svg>
+  )
+}
+
+/* ── 매출 행 ── */
+function RevenueRow({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+  const pct = total > 0 ? Math.round((value / total) * 100) : 0
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+        <span style={{ fontSize: 13, color: '#4E5968' }}>{label}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color }}>{pct}%</span>
+      </div>
+      <div style={{ height: 6, background: '#F2F4F6', borderRadius: 3, overflow: 'hidden', marginBottom: 4 }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3 }} />
+      </div>
+      <p style={{ fontSize: 11, color: '#8B95A1', margin: 0 }}>{value.toLocaleString()}건</p>
+    </div>
+  )
+}
+
+/* ── 스택 바 차트 ── */
+function StackedBarChart({ data }: { data: Record<string, { biz: number; free: number }> }) {
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; date: string; biz: number; free: number } | null>(null)
+  const entries = Object.entries(data).sort(([a], [b]) => a.localeCompare(b)).slice(-14)
+  if (!entries.length) return <Empty />
+  const maxVal = Math.max(...entries.map(([, v]) => v.biz + v.free), 1)
+  const CHART_H = 120
+  return (
+    <div style={{ position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: CHART_H + 28 }}>
+        {entries.map(([d, v]) => {
+          const bizH = Math.round((v.biz / maxVal) * CHART_H)
+          const freeH = Math.round((v.free / maxVal) * CHART_H)
+          const label = d.slice(5)
+          return (
+            <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', cursor: 'default' }}
+              onMouseEnter={e => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setTooltip({ x: rect.left + rect.width / 2, y: rect.top, date: d, biz: v.biz, free: v.free })
+              }}
+              onMouseLeave={() => setTooltip(null)}
+            >
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                {freeH > 0 && <div style={{ height: freeH, background: ORANGE, borderRadius: bizH > 0 ? '3px 3px 0 0' : 3 }} />}
+                {bizH > 0 && <div style={{ height: bizH, background: ACCENT, borderRadius: freeH > 0 ? '0 0 3px 3px' : 3 }} />}
+                {bizH === 0 && freeH === 0 && <div style={{ height: 2, background: '#F2F4F6', borderRadius: 2 }} />}
+              </div>
+              <p style={{ fontSize: 8, color: '#B0B8C1', margin: '4px 0 0', textAlign: 'center', lineHeight: 1 }}>{label}</p>
+            </div>
+          )
+        })}
+      </div>
+      <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, borderRadius: 2, background: ACCENT }} /><span style={{ fontSize: 12, color: '#6B7280' }}>사장님 계산기</span></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, borderRadius: 2, background: ORANGE }} /><span style={{ fontSize: 12, color: '#6B7280' }}>탈출 계산기</span></div>
+      </div>
+      {tooltip && (
+        <div style={{
+          position: 'fixed', left: tooltip.x, top: tooltip.y - 8,
+          transform: 'translate(-50%, -100%)',
+          background: '#fff', borderRadius: 12,
+          boxShadow: '0 8px 28px rgba(0,0,0,0.12)', border: '1px solid #E5E8EB',
+          padding: '12px 16px', zIndex: 1000, pointerEvents: 'none', minWidth: 180,
+        }}>
+          <p style={{ fontSize: 12, fontWeight: 800, color: '#1B1E28', margin: '0 0 8px' }}>📅 {tooltip.date}</p>
+          <TipRow emoji="🏪" label="사장님 계산기" value={`${tooltip.biz}건`} valueColor={ACCENT} />
+          <TipRow emoji="🚀" label="탈출 계산기" value={`${tooltip.free}건`} valueColor={ORANGE} />
+          <div style={{ borderTop: '1px solid #F2F4F6', marginTop: 8, paddingTop: 8 }}>
+            <TipRow emoji="📊" label="합계" value={`${tooltip.biz + tooltip.free}건`} />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── 퍼널 스테이지 카드 ── */
+function FunnelStageCard({ step, label, value, convRate, icon, color }: {
+  step: number; label: string; value: number; convRate: number | null; icon: string; color: string
+}) {
+  const isEmpty = value === 0 && step >= 4
+  return (
+    <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #E5E8EB', padding: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>{icon}</div>
+        <span style={{ fontSize: 10, fontWeight: 700, color: '#B0B8C1', background: '#F2F4F6', borderRadius: 8, padding: '3px 10px' }}>STEP {step}</span>
+      </div>
+      <p style={{ fontSize: 12, color: '#8B95A1', fontWeight: 600, margin: '0 0 4px' }}>{label}</p>
+      <p style={{ fontSize: 26, fontWeight: 900, color: isEmpty ? '#B0B8C1' : '#1B1E28', margin: '0 0 10px', letterSpacing: '-1px' }}>
+        {isEmpty ? '–' : value.toLocaleString()}<span style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1' }}>{isEmpty ? '' : '건'}</span>
+      </p>
+      {convRate !== null && (
+        <div style={{ padding: '5px 10px', background: isEmpty ? '#F8F9FB' : convRate > 5 ? '#F0FFF4' : convRate > 2 ? '#FFFBEB' : '#FFF5F5', borderRadius: 8 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: isEmpty ? '#B0B8C1' : convRate > 5 ? GREEN : convRate > 2 ? '#D97706' : RED }}>
+            전환율 {isEmpty ? '준비중' : `${convRate}%`}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── 퍼널 바 차트 ── */
+function FunnelBarChart({ stages }: { stages: { label: string; value: number; color: string }[] }) {
+  const max = Math.max(...stages.map(s => s.value), 1)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {stages.map((s, i) => {
+        const fillPct = (s.value / max) * 100
+        const containerWidth = 100 - i * 4
+        return (
+          <div key={s.label}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: s.color }} />
+                <span style={{ fontSize: 13, color: '#4E5968', fontWeight: 600 }}>{s.label}</span>
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 800, color: '#1B1E28' }}>
+                {s.value === 0 && i >= 3 ? '준비중' : s.value.toLocaleString()}
+              </span>
+            </div>
+            <div style={{ width: `${containerWidth}%`, height: 36, background: '#FFF7ED', borderRadius: 8, overflow: 'hidden', position: 'relative' }}>
+              <div style={{
+                position: 'absolute', left: 0, top: 0, height: '100%',
+                width: `${fillPct}%`, background: s.color,
+                borderRadius: 8, opacity: 0.85, transition: 'width 0.6s',
+              }} />
+              {i > 0 && stages[i - 1].value > 0 && (
+                <div style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.35)' }}>
+                    -{(100 - Math.round((s.value / stages[i - 1].value) * 100))}% 이탈
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ── 유입 경로 카드 ── */
+function TrafficSourcesCard({ sources }: { sources: { direct: number; kakao_share: number; search: number; external: number } }) {
+  const total = sources.direct + sources.kakao_share + sources.search + sources.external
+  const rows = [
+    { icon: '🏠', label: '직접 방문', key: 'direct',      value: sources.direct,      color: ACCENT },
+    { icon: '💬', label: '카카오 공유', key: 'kakao_share', value: sources.kakao_share, color: '#FEE500', textColor: '#3C1E1E' },
+    { icon: '🔍', label: '검색 유입',  key: 'search',      value: sources.search,      color: GREEN },
+    { icon: '🔗', label: '외부 링크',  key: 'external',    value: sources.external,    color: ORANGE },
+  ] as const
+  if (total === 0) return <Empty />
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {rows.map(r => {
+        const pct = Math.round((r.value / total) * 100)
+        return (
+          <div key={r.key}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 15 }}>{r.icon}</span>
+                <span style={{ fontSize: 13, color: '#4E5968', fontWeight: 600 }}>{r.label}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: '#1B1E28' }}>{r.value.toLocaleString()}</span>
+                <span style={{ fontSize: 12, color: '#8B95A1', minWidth: 36, textAlign: 'right' }}>{pct}%</span>
+              </div>
+            </div>
+            <div style={{ height: 7, background: '#F2F4F6', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${pct}%`, background: r.color, borderRadius: 4, transition: 'width 0.5s' }} />
+            </div>
+          </div>
+        )
+      })}
+      <p style={{ fontSize: 11, color: '#B0B8C1', margin: '4px 0 0', textAlign: 'right' }}>총 {total.toLocaleString()}회 방문</p>
+    </div>
+  )
 }
