@@ -10,6 +10,7 @@ import {
   formatWon,
 } from '@/utils/calculate'
 import { useKakaoShare }     from '@/hooks/useKakaoShare'
+import { createClient }      from '@/lib/supabase/client'
 import { CountUpNumber }    from '@/components/result/CountUpNumber'
 import { ScenarioCard }     from '@/components/result/ScenarioCard'
 import { InsightCard }      from '@/components/result/InsightCard'
@@ -17,6 +18,7 @@ import { PrescriptionCard } from '@/components/result/PrescriptionCard'
 import { CostSlider }       from '@/components/result/CostSlider'
 import { BenchmarkCard }    from '@/components/result/BenchmarkCard'
 import { FreelancerSlider } from '@/components/result/FreelancerSlider'
+import { LoginGate, LoginPromptCard } from '@/components/result/LoginGate'
 
 const DANGER_COLORS: Record<DangerLevel, string> = {
   critical: '#FC8181',
@@ -39,9 +41,21 @@ export default function ResultPage() {
   const [toastVisible, setToastVisible] = useState(false)
   const { shareViaKakao, isKakaoReady }  = useKakaoShare()
 
+  // 로그인 여부 (null = 확인 중, false = 미로그인, true = 로그인)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+
   useEffect(() => {
     if (_hydrated && !result) router.replace('/calculator')
   }, [_hydrated, result, router])
+
+  useEffect(() => {
+    const sb = createClient()
+    sb.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user))
+    const { data: { subscription } } = sb.auth.onAuthStateChange(
+      (_, session) => setIsLoggedIn(!!session?.user),
+    )
+    return () => subscription.unsubscribe()
+  }, [])
 
   if (!_hydrated || !result) {
     return (
@@ -167,6 +181,9 @@ export default function ResultPage() {
   const reaction = isBusiness ? bizReactions[dangerLevel] : freeReactions[dangerLevel]
   const mainLabel = isBusiness ? '현실 런웨이' : '탈출까지'
 
+  // 확인 중(null)에는 깨끗하게 보여주고, 확인 완료 후 false면 잠금 노출
+  const gateOpen = isLoggedIn !== false
+
   return (
     <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', width: '100%' }}>
       <div style={{ width: '100%', maxWidth: 430, overflowX: 'hidden' }}>
@@ -260,22 +277,54 @@ export default function ResultPage() {
 
           {insights.length > 0 && <InsightCard items={insights} />}
 
-          {/* ★ 업종 벤치마크 (자영업자만) */}
+          {/* ★ 업종 벤치마크 (자영업자만) — 순위 부분만 블러 */}
           {isBusiness && (
-            <BenchmarkCard input={businessInput} currentDays={realisticDays} />
+            <BenchmarkCard
+              input={businessInput}
+              currentDays={realisticDays}
+              isLoggedIn={gateOpen}
+            />
           )}
 
-          {/* ★ 런웨이 시뮬레이터 - 와우 포인트 (자영업자만) */}
+          {/* ★ 런웨이 시뮬레이터 - 와우 포인트 (자영업자만) — 비로그인 시 블러 */}
           {isBusiness && (
-            <CostSlider input={businessInput} currentDays={realisticDays} />
+            <LoginGate
+              isLoggedIn={gateOpen}
+              message="시뮬레이터를 사용해보세요"
+              sub="로그인하면 무제한으로 가정해볼 수 있어요"
+            >
+              <CostSlider input={businessInput} currentDays={realisticDays} />
+            </LoginGate>
           )}
 
-          {/* ★ 독립 시뮬레이터 (직장인만) */}
+          {/* ★ 독립 시뮬레이터 (직장인만) — 비로그인 시 블러 */}
           {!isBusiness && (
-            <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
+            <LoginGate
+              isLoggedIn={gateOpen}
+              message="시뮬레이터를 사용해보세요"
+              sub="로그인하면 무제한으로 가정해볼 수 있어요"
+            >
+              <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
+            </LoginGate>
           )}
 
-          <PrescriptionCard level={dangerLevel} mode={mode} />
+          <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
+
+          {/* 비로그인 사용자에게만 노출되는 CTA 카드들 */}
+          {!gateOpen && (
+            <>
+              <LoginPromptCard
+                icon="💾"
+                title="이 결과를 저장하려면?"
+                sub="다시 계산하기 귀찮잖아요 😉"
+              />
+              <LoginPromptCard
+                icon="📈"
+                title="다음 달에 변화를 비교해드려요"
+                sub="카카오 로그인하면 자동 저장!"
+              />
+            </>
+          )}
 
           {/* ── 하단 버튼 ───────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>

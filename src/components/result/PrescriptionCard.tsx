@@ -1,4 +1,5 @@
 import { type DangerLevel } from '@/utils/calculate'
+import { LoginGate } from './LoginGate'
 
 interface Action {
   label: string
@@ -144,11 +145,13 @@ const FREE_PRESCRIPTIONS: Record<DangerLevel, Prescription> = {
 interface Props {
   level: DangerLevel
   mode?: 'business' | 'freelancer'
+  isLoggedIn?: boolean
 }
 
-export function PrescriptionCard({ level, mode = 'business' }: Props) {
+export function PrescriptionCard({ level, mode = 'business', isLoggedIn = true }: Props) {
   const prescriptions = mode === 'freelancer' ? FREE_PRESCRIPTIONS : BIZ_PRESCRIPTIONS
   const p = prescriptions[level]
+  const [firstAction, ...lockedActions] = p.actions
 
   return (
     <div style={{
@@ -187,31 +190,48 @@ export function PrescriptionCard({ level, mode = 'business' }: Props) {
         </p>
       </div>
 
-      {/* 액션 버튼 */}
+      {/* 액션 버튼 — 첫번째는 항상 노출, 나머지는 비로그인 시 블러 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {p.actions.map(action => (
-          <a
-            key={action.label}
-            href={action.href}
-            style={{
-              display:        'flex',
-              alignItems:     'center',
-              justifyContent: 'space-between',
-              padding:        '13px 16px',
-              borderRadius:   12,
-              background:     '#fff',
-              textDecoration: 'none',
-              boxShadow:      '0 1px 4px rgba(0,0,0,0.06)',
-              transition:     'transform 0.1s',
-            }}
+        {firstAction && <ActionLink action={firstAction} />}
+
+        {lockedActions.length > 0 && (
+          <LoginGate
+            isLoggedIn={isLoggedIn}
+            message="더 많은 처방전이 궁금하다면?"
+            sub="로그인하면 모든 처방전을 받아볼 수 있어요"
           >
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1F5E' }}>
-              {action.label}
-            </span>
-            <span style={{ fontSize: 16, color: '#94A3B8' }}>›</span>
-          </a>
-        ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {lockedActions.map(action => (
+                <ActionLink key={action.label} action={action} />
+              ))}
+            </div>
+          </LoginGate>
+        )}
       </div>
     </div>
+  )
+}
+
+function ActionLink({ action }: { action: Action }) {
+  return (
+    <a
+      href={action.href}
+      style={{
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'space-between',
+        padding:        '13px 16px',
+        borderRadius:   12,
+        background:     '#fff',
+        textDecoration: 'none',
+        boxShadow:      '0 1px 4px rgba(0,0,0,0.06)',
+        transition:     'transform 0.1s',
+      }}
+    >
+      <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1F5E' }}>
+        {action.label}
+      </span>
+      <span style={{ fontSize: 16, color: '#94A3B8' }}>›</span>
+    </a>
   )
 }

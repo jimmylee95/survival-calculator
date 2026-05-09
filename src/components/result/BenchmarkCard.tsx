@@ -1,13 +1,15 @@
 'use client'
 
 import { type BusinessInput, INDUSTRY_BENCHMARKS, formatWon } from '@/utils/calculate'
+import { LoginGate } from './LoginGate'
 
 interface Props {
   input:       BusinessInput
   currentDays: number
+  isLoggedIn?: boolean
 }
 
-export function BenchmarkCard({ input, currentDays }: Props) {
+export function BenchmarkCard({ input, currentDays, isLoggedIn = true }: Props) {
   const benchmark = INDUSTRY_BENCHMARKS[input.industryType as keyof typeof INDUSTRY_BENCHMARKS]
     ?? INDUSTRY_BENCHMARKS.other
   const avgDays = benchmark.avgRunway
@@ -45,22 +47,31 @@ export function BenchmarkCard({ input, currentDays }: Props) {
         </p>
       </div>
 
-      {/* 종합 등급 */}
-      <div style={{
-        margin: '16px 20px', padding: '16px 18px', borderRadius: 16,
-        background: overallGrade.bg, display: 'flex', alignItems: 'center', gap: 14,
-      }}>
-        <span style={{ fontSize: 32 }}>{overallGrade.emoji}</span>
-        <div>
-          <p style={{
-            fontSize: 18, fontWeight: 900, color: overallGrade.color, margin: '0 0 2px',
+      {/* 종합 등급 — 비로그인 시 블러 */}
+      <div style={{ margin: '16px 20px' }}>
+        <LoginGate
+          isLoggedIn={isLoggedIn}
+          message="내 순위가 궁금하다면?"
+          sub="로그인하면 같은 업종 순위를 알려드려요"
+        >
+          <div style={{
+            padding: '16px 18px', borderRadius: 16,
+            background: overallGrade.bg,
+            display: 'flex', alignItems: 'center', gap: 14,
           }}>
-            업종 평균 대비 {pctOfAvg}%
-          </p>
-          <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
-            {benchmark.label} 평균 런웨이 {avgDays}일 기준
-          </p>
-        </div>
+            <span style={{ fontSize: 32 }}>{overallGrade.emoji}</span>
+            <div>
+              <p style={{
+                fontSize: 18, fontWeight: 900, color: overallGrade.color, margin: '0 0 2px',
+              }}>
+                업종 평균 대비 {pctOfAvg}%
+              </p>
+              <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
+                {benchmark.label} 평균 런웨이 {avgDays}일 기준
+              </p>
+            </div>
+          </div>
+        </LoginGate>
       </div>
 
       {/* 런웨이 바 비교 */}
