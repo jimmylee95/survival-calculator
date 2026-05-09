@@ -6,13 +6,9 @@ import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { formatWon } from '@/utils/calculate'
 
 const ACCENT = '#FF6B35'
-const STEPS  = ['자산', '수입 · 지출', '목표 설정']
+const TOTAL = 6
 
-/* ── 직군 벤치마크 ─────────────────────────────────────── */
-const JOB_BENCHMARKS: Record<string, {
-  label: string; emoji: string
-  salary: number; expense: number
-}> = {
+const JOB_BENCHMARKS: Record<string, { label: string; emoji: string; salary: number; expense: number }> = {
   office:  { label: '사무직',     emoji: '💼', salary: 3_500_000, expense: 2_500_000 },
   it:      { label: 'IT/개발',    emoji: '💻', salary: 4_500_000, expense: 2_800_000 },
   sales:   { label: '영업',       emoji: '🤝', salary: 3_200_000, expense: 2_300_000 },
@@ -21,84 +17,136 @@ const JOB_BENCHMARKS: Record<string, {
 }
 
 const ASSET_PRESETS = [
-  { label: '1천만',  value:  10_000_000 },
-  { label: '3천만',  value:  30_000_000 },
-  { label: '5천만',  value:  50_000_000 },
-  { label: '1억',    value: 100_000_000 },
-  { label: '3억',    value: 300_000_000 },
+  { label: '1천만', value: 10_000_000 },
+  { label: '3천만', value: 30_000_000 },
+  { label: '5천만', value: 50_000_000 },
+  { label: '1억',   value: 100_000_000 },
+  { label: '3억',   value: 300_000_000 },
+]
+
+const SALARY_PRESETS = [
+  { label: '250만', value: 2_500_000 },
+  { label: '350만', value: 3_500_000 },
+  { label: '500만', value: 5_000_000 },
+  { label: '700만', value: 7_000_000 },
+]
+
+const EXPENSE_PRESETS = [
+  { label: '150만', value: 1_500_000 },
+  { label: '200만', value: 2_000_000 },
+  { label: '250만', value: 2_500_000 },
+  { label: '300만', value: 3_000_000 },
 ]
 
 const TARGET_PRESETS = [
-  { label: '1억',    value: 100_000_000 },
-  { label: '3억',    value: 300_000_000 },
-  { label: '5억',    value: 500_000_000 },
-  { label: '10억',   value: 1_000_000_000 },
+  { label: '1억',  value: 100_000_000 },
+  { label: '3억',  value: 300_000_000 },
+  { label: '5억',  value: 500_000_000 },
+  { label: '10억', value: 1_000_000_000 },
 ]
 
-/* ── 금액 입력 컴포넌트 ────────────────────────────────── */
+const SIDE_PRESETS = [
+  { label: '50만',  value: 500_000 },
+  { label: '100만', value: 1_000_000 },
+  { label: '200만', value: 2_000_000 },
+  { label: '300만', value: 3_000_000 },
+]
+
+/* ── 공통 컴포넌트 ─────────────────────────────────────── */
+
+function QuestionTitle({ num, text, sub }: { num: number; text: React.ReactNode; sub?: string }) {
+  return (
+    <div style={{ marginBottom: 36 }}>
+      <div style={{
+        fontSize: 13, fontWeight: 800, color: ACCENT,
+        marginBottom: 12, letterSpacing: '0.5px',
+      }}>
+        Q{num} / {TOTAL}
+      </div>
+      <h2 style={{
+        fontSize: 26, fontWeight: 900, color: '#0F172A',
+        margin: '0 0 12px', letterSpacing: '-0.7px', lineHeight: 1.3,
+      }}>
+        {text}
+      </h2>
+      {sub && (
+        <p style={{ fontSize: 15, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+          {sub}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function AmountInput({
-  value, onChange, placeholder, presets, benchmarkLabel,
+  value, onChange, presets, autoFocus, onEnter,
 }: {
   value: number
   onChange: (v: number) => void
-  placeholder: string
   presets?: { label: string; value: number }[]
-  benchmarkLabel?: string
+  autoFocus?: boolean
+  onEnter?: () => void
 }) {
   const ref = useRef<HTMLInputElement>(null)
-  const [focused, setFocused] = useState(false)
   const display = value > 0 ? value.toLocaleString('ko-KR') : ''
+
+  useEffect(() => {
+    if (autoFocus) {
+      const t = setTimeout(() => ref.current?.focus(), 350)
+      return () => clearTimeout(t)
+    }
+  }, [autoFocus])
 
   return (
     <div>
-      <div
-        onClick={() => ref.current?.focus()}
-        style={{
-          display: 'flex', alignItems: 'center', borderRadius: 16,
-          border: `2px solid ${focused ? ACCENT : '#E2E8F0'}`,
-          background: '#fff', padding: '0 16px', gap: 8,
-          transition: 'border-color 0.2s',
-        }}
-      >
+      <div style={{
+        display: 'flex', alignItems: 'baseline',
+        gap: 8, paddingBottom: 12,
+        borderBottom: `2px solid ${value > 0 ? ACCENT : '#E2E8F0'}`,
+        transition: 'border-color 0.2s',
+      }}>
         <input
-          ref={ref} type="text" inputMode="numeric"
+          ref={ref}
+          type="text"
+          inputMode="numeric"
           value={display}
           onChange={e => {
             const raw = e.target.value.replace(/[^0-9]/g, '')
             onChange(raw ? parseInt(raw, 10) : 0)
           }}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder={placeholder}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && value > 0) onEnter?.()
+          }}
+          placeholder="0"
           style={{
-            flex: 1, height: 56, fontSize: 24, fontWeight: 800,
-            color: '#1A1F5E', background: 'transparent', border: 'none',
-            outline: 'none', letterSpacing: '-0.5px',
+            flex: 1, minWidth: 0, textAlign: 'right',
+            fontSize: 40, fontWeight: 900, color: ACCENT,
+            background: 'transparent', border: 'none', outline: 'none',
+            letterSpacing: '-1px', padding: 0,
           }}
         />
-        <span style={{ fontSize: 15, fontWeight: 600, color: '#94A3B8' }}>원</span>
+        <span style={{ fontSize: 20, fontWeight: 700, color: '#94A3B8' }}>원</span>
       </div>
-      {value > 0 && (
-        <p style={{ fontSize: 13, color: ACCENT, fontWeight: 700, margin: '6px 0 0 4px' }}>
-          = {formatWon(value)}
-        </p>
-      )}
-      {benchmarkLabel && (
-        <p style={{ fontSize: 12, color: '#64748B', margin: '6px 0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#94A3B8' }} />
-          {benchmarkLabel}
-        </p>
-      )}
+      <p style={{
+        fontSize: 14, color: value > 0 ? ACCENT : '#CBD5E1',
+        fontWeight: 700, textAlign: 'right', margin: '12px 0 0', minHeight: 18,
+      }}>
+        {value > 0 ? `= ${formatWon(value)}` : ' '}
+      </p>
       {presets && (
-        <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+        <div style={{
+          display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap',
+        }}>
           {presets.map(p => {
             const sel = value === p.value
             return (
               <button key={p.value} onClick={() => onChange(p.value)}
                 style={{
-                  padding: '8px 16px', borderRadius: 24, fontSize: 13, fontWeight: 700,
+                  padding: '12px 18px', borderRadius: 24,
+                  fontSize: 14, fontWeight: 700,
                   border: `1.5px solid ${sel ? ACCENT : '#E2E8F0'}`,
-                  background: sel ? ACCENT : '#fff', color: sel ? '#fff' : '#475569',
+                  background: sel ? ACCENT : '#fff',
+                  color: sel ? '#fff' : '#475569',
                   cursor: 'pointer', transition: 'all 0.15s',
                 }}>
                 {p.label}
@@ -111,313 +159,384 @@ function AmountInput({
   )
 }
 
+function ContinueButton({
+  onClick, disabled, label = '다음',
+}: { onClick: () => void; disabled?: boolean; label?: string }) {
+  return (
+    <button onClick={onClick} disabled={disabled}
+      style={{
+        marginTop: 36, width: '100%', height: 60, borderRadius: 14,
+        border: 'none',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        fontSize: 17, fontWeight: 900, color: '#fff',
+        background: disabled ? '#E2E8F0' : ACCENT,
+        boxShadow: disabled ? 'none' : `0 8px 24px ${ACCENT}30`,
+        transition: 'all 0.2s', letterSpacing: '-0.3px',
+      }}>
+      {label} {!disabled && <span style={{ marginLeft: 6, opacity: 0.7, fontSize: 13, fontWeight: 700 }}>↵</span>}
+    </button>
+  )
+}
+
 /* ═══════════════════════════════════════════════════════════
-   3-Step Freelancer Escape Wizard
+   Typeform-style Freelancer Wizard (6 questions)
+
+   internal step:
+     0 = job select
+     1 = assets
+     2 = salary
+     3 = monthly expense
+     4 = target amount
+     5 = side income ask (yes/no)
+     6 = side income amount (sub-step of Q6)
    ═══════════════════════════════════════════════════════════ */
 export function FreelancerWizard() {
   const router = useRouter()
   const { freelancerInput, updateFreelancerInput, calculate } = useCalculatorStore()
   const [step, setStep] = useState(0)
   const [selectedJob, setSelectedJob] = useState<string | null>(null)
-  const [direction, setDirection] = useState<'next' | 'prev'>('next')
   const [animKey, setAnimKey] = useState(0)
 
   const benchmark = selectedJob ? JOB_BENCHMARKS[selectedJob] : JOB_BENCHMARKS.other
+  const progressIdx = Math.min(step + 1, TOTAL)
 
   function goNext() {
-    if (step < 2) {
-      setDirection('next'); setAnimKey(k => k + 1); setStep(s => s + 1)
-    } else {
-      calculate(); router.push('/result')
-    }
+    setAnimKey(k => k + 1)
+    setStep(s => s + 1)
   }
   function goBack() {
-    if (step > 0) { setDirection('prev'); setAnimKey(k => k + 1); setStep(s => s - 1) }
-    else router.back()
+    if (step === 0) { router.back(); return }
+    setAnimKey(k => k + 1)
+    setStep(s => s - 1)
+  }
+  function finish() {
+    calculate()
+    router.push('/result')
   }
 
-  const canProceed = [
-    freelancerInput.assets > 0,
-    freelancerInput.salary > 0 && freelancerInput.monthlyExpense > 0,
-    freelancerInput.targetAmount > 0,
-  ][step]
-
   return (
-    <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', width: '100%' }}>
-      <div style={{ width: '100%', maxWidth: 430, display: 'flex', flexDirection: 'column', minHeight: '100dvh', overflowX: 'hidden' }}>
-
-        {/* 헤더 */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#fff', borderBottom: '1px solid #F1F5F9' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px' }}>
-            <button onClick={goBack} style={{ background: 'none', border: 'none', fontSize: 22, color: '#64748B', cursor: 'pointer', padding: '0 4px' }}>←</button>
-            <span style={{ fontSize: 15, fontWeight: 800, color: '#1A1F5E' }}>직장인 탈출 계산기</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: ACCENT, background: `${ACCENT}15`, borderRadius: 20, padding: '3px 12px' }}>{step + 1}/3</span>
+    <div style={{
+      minHeight: '100dvh',
+      background: 'linear-gradient(180deg, #FFF8F3 0%, #FFFFFF 60%)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      width: '100%', overflowX: 'hidden',
+    }}>
+      <div style={{
+        width: '100%', maxWidth: 480,
+        display: 'flex', flexDirection: 'column', minHeight: '100dvh',
+      }}>
+        {/* 상단: 얇은 프로그레스 바 + 뒤로가기 */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 20,
+          background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
+        }}>
+          <div style={{ height: 3, background: '#F1F5F9' }}>
+            <div style={{
+              height: '100%',
+              width: `${(progressIdx / TOTAL) * 100}%`,
+              background: ACCENT,
+              transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            }} />
           </div>
-          <div style={{ height: 4, background: '#F1F5F9' }}>
-            <div style={{ height: '100%', width: `${((step + 1) / 3) * 100}%`, background: `linear-gradient(90deg, ${ACCENT}, #E8590C)`, transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)', borderRadius: '0 4px 4px 0' }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, padding: '14px 20px 12px' }}>
-            {STEPS.map((label, i) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: i <= step ? 1 : 0.35, transition: 'opacity 0.3s' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', background: i < step ? '#48BB78' : i === step ? ACCENT : '#E2E8F0', color: i <= step ? '#fff' : '#94A3B8', transition: 'all 0.3s' }}>
-                  {i < step ? '✓' : i + 1}
-                </div>
-                <span style={{ fontSize: 12, fontWeight: i === step ? 800 : 600, color: i === step ? ACCENT : '#94A3B8' }}>{label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 콘텐츠 */}
-        <div key={animKey} style={{ flex: 1, padding: '24px 20px 140px', animation: `slideInF 0.35s cubic-bezier(0.16, 1, 0.3, 1)` }}>
-          {step === 0 && <Step1Assets input={freelancerInput} update={updateFreelancerInput} selectedJob={selectedJob} onSelectJob={setSelectedJob} />}
-          {step === 1 && <Step2Income input={freelancerInput} update={updateFreelancerInput} benchmark={benchmark} />}
-          {step === 2 && <Step3Target input={freelancerInput} update={updateFreelancerInput} />}
-        </div>
-
-        {/* 하단 버튼 */}
-        <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 430, padding: '12px 20px 32px', background: 'linear-gradient(to top, #F8F9FB 70%, transparent)', zIndex: 30 }}>
-          <button onClick={goNext} disabled={!canProceed}
-            style={{ width: '100%', height: 56, borderRadius: 16, border: 'none', cursor: canProceed ? 'pointer' : 'not-allowed', fontSize: 16, fontWeight: 900, color: '#fff', background: canProceed ? `linear-gradient(135deg, ${ACCENT}, #E8590C)` : '#E2E8F0', boxShadow: canProceed ? `0 8px 28px ${ACCENT}40` : 'none', transition: 'all 0.25s', letterSpacing: '-0.3px' }}>
-            {step < 2 ? '다음 →' : '탈출 D-day 확인하기 🚀'}
+          <button onClick={goBack} aria-label="뒤로 가기"
+            style={{
+              background: 'none', border: 'none',
+              fontSize: 24, color: '#64748B',
+              cursor: 'pointer', padding: '14px 18px',
+              display: 'block',
+            }}>
+            ←
           </button>
         </div>
+
+        {/* 질문 영역 (세로 중앙 정렬) */}
+        <div key={animKey} style={{
+          flex: 1, padding: '8px 24px 60px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          animation: 'fl-slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
+        }}>
+          {step === 0 && (
+            <Q1Job selectedJob={selectedJob}
+              onSelect={k => { setSelectedJob(k); setTimeout(goNext, 220) }} />
+          )}
+          {step === 1 && (
+            <Q2Assets input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
+          )}
+          {step === 2 && (
+            <Q3Salary input={freelancerInput} update={updateFreelancerInput}
+              benchmark={benchmark} onNext={goNext} />
+          )}
+          {step === 3 && (
+            <Q4Expense input={freelancerInput} update={updateFreelancerInput}
+              benchmark={benchmark} onNext={goNext} />
+          )}
+          {step === 4 && (
+            <Q5Target input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
+          )}
+          {step === 5 && (
+            <Q6SideAsk
+              onYes={goNext}
+              onNo={() => { updateFreelancerInput({ sideIncome: 0 }); finish() }}
+            />
+          )}
+          {step === 6 && (
+            <Q6SideAmount input={freelancerInput} update={updateFreelancerInput} onFinish={finish} />
+          )}
+        </div>
       </div>
+
       <style>{`
-        @keyframes slideInF {
-          from { opacity: 0; transform: translateX(${direction === 'next' ? '40px' : '-40px'}); }
-          to   { opacity: 1; transform: translateX(0); }
+        @keyframes fl-slide-up {
+          from { opacity: 0; transform: translateY(36px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Step 1 — 직군 선택 + 현재 자산
-   ═══════════════════════════════════════════════════════════ */
-function Step1Assets({ input, update, selectedJob, onSelectJob }: {
-  input: { assets: number }; update: (p: Record<string, unknown>) => void
-  selectedJob: string | null; onSelectJob: (k: string) => void
+/* ───── Q1: 직군 선택 (탭 → 자동 다음) ─────────────────── */
+function Q1Job({
+  selectedJob, onSelect,
+}: {
+  selectedJob: string | null
+  onSelect: (k: string) => void
 }) {
   return (
     <div>
-      <div style={{ marginBottom: 28 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 900, color: '#1A1F5E', margin: '0 0 8px', letterSpacing: '-0.5px', lineHeight: 1.4 }}>
-          지금 얼마나<br />모아두셨나요?
-        </h2>
-        <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>현금, 주식, 부동산 등 전부 합산해주세요</p>
-      </div>
-
-      {/* 직군 선택 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 28 }}>
+      <QuestionTitle num={1} text={<>어떤 일을<br />하고 계세요?</>}
+        sub="직군에 맞는 평균값을 알려드릴게요" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {Object.entries(JOB_BENCHMARKS).map(([key, data]) => {
           const sel = selectedJob === key
           return (
-            <button key={key} onClick={() => onSelectJob(key)}
-              style={{ padding: '18px 8px 14px', borderRadius: 16, border: 'none', background: sel ? ACCENT : '#fff', boxShadow: sel ? `0 6px 20px ${ACCENT}30` : '0 2px 8px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', transform: sel ? 'scale(1.02)' : 'scale(1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <button key={key} onClick={() => onSelect(key)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 16,
+                padding: '20px 22px', borderRadius: 16,
+                border: `2px solid ${sel ? ACCENT : '#E2E8F0'}`,
+                background: sel ? `${ACCENT}0A` : '#fff',
+                cursor: 'pointer', transition: 'all 0.15s',
+                textAlign: 'left',
+                boxShadow: sel ? `0 4px 14px ${ACCENT}20` : 'none',
+              }}>
               <span style={{ fontSize: 28 }}>{data.emoji}</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: sel ? '#fff' : '#475569' }}>{data.label}</span>
+              <span style={{ fontSize: 17, fontWeight: 800, color: '#1A1F5E', flex: 1 }}>
+                {data.label}
+              </span>
+              {sel && <span style={{ color: ACCENT, fontSize: 18, fontWeight: 900 }}>✓</span>}
             </button>
           )
         })}
       </div>
-
-      {/* 현재 자산 */}
-      <div style={{ background: '#fff', borderRadius: 20, padding: '22px 20px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 20 }}>💰</span>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>현재 총 자산</p>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>현금 + 주식 + 부동산 등</p>
-          </div>
-        </div>
-        <AmountInput value={input.assets} onChange={v => update({ assets: v })} placeholder="현재 총 자산" presets={ASSET_PRESETS} />
-      </div>
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Step 2 — 월급 + 생활비 + 대출이자
-   ═══════════════════════════════════════════════════════════ */
-function Step2Income({ input, update, benchmark }: {
-  input: { salary: number; monthlyExpense: number; loanInterest: number }
+/* ───── Q2: 현재 자산 ─────────────────────────────────── */
+function Q2Assets({
+  input, update, onNext,
+}: {
+  input: { assets: number }
   update: (p: Record<string, unknown>) => void
-  benchmark: { label: string; salary: number; expense: number }
+  onNext: () => void
 }) {
-  const savings = input.salary - input.monthlyExpense - input.loanInterest
-
   return (
     <div>
-      <div style={{ marginBottom: 28 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 900, color: '#1A1F5E', margin: '0 0 8px', letterSpacing: '-0.5px', lineHeight: 1.4 }}>
-          매달 얼마나 벌고<br />쓰시나요?
-        </h2>
-        <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>월급과 생활비를 입력해주세요</p>
-      </div>
-
-      {/* 월급 */}
-      <div style={{ background: '#fff', borderRadius: 20, padding: '22px 20px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginBottom: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 20 }}>💵</span>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>월급 (세후)</p>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>실수령액 기준</p>
-          </div>
-        </div>
-        <AmountInput value={input.salary} onChange={v => update({ salary: v })} placeholder="월 실수령액"
-          benchmarkLabel={`${benchmark.label} 평균 ${formatWon(benchmark.salary)}`}
-          presets={[
-            { label: '250만', value: 2_500_000 }, { label: '350만', value: 3_500_000 },
-            { label: '500만', value: 5_000_000 }, { label: '700만', value: 7_000_000 },
-          ]}
-        />
-      </div>
-
-      {/* 생활비 */}
-      <div style={{ background: '#fff', borderRadius: 20, padding: '22px 20px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginBottom: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 20 }}>🏠</span>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>월 생활비</p>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>월세 + 식비 + 교통 + 보험 등</p>
-          </div>
-        </div>
-        <AmountInput value={input.monthlyExpense} onChange={v => update({ monthlyExpense: v })} placeholder="월 생활비"
-          benchmarkLabel={`${benchmark.label} 평균 ${formatWon(benchmark.expense)}`}
-          presets={[
-            { label: '150만', value: 1_500_000 }, { label: '200만', value: 2_000_000 },
-            { label: '250만', value: 2_500_000 }, { label: '300만', value: 3_000_000 },
-          ]}
-        />
-      </div>
-
-      {/* 대출이자 */}
-      <div style={{ background: '#fff', borderRadius: 20, padding: '22px 20px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 20 }}>🏦</span>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>월 대출 이자</p>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>없으면 비워두세요</p>
-          </div>
-        </div>
-        <AmountInput value={input.loanInterest} onChange={v => update({ loanInterest: v })} placeholder="0" />
-      </div>
-
-      {/* 월 저축액 미리보기 */}
-      {input.salary > 0 && input.monthlyExpense > 0 && (
-        <div style={{
-          marginTop: 14, padding: '16px 18px', borderRadius: 16,
-          background: savings > 0 ? '#F0FFF4' : '#FFF5F5',
-          display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <span style={{ fontSize: 24 }}>{savings > 0 ? '📈' : '📉'}</span>
-          <div>
-            <p style={{ fontSize: 13, fontWeight: 800, color: savings > 0 ? '#276749' : '#C53030', margin: 0 }}>
-              월 저축 가능액: {formatWon(Math.abs(savings))}
-            </p>
-            <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-              {savings > 0 ? '매달 이만큼 목표에 가까워져요' : '지출이 수입보다 많아요'}
-            </p>
-          </div>
-        </div>
-      )}
+      <QuestionTitle num={2} text={<>지금까지<br />얼마나 모았어요?</>}
+        sub="현금, 주식, 부동산 등 모두 합산해주세요" />
+      <AmountInput value={input.assets}
+        onChange={v => update({ assets: v })}
+        presets={ASSET_PRESETS} autoFocus onEnter={onNext} />
+      <ContinueButton onClick={onNext} disabled={input.assets === 0} />
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Step 3 — 목표 금액 + 부업 수입
-   ═══════════════════════════════════════════════════════════ */
-function Step3Target({ input, update }: {
-  input: { targetAmount: number; sideIncome: number; assets: number; salary: number; monthlyExpense: number; loanInterest: number }
+/* ───── Q3: 월급 ──────────────────────────────────────── */
+function Q3Salary({
+  input, update, benchmark, onNext,
+}: {
+  input: { salary: number }
   update: (p: Record<string, unknown>) => void
+  benchmark: { label: string; salary: number }
+  onNext: () => void
 }) {
-  const [skipSideIncome, setSkipSideIncome] = useState(false)
-  const monthlySavings = (input.salary - input.monthlyExpense - input.loanInterest) + input.sideIncome
-  const remaining = Math.max(input.targetAmount - input.assets, 0)
+  return (
+    <div>
+      <QuestionTitle num={3} text={<>월급은<br />얼마 받으세요?</>}
+        sub="실수령액(세후) 기준" />
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        padding: '8px 14px', borderRadius: 20, background: '#FFF1E6',
+        marginBottom: 24, fontSize: 13, fontWeight: 700, color: '#C2410C',
+      }}>
+        💵 {benchmark.label} 평균 {formatWon(benchmark.salary)}
+      </div>
+      <AmountInput value={input.salary}
+        onChange={v => update({ salary: v })}
+        presets={SALARY_PRESETS} autoFocus onEnter={onNext} />
+      <ContinueButton onClick={onNext} disabled={input.salary === 0} />
+    </div>
+  )
+}
 
-  useEffect(() => {
-    if (skipSideIncome) update({ sideIncome: 0 })
-  }, [skipSideIncome]) // eslint-disable-line react-hooks/exhaustive-deps
+/* ───── Q4: 월 생활비 ─────────────────────────────────── */
+function Q4Expense({
+  input, update, benchmark, onNext,
+}: {
+  input: { monthlyExpense: number }
+  update: (p: Record<string, unknown>) => void
+  benchmark: { label: string; expense: number }
+  onNext: () => void
+}) {
+  return (
+    <div>
+      <QuestionTitle num={4} text={<>매달 생활비는<br />얼마인가요?</>}
+        sub="월세 + 식비 + 교통 + 보험 등 전부 합쳐서" />
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        padding: '8px 14px', borderRadius: 20, background: '#FEF3C7',
+        marginBottom: 24, fontSize: 13, fontWeight: 700, color: '#92400E',
+      }}>
+        🏠 {benchmark.label} 평균 {formatWon(benchmark.expense)}
+      </div>
+      <AmountInput value={input.monthlyExpense}
+        onChange={v => update({ monthlyExpense: v })}
+        presets={EXPENSE_PRESETS} autoFocus onEnter={onNext} />
+      <ContinueButton onClick={onNext} disabled={input.monthlyExpense === 0} />
+    </div>
+  )
+}
+
+/* ───── Q5: 목표 금액 (큰 버튼 4개 + 직접 입력) ──────────── */
+function Q5Target({
+  input, update, onNext,
+}: {
+  input: { targetAmount: number }
+  update: (p: Record<string, unknown>) => void
+  onNext: () => void
+}) {
+  const [custom, setCustom] = useState(false)
+
+  if (custom) {
+    return (
+      <div>
+        <QuestionTitle num={5} text={<>얼마 모이면<br />퇴사할 건가요?</>}
+          sub="목표 금액을 직접 입력해주세요" />
+        <AmountInput value={input.targetAmount}
+          onChange={v => update({ targetAmount: v })}
+          autoFocus onEnter={onNext} />
+        <button onClick={() => { update({ targetAmount: 0 }); setCustom(false) }}
+          style={{
+            marginTop: 20, padding: '12px', width: '100%',
+            borderRadius: 12, border: 'none', background: 'transparent',
+            fontSize: 14, fontWeight: 700, color: '#64748B', cursor: 'pointer',
+          }}>
+          ← 프리셋으로 돌아가기
+        </button>
+        <ContinueButton onClick={onNext} disabled={input.targetAmount === 0} />
+      </div>
+    )
+  }
 
   return (
     <div>
-      <div style={{ marginBottom: 28 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 900, color: '#1A1F5E', margin: '0 0 8px', letterSpacing: '-0.5px', lineHeight: 1.4 }}>
-          얼마 모이면<br />퇴사하실 건가요?
-        </h2>
-        <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>목표 금액을 설정해주세요</p>
+      <QuestionTitle num={5} text={<>얼마 모이면<br />퇴사할 건가요?</>}
+        sub="목표 금액을 골라주세요" />
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12,
+      }}>
+        {TARGET_PRESETS.map(p => {
+          const sel = input.targetAmount === p.value
+          return (
+            <button key={p.value}
+              onClick={() => {
+                update({ targetAmount: p.value })
+                setTimeout(onNext, 220)
+              }}
+              style={{
+                padding: '40px 16px', borderRadius: 18,
+                border: `2px solid ${sel ? ACCENT : '#E2E8F0'}`,
+                background: sel ? `${ACCENT}0A` : '#fff',
+                fontSize: 32, fontWeight: 900, color: ACCENT,
+                cursor: 'pointer', transition: 'all 0.15s',
+                boxShadow: sel ? `0 4px 14px ${ACCENT}20` : '0 1px 4px rgba(0,0,0,0.04)',
+                letterSpacing: '-1px',
+              }}>
+              {p.label}
+            </button>
+          )
+        })}
       </div>
-
-      {/* 목표 금액 */}
-      <div style={{ background: '#fff', borderRadius: 20, padding: '22px 20px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginBottom: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 20 }}>🎯</span>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>퇴사 목표 금액</p>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>이만큼 모이면 탈출!</p>
-          </div>
-        </div>
-        <AmountInput value={input.targetAmount} onChange={v => update({ targetAmount: v })} placeholder="목표 금액" presets={TARGET_PRESETS} />
-      </div>
-
-      {/* 목표까지 남은 금액 미리보기 */}
-      {input.targetAmount > 0 && (
-        <div style={{
-          padding: '16px 18px', borderRadius: 16, marginBottom: 14,
-          background: remaining <= 0 ? '#F0FFF4' : '#EEF2FF',
-          display: 'flex', alignItems: 'center', gap: 12,
+      <button onClick={() => setCustom(true)}
+        style={{
+          marginTop: 20, padding: '16px', width: '100%',
+          borderRadius: 12, border: '1.5px solid #E2E8F0',
+          background: '#fff', fontSize: 14, fontWeight: 700,
+          color: '#64748B', cursor: 'pointer',
         }}>
-          <span style={{ fontSize: 24 }}>{remaining <= 0 ? '🎉' : '🏃'}</span>
-          <div>
-            {remaining <= 0 ? (
-              <p style={{ fontSize: 14, fontWeight: 800, color: '#276749', margin: 0 }}>이미 목표를 달성했어요!</p>
-            ) : (
-              <>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#3730A3', margin: 0 }}>
-                  목표까지 {formatWon(remaining)} 남았어요
-                </p>
-                {monthlySavings > 0 && (
-                  <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                    현재 속도로 약 {Math.ceil(remaining / monthlySavings)}개월 소요
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* 부업 수입 */}
-      {!skipSideIncome ? (
-        <div style={{ background: '#fff', borderRadius: 20, padding: '22px 20px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <span style={{ fontSize: 20 }}>💡</span>
-            <div>
-              <p style={{ fontSize: 15, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>월 부업 수입</p>
-              <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>프리랜서, 투잡, 투자수익 등</p>
-            </div>
-          </div>
-          <AmountInput value={input.sideIncome} onChange={v => update({ sideIncome: v })} placeholder="월 부업 수입"
-            presets={[
-              { label: '50만', value: 500_000 }, { label: '100만', value: 1_000_000 },
-              { label: '200만', value: 2_000_000 }, { label: '300만', value: 3_000_000 },
-            ]}
-          />
-        </div>
-      ) : (
-        <div style={{ background: '#FFF8F0', borderRadius: 20, padding: '22px 20px', border: '1.5px dashed #FED7AA', marginBottom: 12 }}>
-          <p style={{ fontSize: 15, fontWeight: 800, color: '#F97316', margin: '0 0 4px' }}>부업 없이 계산할게요</p>
-          <p style={{ fontSize: 13, color: '#94A3B8', margin: 0 }}>월급만으로 목표 달성 기간을 계산해요</p>
-        </div>
-      )}
-
-      <button onClick={() => setSkipSideIncome(!skipSideIncome)}
-        style={{ width: '100%', padding: '14px', borderRadius: 14, border: '1.5px solid #E2E8F0', background: '#fff', fontSize: 13, fontWeight: 700, color: '#64748B', cursor: 'pointer', textAlign: 'center' }}>
-        {skipSideIncome ? '💡 부업 수입 입력하기' : '🚫 부업 수입 없이 계산하기'}
+        ✏️ 직접 입력하기
       </button>
+    </div>
+  )
+}
+
+/* ───── Q6-A: 부업 수입 있음/없음 (큰 버튼 2개) ──────────── */
+function Q6SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
+  return (
+    <div>
+      <QuestionTitle num={6} text={<>부업 수입이<br />있으세요?</>}
+        sub="없으면 바로 결과를 보여드릴게요" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <button onClick={onYes}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 16,
+            padding: '26px 22px', borderRadius: 16, border: '2px solid #E2E8F0',
+            background: '#fff', cursor: 'pointer', textAlign: 'left',
+            transition: 'all 0.15s',
+          }}>
+          <span style={{ fontSize: 32 }}>💡</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 19, fontWeight: 900, color: '#1A1F5E' }}>있어요</div>
+            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>프리랜서, 투잡, 투자수익 등</div>
+          </div>
+        </button>
+        <button onClick={onNo}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 16,
+            padding: '26px 22px', borderRadius: 16, border: '2px solid #E2E8F0',
+            background: '#fff', cursor: 'pointer', textAlign: 'left',
+            transition: 'all 0.15s',
+          }}>
+          <span style={{ fontSize: 32 }}>🙅</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 19, fontWeight: 900, color: '#1A1F5E' }}>없어요</div>
+            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>월급만으로 계산</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/* ───── Q6-B: 부업 수입 금액 입력 ─────────────────────── */
+function Q6SideAmount({
+  input, update, onFinish,
+}: {
+  input: { sideIncome: number }
+  update: (p: Record<string, unknown>) => void
+  onFinish: () => void
+}) {
+  return (
+    <div>
+      <QuestionTitle num={6} text={<>부업 수입은<br />한 달에 얼마예요?</>}
+        sub="평균 금액으로 입력해주세요" />
+      <AmountInput value={input.sideIncome}
+        onChange={v => update({ sideIncome: v })}
+        presets={SIDE_PRESETS} autoFocus onEnter={onFinish} />
+      <ContinueButton onClick={onFinish}
+        disabled={input.sideIncome === 0} label="탈출 D-day 확인하기 🚀" />
     </div>
   )
 }
