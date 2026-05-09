@@ -1,11 +1,22 @@
 // ── 업종별 변동비율 ────────────────────────────────────────
 export const VARIABLE_RATE: Record<string, number> = {
-  restaurant:  0.40,
-  cafe:        0.35,
-  retail:      0.50,
-  service:     0.20,
-  delivery:    0.45,
-  other:       0.35,
+  restaurant:   0.40,
+  cafe:         0.35,
+  bar:          0.42,
+  bakery:       0.42,
+  delivery:     0.45,
+  retail:       0.50,
+  service:      0.20,
+  fitness:      0.15,
+  hospital:     0.25,
+  academy:      0.15,
+  laundry:      0.25,
+  repair:       0.40,
+  online_shop:  0.55,
+  transport:    0.40,
+  freelance:    0.10,
+  shipping:     0.40,
+  other:        0.35,
 }
 
 // ── 업종별 평균 벤치마크 데이터 ────────────────────────────
@@ -29,6 +40,21 @@ export const INDUSTRY_BENCHMARKS: Record<keyof typeof VARIABLE_RATE, IndustryBen
     fixedCost: 2_500_000, variableCost: 1_200_000,
     revenue: 10_000_000, avgRunway: 65,
   },
+  bar: {
+    label: '주점/BAR', emoji: '🍺',
+    fixedCost: 3_000_000, variableCost: 1_800_000,
+    revenue: 14_000_000, avgRunway: 55,
+  },
+  bakery: {
+    label: '베이커리/디저트', emoji: '🧁',
+    fixedCost: 2_800_000, variableCost: 1_600_000,
+    revenue: 11_000_000, avgRunway: 60,
+  },
+  delivery: {
+    label: '배달전문', emoji: '🛵',
+    fixedCost: 1_800_000, variableCost: 1_500_000,
+    revenue: 12_000_000, avgRunway: 55,
+  },
   retail: {
     label: '소매/유통', emoji: '🛒',
     fixedCost: 3_000_000, variableCost: 2_500_000,
@@ -39,10 +65,50 @@ export const INDUSTRY_BENCHMARKS: Record<keyof typeof VARIABLE_RATE, IndustryBen
     fixedCost: 2_000_000, variableCost: 800_000,
     revenue: 8_000_000, avgRunway: 90,
   },
-  delivery: {
-    label: '배달전문', emoji: '🛵',
-    fixedCost: 1_800_000, variableCost: 1_500_000,
-    revenue: 12_000_000, avgRunway: 55,
+  fitness: {
+    label: '헬스/피트니스', emoji: '🏋️',
+    fixedCost: 4_500_000, variableCost: 800_000,
+    revenue: 13_000_000, avgRunway: 70,
+  },
+  hospital: {
+    label: '병원/약국', emoji: '🏥',
+    fixedCost: 5_500_000, variableCost: 2_500_000,
+    revenue: 28_000_000, avgRunway: 110,
+  },
+  academy: {
+    label: '학원/교육', emoji: '📚',
+    fixedCost: 3_500_000, variableCost: 1_000_000,
+    revenue: 13_000_000, avgRunway: 85,
+  },
+  laundry: {
+    label: '세탁/청소', emoji: '🧹',
+    fixedCost: 2_000_000, variableCost: 700_000,
+    revenue: 7_000_000, avgRunway: 80,
+  },
+  repair: {
+    label: '수리/인테리어', emoji: '🛠️',
+    fixedCost: 2_500_000, variableCost: 2_000_000,
+    revenue: 11_000_000, avgRunway: 65,
+  },
+  online_shop: {
+    label: '온라인쇼핑몰', emoji: '🛍️',
+    fixedCost: 1_500_000, variableCost: 3_000_000,
+    revenue: 13_000_000, avgRunway: 60,
+  },
+  transport: {
+    label: '운송업', emoji: '🚛',
+    fixedCost: 2_500_000, variableCost: 4_000_000,
+    revenue: 12_000_000, avgRunway: 60,
+  },
+  freelance: {
+    label: '프리랜서', emoji: '🎨',
+    fixedCost: 1_000_000, variableCost: 500_000,
+    revenue: 6_000_000, avgRunway: 90,
+  },
+  shipping: {
+    label: '배송업', emoji: '📦',
+    fixedCost: 2_000_000, variableCost: 3_000_000,
+    revenue: 10_000_000, avgRunway: 65,
   },
   other: {
     label: '기타', emoji: '🏢',

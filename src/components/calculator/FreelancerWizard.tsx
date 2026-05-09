@@ -9,11 +9,21 @@ const ACCENT = '#FF6B35'
 const TOTAL = 6
 
 const JOB_BENCHMARKS: Record<string, { label: string; emoji: string; salary: number; expense: number }> = {
-  office:  { label: '사무직',     emoji: '💼', salary: 3_500_000, expense: 2_500_000 },
-  it:      { label: 'IT/개발',    emoji: '💻', salary: 4_500_000, expense: 2_800_000 },
-  sales:   { label: '영업',       emoji: '🤝', salary: 3_200_000, expense: 2_300_000 },
-  creator: { label: '크리에이터', emoji: '🎨', salary: 2_500_000, expense: 2_000_000 },
-  other:   { label: '기타',       emoji: '📋', salary: 3_000_000, expense: 2_300_000 },
+  office:        { label: '사무직',         emoji: '💼', salary: 3_500_000, expense: 2_500_000 },
+  it:            { label: 'IT/개발',        emoji: '💻', salary: 4_500_000, expense: 2_800_000 },
+  sales:         { label: '영업',           emoji: '🤝', salary: 3_200_000, expense: 2_300_000 },
+  creator:       { label: '크리에이터',     emoji: '🎨', salary: 2_500_000, expense: 2_000_000 },
+  finance:       { label: '금융/회계',      emoji: '📊', salary: 5_000_000, expense: 3_000_000 },
+  marketing:     { label: '마케팅/홍보',    emoji: '📢', salary: 4_000_000, expense: 2_700_000 },
+  construction:  { label: '건설/엔지니어링', emoji: '🏗️', salary: 4_500_000, expense: 2_800_000 },
+  education:     { label: '교육/연구',      emoji: '🎓', salary: 3_500_000, expense: 2_500_000 },
+  medical:       { label: '의료/보건',      emoji: '🏥', salary: 5_500_000, expense: 3_200_000 },
+  logistics:     { label: '물류/유통',      emoji: '🚚', salary: 3_200_000, expense: 2_400_000 },
+  manufacturing: { label: '제조/생산',      emoji: '🏭', salary: 3_500_000, expense: 2_500_000 },
+  legal:         { label: '법무',           emoji: '⚖️', salary: 5_500_000, expense: 3_200_000 },
+  hr:            { label: 'HR/인사',        emoji: '👥', salary: 3_800_000, expense: 2_600_000 },
+  civil_servant: { label: '공무원',         emoji: '🏛️', salary: 3_000_000, expense: 2_300_000 },
+  other:         { label: '기타',           emoji: '📋', salary: 3_000_000, expense: 2_300_000 },
 }
 
 const ASSET_PRESETS = [
@@ -249,11 +259,12 @@ export function FreelancerWizard() {
           </button>
         </div>
 
-        {/* 질문 영역 (세로 중앙 정렬) */}
+        {/* 질문 영역 (세로 중앙 정렬, 콘텐츠 길어지면 자연스럽게 스크롤) */}
         <div key={animKey} style={{
           flex: 1, padding: '8px 24px 60px',
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
           animation: 'fl-slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
+          minHeight: 0,
         }}>
           {step === 0 && (
             <Q1Job selectedJob={selectedJob}
@@ -295,7 +306,7 @@ export function FreelancerWizard() {
   )
 }
 
-/* ───── Q1: 직군 선택 (탭 → 자동 다음) ─────────────────── */
+/* ───── Q1: 직군 선택 (3열 그리드, 탭 → 자동 다음) ───────── */
 function Q1Job({
   selectedJob, onSelect,
 }: {
@@ -306,25 +317,37 @@ function Q1Job({
     <div>
       <QuestionTitle num={1} text={<>어떤 일을<br />하고 계세요?</>}
         sub="직군에 맞는 평균값을 알려드릴게요" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 8,
+      }}>
         {Object.entries(JOB_BENCHMARKS).map(([key, data]) => {
           const sel = selectedJob === key
           return (
             <button key={key} onClick={() => onSelect(key)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 16,
-                padding: '20px 22px', borderRadius: 16,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 6,
+                padding: '14px 6px',
+                minHeight: 88,
+                borderRadius: 14,
                 border: `2px solid ${sel ? ACCENT : '#E2E8F0'}`,
                 background: sel ? `${ACCENT}0A` : '#fff',
                 cursor: 'pointer', transition: 'all 0.15s',
-                textAlign: 'left',
                 boxShadow: sel ? `0 4px 14px ${ACCENT}20` : 'none',
               }}>
-              <span style={{ fontSize: 28 }}>{data.emoji}</span>
-              <span style={{ fontSize: 17, fontWeight: 800, color: '#1A1F5E', flex: 1 }}>
+              <span style={{ fontSize: 26, lineHeight: 1 }}>{data.emoji}</span>
+              <span style={{
+                fontSize: 12, fontWeight: 800,
+                color: sel ? ACCENT : '#1A1F5E',
+                lineHeight: 1.25,
+                textAlign: 'center',
+                wordBreak: 'keep-all',
+              }}>
                 {data.label}
               </span>
-              {sel && <span style={{ color: ACCENT, fontSize: 18, fontWeight: 900 }}>✓</span>}
             </button>
           )
         })}

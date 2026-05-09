@@ -60,7 +60,7 @@ export default function Header() {
         alignItems:     'center',
         gap:            6,
       }}>
-        🫧 현대인 생존 계산기
+        🤖 AI 계산기
       </Link>
 
       {user ? (

@@ -9,11 +9,11 @@ import { NumberInput }  from './NumberInput'
 const ACCENT = '#1A1F5E'
 
 // 업종별 평균값 (원)
-const INDUSTRY_PRESETS: Record<keyof typeof VARIABLE_RATE, {
+const INDUSTRY_PRESETS: Partial<Record<keyof typeof VARIABLE_RATE, {
   label:    string
   fixedCost: number
   revenue:  number
-}> = {
+}>> = {
   restaurant: { label: '음식점',    fixedCost: 2_200_000, revenue: 5_000_000 },
   cafe:       { label: '카페',      fixedCost: 1_800_000, revenue: 4_000_000 },
   retail:     { label: '소매/유통', fixedCost: 2_000_000, revenue: 4_500_000 },
@@ -38,6 +38,10 @@ export function BusinessForm() {
 
   function handleIndustryChange(type: keyof typeof VARIABLE_RATE) {
     const preset = INDUSTRY_PRESETS[type]
+    if (!preset) {
+      updateBusinessInput({ industryType: type })
+      return
+    }
     updateBusinessInput({
       industryType: type,
       fixedCost:    preset.fixedCost,
@@ -104,7 +108,7 @@ export function BusinessForm() {
                     transition:   'all 0.12s',
                   }}
                 >
-                  {INDUSTRY_PRESETS[key].label}
+                  {INDUSTRY_PRESETS[key]?.label}
                 </button>
               )
             })}

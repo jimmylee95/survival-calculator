@@ -236,11 +236,12 @@ export function BusinessWizard() {
           </button>
         </div>
 
-        {/* 질문 영역 (세로 중앙 정렬) */}
+        {/* 질문 영역 (세로 중앙 정렬, 콘텐츠 길어지면 자연스럽게 스크롤) */}
         <div key={animKey} style={{
           flex: 1, padding: '8px 24px 60px',
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
           animation: 'biz-slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
+          minHeight: 0,
         }}>
           {step === 0 && (
             <Q1Industry input={businessInput} update={updateBusinessInput} onNext={goNext} />
@@ -278,7 +279,7 @@ export function BusinessWizard() {
   )
 }
 
-/* ───── Q1: 업종 선택 (탭 → 자동 다음) ───────────────────── */
+/* ───── Q1: 업종 선택 (3열 그리드, 탭 → 자동 다음) ───────── */
 function Q1Industry({
   input, update, onNext,
 }: {
@@ -290,7 +291,11 @@ function Q1Industry({
     <div>
       <QuestionTitle num={1} text={<>어떤 사업을<br />하고 계세요?</>}
         sub="업종에 맞는 평균값을 알려드릴게요" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 8,
+      }}>
         {Object.entries(INDUSTRY_BENCHMARKS).map(([key, data]) => {
           const sel = input.industryType === key
           return (
@@ -300,19 +305,27 @@ function Q1Industry({
                 setTimeout(onNext, 220)
               }}
               style={{
-                display: 'flex', alignItems: 'center', gap: 16,
-                padding: '20px 22px', borderRadius: 16,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 6,
+                padding: '14px 6px',
+                minHeight: 88,
+                borderRadius: 14,
                 border: `2px solid ${sel ? ACCENT : '#E2E8F0'}`,
                 background: sel ? `${ACCENT}0A` : '#fff',
                 cursor: 'pointer', transition: 'all 0.15s',
-                textAlign: 'left',
                 boxShadow: sel ? `0 4px 14px ${ACCENT}20` : 'none',
               }}>
-              <span style={{ fontSize: 28 }}>{data.emoji}</span>
-              <span style={{ fontSize: 17, fontWeight: 800, color: '#1A1F5E', flex: 1 }}>
+              <span style={{ fontSize: 26, lineHeight: 1 }}>{data.emoji}</span>
+              <span style={{
+                fontSize: 12, fontWeight: 800,
+                color: sel ? ACCENT : '#1A1F5E',
+                lineHeight: 1.25,
+                textAlign: 'center',
+                wordBreak: 'keep-all',
+              }}>
                 {data.label}
               </span>
-              {sel && <span style={{ color: ACCENT, fontSize: 18, fontWeight: 900 }}>✓</span>}
             </button>
           )
         })}
