@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { type User } from '@supabase/supabase-js'
+import { useAuth } from '@/hooks/useAuth'
+import { Loading } from '@/components/layout/Loading'
 
 function formatJoinDate(iso?: string): string {
   if (!iso) return ''
@@ -14,41 +15,23 @@ function formatJoinDate(iso?: string): string {
 }
 
 export default function MyPage() {
+  console.log('[mypage] rendering')
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [user, setUser]       = useState<User | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    const sb = createClient()
-    sb.auth.getUser()
-      .then(({ data: { user } }) => {
-        if (cancelled) return
-        if (!user) { router.replace('/login'); return }
-        setUser(user)
-        setLoading(false)
-      })
-      .catch(() => { if (!cancelled) router.replace('/login') })
-    return () => { cancelled = true }
-  }, [router])
+  const { user, loading } = useAuth({ redirectTo: '/login' })
+  console.log('[mypage] auth state — loading:', loading, 'user:', user?.id ?? null)
+  const [loggingOut, setLoggingOut] = useState(false)
 
   async function handleLogout() {
+    if (loggingOut) return
+    setLoggingOut(true)
     const sb = createClient()
     await sb.auth.signOut()
     router.replace('/')
     router.refresh()
   }
 
-  if (loading || !user) {
-    return (
-      <div style={{
-        minHeight: '100dvh', background: '#F8F9FB',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ fontSize: 28 }}>⚡</div>
-      </div>
-    )
-  }
+  if (loading) return <Loading />
+  if (!user)   return null
 
   const nickname = (user.user_metadata?.name as string | undefined) ?? '사용자'
   const avatar   = user.user_metadata?.avatar_url as string | undefined

@@ -20,13 +20,14 @@ export default function BottomNav() {
 
   return (
     <nav style={{
-      position: 'fixed', bottom: 0, left: '50%',
-      transform: 'translateX(-50%)',
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      margin: '0 auto',
       width: '100%', maxWidth: 430,
-      background: '#fff',
+      background: '#ffffff',
       borderTop: '1px solid #E5E8EB',
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
       paddingBottom: 'env(safe-area-inset-bottom)',
-      zIndex: 100,
+      zIndex: 9999,
     }}>
       <div style={{
         display: 'grid',

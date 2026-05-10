@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { type User } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/client'
 import {
   saveDailyInput,
   type DailyInputMode,
@@ -18,6 +16,8 @@ import {
   VARIABLE_RATE,
   formatWon,
 } from '@/utils/calculate'
+import { useAuth } from '@/hooks/useAuth'
+import { Loading } from '@/components/layout/Loading'
 
 const TOTAL = 3
 
@@ -53,10 +53,10 @@ const FREE_CATEGORIES = ['여행', '쇼핑', '경조사', '의료비', '기타']
 /* ── 페이지 ───────────────────────────────────────────── */
 export default function InputPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth({ redirectTo: '/login' })
 
-  const [loading, setLoading] = useState(true)
-  const [user, setUser]       = useState<User | null>(null)
-  const [latest, setLatest]   = useState<CalculationRecord | null>(null)
+  const [latest, setLatest]           = useState<CalculationRecord | null>(null)
+  const [dataLoading, setDataLoading] = useState(true)
 
   const [step, setStep]       = useState(0)
   const [animKey, setAnimKey] = useState(0)
@@ -69,22 +69,23 @@ export default function InputPage() {
   const accent = isBiz ? '#1A1F5E' : '#FF6B35'
   const accentTo = isBiz ? '#4F46E5' : '#E8590C'
 
+  // 인증 후 latest 계산 기록 조회 (변화량 표시용)
   useEffect(() => {
+    if (!user) return
     let cancelled = false
-    const sb = createClient()
-    sb.auth.getUser()
-      .then(async ({ data: { user } }) => {
-        if (cancelled) return
-        if (!user) { router.replace('/login'); return }
+    ;(async () => {
+      try {
         const l = await getLatestCalculation(user.id)
         if (cancelled) return
-        setUser(user)
         setLatest(l)
-        setLoading(false)
-      })
-      .catch(() => { if (!cancelled) router.replace('/login') })
+      } catch (err) {
+        console.error('[input data]', err)
+      } finally {
+        if (!cancelled) setDataLoading(false)
+      }
+    })()
     return () => { cancelled = true }
-  }, [router])
+  }, [user])
 
   function goNext() {
     setAnimKey(k => k + 1)
@@ -117,16 +118,9 @@ export default function InputPage() {
     goNext()
   }
 
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100dvh', background: '#fff',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ fontSize: 28 }}>⚡</div>
-      </div>
-    )
-  }
+  if (authLoading) return <Loading />
+  if (!user)        return null
+  if (dataLoading) return <Loading />
 
   const progressIdx = Math.min(step + 1, TOTAL)
 
@@ -138,7 +132,7 @@ export default function InputPage() {
       width: '100%', overflowX: 'hidden',
     }}>
       <div style={{
-        width: '100%', maxWidth: 480,
+        width: '100%', maxWidth: 430,
         display: 'flex', flexDirection: 'column', minHeight: '100dvh',
       }}>
         {/* 상단 바 */}

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import {
   getCalculationHistory,
   type CalculationRecord,
@@ -12,6 +11,8 @@ import {
   type BusinessInput,
   INDUSTRY_BENCHMARKS,
 } from '@/utils/calculate'
+import { useAuth } from '@/hooks/useAuth'
+import { Loading } from '@/components/layout/Loading'
 
 const HISTORY_LIMIT = 30
 
@@ -71,29 +72,33 @@ function industryLabel(record: CalculationRecord): string | null {
 
 /* ── 페이지 ──────────────────────────────────────────── */
 export default function HistoryPage() {
+  console.log('[history] rendering')
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [records, setRecords] = useState<CalculationRecord[]>([])
+  const { user, loading: authLoading } = useAuth({ redirectTo: '/login' })
+  console.log('[history] auth state — loading:', authLoading, 'user:', user?.id ?? null)
+  const [records, setRecords]         = useState<CalculationRecord[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
 
   useEffect(() => {
+    if (!user) return
+    console.log('[history] fetching list for user', user.id)
     let cancelled = false
     ;(async () => {
+      const t0 = performance.now()
       try {
-        const sb = createClient()
-        const { data: { user } } = await sb.auth.getUser()
-        if (cancelled) return
-        if (!user) { router.replace('/login'); return }
         const list = await getCalculationHistory(user.id, HISTORY_LIMIT)
+        const elapsed = (performance.now() - t0).toFixed(0)
+        console.log(`[history] list query done in ${elapsed}ms — count:`, list.length)
         if (cancelled) return
         setRecords(list)
-        setLoading(false)
       } catch (err) {
-        console.error('[history]', err)
-        if (!cancelled) router.replace('/login')
+        console.error('[history data] error', err)
+      } finally {
+        if (!cancelled) setDataLoading(false)
       }
     })()
     return () => { cancelled = true }
-  }, [router])
+  }, [user])
 
   // 그룹핑
   const groups = useMemo(() => {
@@ -107,16 +112,9 @@ export default function HistoryPage() {
     return map
   }, [records])
 
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100dvh', background: '#F8F9FB',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ fontSize: 28 }}>⚡</div>
-      </div>
-    )
-  }
+  if (authLoading) return <Loading />
+  if (!user)        return null
+  if (dataLoading) return <Loading />
 
   return (
     <div style={{

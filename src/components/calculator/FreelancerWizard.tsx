@@ -232,7 +232,7 @@ export function FreelancerWizard() {
       width: '100%', overflowX: 'hidden',
     }}>
       <div style={{
-        width: '100%', maxWidth: 480,
+        width: '100%', maxWidth: 430,
         display: 'flex', flexDirection: 'column', minHeight: '100dvh',
       }}>
         {/* 상단: 얇은 프로그레스 바 + 뒤로가기 */}

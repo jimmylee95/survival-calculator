@@ -14,34 +14,40 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  margin:     0;
-  padding:    0;
 }
 
-/* html/body 명시적 초기화 — 모든 환경에서 가로 스크롤/여백 제거 */
-html, body {
-  margin:     0;
-  padding:    0;
-  width:      100%;
-  overflow-x: hidden;
+* {
+  margin:  0;
+  padding: 0;
 }
 
+/* 가로 스크롤·여백 제거 + 화면 가득 채우기 */
 html {
-  /* iOS Safari 바운스 스크롤 방지 */
+  overflow-x: hidden;
   overscroll-behavior: none;
+  width: 100%;
 }
 
 body {
+  margin:     0;
+  padding:    0;
+  width:      100%;
+  max-width:  100vw;
+  overflow-x: hidden;
+  min-height: 100dvh;
+
+  /* 콘텐츠를 가로 가운데 정렬 */
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+
   color:       var(--foreground);
   background:  var(--background);
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont,
                'Segoe UI', sans-serif;
   -webkit-font-smoothing:  antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* 모바일 텍스트 크기 자동 조정 방지 */
   -webkit-text-size-adjust: 100%;
-  /* 하단 네비게이션 바 공간 확보 */
-  padding-bottom: 80px;
 }
 
 /* 버튼 기본 스타일 초기화 */

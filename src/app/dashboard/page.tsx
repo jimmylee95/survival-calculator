@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import {
   getLatestCalculation,
   getPreviousCalculation,
@@ -23,6 +22,8 @@ import {
   RevenueExpenseChart,
   formatShort,
 } from '@/components/dashboard/Charts'
+import { useAuth } from '@/hooks/useAuth'
+import { Loading } from '@/components/layout/Loading'
 
 /* ── 상수 ────────────────────────────────────────────── */
 const HERO_BG = {
@@ -76,53 +77,55 @@ const PERIOD_LABEL: Record<Period, string> = { '1w': '1주', '1m': '1개월', '3
 
 /* ── 페이지 ──────────────────────────────────────────── */
 export default function DashboardPage() {
+  console.log('[dashboard] rendering')
   const router = useRouter()
-  const [loading, setLoading]     = useState(true)
-  const [latest, setLatest]       = useState<CalculationRecord | null>(null)
-  const [previous, setPrevious]   = useState<CalculationRecord | null>(null)
-  const [userId, setUserId]       = useState<string | null>(null)
+  const { user, loading: authLoading } = useAuth({ redirectTo: '/' })
+  console.log('[dashboard] auth state — loading:', authLoading, 'user:', user?.id ?? null)
+
+  const [latest, setLatest]           = useState<CalculationRecord | null>(null)
+  const [previous, setPrevious]       = useState<CalculationRecord | null>(null)
+  const [dataLoading, setDataLoading] = useState(true)
 
   // 추이 차트 데이터
   const [period, setPeriod]               = useState<Period>('1m')
   const [runwayHistory, setRunwayHistory] = useState<CalculationRecord[]>([])
   const [inputHistory, setInputHistory]   = useState<DailyInputAggregate[]>([])
 
+  // 인증 후 latest/previous 조회
   useEffect(() => {
+    if (!user) return
+    console.log('[dashboard] fetching latest/previous calc for user', user.id)
     let cancelled = false
     ;(async () => {
+      const t0 = performance.now()
       try {
-        const sb = createClient()
-        const { data: { user } } = await sb.auth.getUser()
-        if (cancelled) return
-        if (!user) { router.replace('/'); return }
-
         const [l, p] = await Promise.all([
           getLatestCalculation(user.id),
           getPreviousCalculation(user.id),
         ])
+        const elapsed = (performance.now() - t0).toFixed(0)
+        console.log(`[dashboard] calc query done in ${elapsed}ms — latest:`, l ? 'yes' : 'null', 'previous:', p ? 'yes' : 'null')
         if (cancelled) return
-        if (!l) { router.replace('/'); return }
-        setUserId(user.id)
         setLatest(l)
         setPrevious(p)
-        setLoading(false)
       } catch (err) {
-        console.error('[dashboard]', err)
-        if (!cancelled) router.replace('/')
+        console.error('[dashboard data] error', err)
+      } finally {
+        if (!cancelled) setDataLoading(false)
       }
     })()
     return () => { cancelled = true }
-  }, [router])
+  }, [user])
 
   // 기간 변경 시 추이 데이터 재조회
   useEffect(() => {
-    if (!userId) return
+    if (!user) return
     let cancelled = false
     ;(async () => {
       try {
         const [rh, ih] = await Promise.all([
-          getRunwayHistory(userId, PERIOD_LIMIT[period]),
-          getDailyInputHistory(userId, PERIOD_DAYS[period]),
+          getRunwayHistory(user.id, PERIOD_LIMIT[period]),
+          getDailyInputHistory(user.id, PERIOD_DAYS[period]),
         ])
         if (cancelled) return
         setRunwayHistory(rh)
@@ -132,7 +135,7 @@ export default function DashboardPage() {
       }
     })()
     return () => { cancelled = true }
-  }, [userId, period])
+  }, [user, period])
 
   // 오늘의 한마디는 마운트 시 한 번만 결정 (재렌더링에 따라 흔들리지 않게)
   const todayMsg = useMemo(() => {
@@ -143,15 +146,11 @@ export default function DashboardPage() {
     return pool[Math.floor(Math.random() * pool.length)]
   }, [latest])
 
-  if (loading || !latest) {
-    return (
-      <div style={{
-        minHeight: '100dvh', background: '#F8F9FB',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ fontSize: 28 }}>⚡</div>
-      </div>
-    )
+  if (authLoading) return <Loading />
+  if (!user)        return null
+  if (dataLoading) return <Loading />
+  if (!latest) {
+    return <DashboardEmpty onStart={() => router.push('/calculator')} />
   }
 
   const isBiz    = latest.mode === 'business'
@@ -465,6 +464,52 @@ function ActionButton({ icon, label, onClick, accent }: {
       <span style={{ fontSize: 22, lineHeight: 1 }}>{icon}</span>
       <span style={{ letterSpacing: '-0.2px' }}>{label}</span>
     </button>
+  )
+}
+
+/* ── 빈 상태 (로그인 + 기록 없음) ───────────────────────── */
+function DashboardEmpty({ onStart }: { onStart: () => void }) {
+  return (
+    <div style={{
+      minHeight: '100dvh', background: '#F8F9FB',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+      width: '100%', overflowX: 'hidden',
+    }}>
+      <div style={{
+        width: '100%', maxWidth: 360,
+        textAlign: 'center',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16,
+      }}>
+        <div style={{ fontSize: 64, lineHeight: 1 }}>🧮</div>
+        <div>
+          <p style={{
+            fontSize: 18, fontWeight: 900, color: '#1A1F5E',
+            margin: '0 0 6px', letterSpacing: '-0.3px',
+          }}>
+            아직 계산 기록이 없어요
+          </p>
+          <p style={{
+            fontSize: 14, color: '#64748B',
+            margin: 0, lineHeight: 1.6,
+          }}>
+            첫 계산을 해보세요!
+          </p>
+        </div>
+        <button onClick={onStart}
+          style={{
+            marginTop: 8, height: 52, padding: '0 32px',
+            borderRadius: 14, border: 'none',
+            background: 'linear-gradient(135deg, #1A1F5E, #4F46E5)',
+            color: '#fff', fontSize: 15, fontWeight: 900,
+            cursor: 'pointer', letterSpacing: '-0.3px',
+            boxShadow: '0 8px 20px rgba(26,31,94,0.3)',
+          }}>
+          🧮 계산하러 가기
+        </button>
+      </div>
+    </div>
   )
 }
 
