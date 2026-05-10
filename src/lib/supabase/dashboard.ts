@@ -73,6 +73,86 @@ export async function getCalculationHistory(
   return (data ?? []) as CalculationRecord[]
 }
 
+/** 차트용: 최신 limit건의 계산을 오래된→최신 순서로 반환 */
+export async function getRunwayHistory(
+  userId: string,
+  limit: number = 30,
+): Promise<CalculationRecord[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('calculations')
+    .select(SELECT_COLUMNS)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('[getRunwayHistory]', error)
+    return []
+  }
+  return ((data ?? []) as CalculationRecord[]).slice().reverse()
+}
+
+/** 차트용: 일별 매출/지출/저축 합산 (오래된→최신, 빈 날짜 0으로 채움) */
+export interface DailyInputAggregate {
+  date:    string  // YYYY-MM-DD (로컬 자정 기준)
+  revenue: number
+  expense: number
+  savings: number
+}
+
+export async function getDailyInputHistory(
+  userId: string,
+  days: number = 14,
+): Promise<DailyInputAggregate[]> {
+  const supabase = createClient()
+
+  // 시작일 = 오늘 자정에서 (days-1) 일 전
+  const since = new Date()
+  since.setHours(0, 0, 0, 0)
+  since.setDate(since.getDate() - (days - 1))
+
+  const { data, error } = await supabase
+    .from('daily_inputs')
+    .select('input_type, amount, created_at')
+    .eq('user_id', userId)
+    .gte('created_at', since.toISOString())
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    console.error('[getDailyInputHistory]', error)
+    return []
+  }
+
+  // 빈 날짜 0으로 채워넣은 맵
+  const map = new Map<string, DailyInputAggregate>()
+  for (let i = 0; i < days; i++) {
+    const d = new Date(since)
+    d.setDate(d.getDate() + i)
+    const key = formatDateKey(d)
+    map.set(key, { date: key, revenue: 0, expense: 0, savings: 0 })
+  }
+
+  type Row = { input_type: string; amount: number; created_at: string }
+  for (const row of (data ?? []) as Row[]) {
+    const key = formatDateKey(new Date(row.created_at))
+    const agg = map.get(key)
+    if (!agg) continue
+    if (row.input_type === 'revenue')      agg.revenue += row.amount
+    else if (row.input_type === 'expense') agg.expense += row.amount
+    else if (row.input_type === 'savings') agg.savings += row.amount
+  }
+
+  return Array.from(map.values())
+}
+
+function formatDateKey(d: Date): string {
+  const y  = d.getFullYear()
+  const m  = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${dd}`
+}
+
 /** 해당 유저의 계산 기록이 1건이라도 있는지 */
 export async function hasCalculationHistory(userId: string): Promise<boolean> {
   const supabase = createClient()

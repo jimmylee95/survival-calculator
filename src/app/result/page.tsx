@@ -135,8 +135,8 @@ export default function ResultPage() {
     const days = isFinite(realisticDays) ? Math.floor(realisticDays) : '∞'
     const url  = typeof window !== 'undefined' ? window.location.origin : ''
     return isBusiness
-      ? `나의 사업 런웨이는 D-${days}일!\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
-      : `나의 퇴사까지 D-${days}일!\n직장인 탈출 계산기로 확인해보세요\n👉 ${url}`
+      ? `나의 사업 런웨이는 ${days}일!\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
+      : `나의 퇴사까지 ${days}일!\n직장인 탈출 계산기로 확인해보세요\n👉 ${url}`
   }
 
   async function handleShare() {
@@ -234,15 +234,6 @@ export default function ResultPage() {
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontWeight: 700, margin: '0 0 8px' }}>
             {mainLabel}
           </p>
-
-          {isFinite(realisticDays) && realisticDays > 0 && (
-            <p style={{
-              fontSize: 16, fontWeight: 800,
-              color: 'rgba(255,255,255,0.7)', margin: '0 0 -4px',
-            }}>
-              D -
-            </p>
-          )}
 
           <p style={{
             fontSize: 72, fontWeight: 900, color: runwayColor,

@@ -6,7 +6,10 @@ import { createClient } from '@/lib/supabase/client'
 import {
   getLatestCalculation,
   getPreviousCalculation,
+  getRunwayHistory,
+  getDailyInputHistory,
   type CalculationRecord,
+  type DailyInputAggregate,
 } from '@/lib/supabase/dashboard'
 import {
   type BusinessInput,
@@ -15,6 +18,11 @@ import {
   VARIABLE_RATE,
   formatWon,
 } from '@/utils/calculate'
+import {
+  TrendChart,
+  RevenueExpenseChart,
+  formatShort,
+} from '@/components/dashboard/Charts'
 
 /* ── 상수 ────────────────────────────────────────────── */
 const HERO_BG = {
@@ -60,12 +68,24 @@ const TODAY_MSG_FREE: Record<DangerLevel, string[]> = {
   infinite: ['이미 자유인! 오늘은 다음 챕터를 그려요', '회사가 당신을 붙잡고 있을 뿐이에요'],
 }
 
+/* ── 기간 탭 ─────────────────────────────────────────── */
+type Period = '1w' | '1m' | '3m'
+const PERIOD_DAYS: Record<Period, number> = { '1w': 7, '1m': 30, '3m': 90 }
+const PERIOD_LIMIT: Record<Period, number> = { '1w': 10, '1m': 30, '3m': 90 }
+const PERIOD_LABEL: Record<Period, string> = { '1w': '1주', '1m': '1개월', '3m': '3개월' }
+
 /* ── 페이지 ──────────────────────────────────────────── */
 export default function DashboardPage() {
   const router = useRouter()
   const [loading, setLoading]     = useState(true)
   const [latest, setLatest]       = useState<CalculationRecord | null>(null)
   const [previous, setPrevious]   = useState<CalculationRecord | null>(null)
+  const [userId, setUserId]       = useState<string | null>(null)
+
+  // 추이 차트 데이터
+  const [period, setPeriod]               = useState<Period>('1m')
+  const [runwayHistory, setRunwayHistory] = useState<CalculationRecord[]>([])
+  const [inputHistory, setInputHistory]   = useState<DailyInputAggregate[]>([])
 
   useEffect(() => {
     let cancelled = false
@@ -82,6 +102,7 @@ export default function DashboardPage() {
         ])
         if (cancelled) return
         if (!l) { router.replace('/'); return }
+        setUserId(user.id)
         setLatest(l)
         setPrevious(p)
         setLoading(false)
@@ -92,6 +113,26 @@ export default function DashboardPage() {
     })()
     return () => { cancelled = true }
   }, [router])
+
+  // 기간 변경 시 추이 데이터 재조회
+  useEffect(() => {
+    if (!userId) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const [rh, ih] = await Promise.all([
+          getRunwayHistory(userId, PERIOD_LIMIT[period]),
+          getDailyInputHistory(userId, PERIOD_DAYS[period]),
+        ])
+        if (cancelled) return
+        setRunwayHistory(rh)
+        setInputHistory(ih)
+      } catch (err) {
+        console.error('[dashboard trends]', err)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [userId, period])
 
   // 오늘의 한마디는 마운트 시 한 번만 결정 (재렌더링에 따라 흔들리지 않게)
   const todayMsg = useMemo(() => {
@@ -163,7 +204,7 @@ export default function DashboardPage() {
               margin: '0 0 8px', lineHeight: 1, letterSpacing: '-2.5px',
               filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.25))',
             }}>
-              D-{days}
+              {days}일
             </p>
           ) : (
             <p style={{
@@ -270,6 +311,20 @@ export default function DashboardPage() {
               {todayMsg}
             </p>
           </Card>
+
+          {/* 추이 차트 */}
+          <PeriodTabs value={period} onChange={setPeriod} />
+          {isBiz ? (
+            <BusinessTrendCharts
+              runwayHistory={runwayHistory}
+              inputHistory={inputHistory}
+            />
+          ) : (
+            <FreelancerTrendCharts
+              runwayHistory={runwayHistory}
+              targetAmount={(latest.input_data as FreelancerInput).targetAmount}
+            />
+          )}
         </div>
 
         {/* ── 액션 버튼 ─────────────────────────────── */}
@@ -410,5 +465,176 @@ function ActionButton({ icon, label, onClick, accent }: {
       <span style={{ fontSize: 22, lineHeight: 1 }}>{icon}</span>
       <span style={{ letterSpacing: '-0.2px' }}>{label}</span>
     </button>
+  )
+}
+
+/* ── 기간 선택 탭 ──────────────────────────────────────── */
+function PeriodTabs({
+  value, onChange,
+}: {
+  value: Period; onChange: (p: Period) => void
+}) {
+  return (
+    <div style={{
+      display: 'flex', gap: 6, padding: 4,
+      background: '#F1F5F9', borderRadius: 12,
+      width: 'fit-content', alignSelf: 'flex-end',
+    }}>
+      {(['1w', '1m', '3m'] as Period[]).map(p => {
+        const sel = p === value
+        return (
+          <button key={p} onClick={() => onChange(p)}
+            style={{
+              padding: '6px 14px', borderRadius: 8,
+              border: 'none', cursor: 'pointer',
+              fontSize: 12, fontWeight: 800,
+              background: sel ? '#fff' : 'transparent',
+              color:      sel ? '#1A1F5E' : '#64748B',
+              boxShadow:  sel ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              letterSpacing: '-0.2px',
+              transition: 'all 0.15s',
+            }}>
+            {PERIOD_LABEL[p]}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ── 차트 카드 래퍼 ────────────────────────────────────── */
+function ChartCard({ title, sub, children }: {
+  title: string; sub?: string; children: React.ReactNode
+}) {
+  return (
+    <Card>
+      <div style={{ marginBottom: 12 }}>
+        <p style={{
+          fontSize: 13, fontWeight: 900, color: '#1A1F5E',
+          margin: 0, letterSpacing: '-0.3px',
+        }}>
+          {title}
+        </p>
+        {sub && (
+          <p style={{
+            fontSize: 11, fontWeight: 600, color: '#94A3B8',
+            margin: '2px 0 0',
+          }}>
+            {sub}
+          </p>
+        )}
+      </div>
+      {children}
+    </Card>
+  )
+}
+
+/* ── 자영업자 차트 묶음 ─────────────────────────────────── */
+function BusinessTrendCharts({
+  runwayHistory, inputHistory,
+}: {
+  runwayHistory: CalculationRecord[]
+  inputHistory:  DailyInputAggregate[]
+}) {
+  const trendPoints = runwayHistory.map(r => ({
+    date:  r.created_at,
+    value: r.result_days ?? 0,
+  }))
+
+  const barPoints = inputHistory.map(i => ({
+    date:    i.date,
+    revenue: i.revenue,
+    expense: i.expense,
+  }))
+
+  return (
+    <>
+      <ChartCard title="📈 런웨이 추이" sub="계산 기록 기반">
+        <TrendChart
+          points={trendPoints}
+          unit="일"
+          lineColor="#38A169"
+          fillTop="#38A169"
+          fillBottom="#FC8181"
+          emptyMessage="계산 기록이 2건 이상이면 추이를 볼 수 있어요"
+        />
+      </ChartCard>
+
+      <ChartCard title="💰 매출 vs 지출" sub="간편 입력 일별 합산">
+        <RevenueExpenseChart
+          points={barPoints}
+          emptyMessage="간편 입력을 시작하면 매출/지출 추이를 볼 수 있어요"
+        />
+      </ChartCard>
+    </>
+  )
+}
+
+/* ── 직장인 차트 묶음 ───────────────────────────────────── */
+function FreelancerTrendCharts({
+  runwayHistory, targetAmount,
+}: {
+  runwayHistory: CalculationRecord[]
+  targetAmount:  number
+}) {
+  // 자산 추이: 각 계산의 input_data.assets
+  const assetPoints = runwayHistory
+    .map(r => ({
+      date:  r.created_at,
+      value: ((r.input_data as FreelancerInput)?.assets ?? 0),
+    }))
+    .filter(p => p.value > 0)
+
+  // 자산 진행률 (최신 자산 기준)
+  const latestAssets = assetPoints.length > 0 ? assetPoints[assetPoints.length - 1].value : 0
+  const progressPct  = targetAmount > 0
+    ? Math.min((latestAssets / targetAmount) * 100, 100)
+    : 0
+
+  // 탈출일 추이
+  const escapePoints = runwayHistory.map(r => ({
+    date:  r.created_at,
+    value: r.result_days ?? 0,
+  }))
+  // 트렌드 방향: 최신이 처음보다 작으면(=가까워짐) 초록, 크면 빨강
+  const escapeImproving = escapePoints.length >= 2
+    ? escapePoints[escapePoints.length - 1].value <= escapePoints[0].value
+    : true
+  const escapeColor = escapeImproving ? '#38A169' : '#E53E3E'
+
+  return (
+    <>
+      <ChartCard
+        title="📈 자산 증가 추이"
+        sub={targetAmount > 0 ? `목표까지 ${progressPct.toFixed(0)}% 달성` : undefined}
+      >
+        <TrendChart
+          points={assetPoints}
+          lineColor="#FF6B35"
+          fillTop="#FF6B35"
+          fillBottom="#FF6B35"
+          targetValue={targetAmount > 0 ? targetAmount : undefined}
+          targetLabel={targetAmount > 0 ? '목표' : undefined}
+          formatValue={v => formatShort(v)}
+          emptyMessage="계산 기록이 2건 이상이면 자산 추이를 볼 수 있어요"
+        />
+      </ChartCard>
+
+      <ChartCard
+        title="🚀 탈출일 변화"
+        sub={escapePoints.length >= 2
+          ? (escapeImproving ? '탈출이 점점 가까워지고 있어요' : '탈출이 점점 멀어지고 있어요')
+          : undefined}
+      >
+        <TrendChart
+          points={escapePoints}
+          unit="일"
+          lineColor={escapeColor}
+          fillTop={escapeColor}
+          fillBottom={escapeColor}
+          emptyMessage="계산 기록이 2건 이상이면 탈출일 변화를 볼 수 있어요"
+        />
+      </ChartCard>
+    </>
   )
 }
