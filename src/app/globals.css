@@ -36,6 +36,8 @@ body {
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
   width: 100%;
+  /* 하단 네비게이션 바 공간 확보 */
+  padding-bottom: 80px;
 }
 
 /* 태블릿/데스크탑에서 모바일 카드처럼 중앙 정렬 */
