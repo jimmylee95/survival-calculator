@@ -62,7 +62,6 @@ export default function InputPage() {
   const [animKey, setAnimKey] = useState(0)
   const [amount1, setAmount1] = useState(0)   // 매출 또는 저축
   const [amount2, setAmount2] = useState(0)   // 지출
-  const [category, setCategory] = useState<string | null>(null)
   const [saving, setSaving]   = useState(false)
 
   const mode: DailyInputMode = (latest?.mode as DailyInputMode | undefined) ?? 'business'
@@ -110,7 +109,6 @@ export default function InputPage() {
   // Step 2 완료 — 지출 저장 후 다음
   async function commitStep2(value: number, cat: string | null) {
     setAmount2(value)
-    setCategory(cat)
     setSaving(true)
     if (user && value > 0) {
       await saveDailyInput(user.id, mode, 'expense', value, cat)
