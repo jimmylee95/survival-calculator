@@ -24,6 +24,7 @@ import {
 } from '@/components/dashboard/Charts'
 import { useAuth } from '@/hooks/useAuth'
 import { Loading } from '@/components/layout/Loading'
+import { generateAlerts, type Alert } from '@/lib/supabase/alerts'
 
 /* ── 상수 ────────────────────────────────────────────── */
 const HERO_BG = {
@@ -86,10 +87,29 @@ export default function DashboardPage() {
   const [previous, setPrevious]       = useState<CalculationRecord | null>(null)
   const [dataLoading, setDataLoading] = useState(true)
 
+  // 알림
+  const [alerts, setAlerts]         = useState<Alert[]>([])
+  const [dismissed, setDismissed]   = useState<Set<string>>(new Set())
+  const [showAll, setShowAll]       = useState(false)
+
   // 추이 차트 데이터
   const [period, setPeriod]               = useState<Period>('1m')
   const [runwayHistory, setRunwayHistory] = useState<CalculationRecord[]>([])
   const [inputHistory, setInputHistory]   = useState<DailyInputAggregate[]>([])
+
+  // 닫은 알림 복원
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem('dismissed_alerts')
+      if (stored) setDismissed(new Set(JSON.parse(stored) as string[]))
+    } catch { /* ignore */ }
+  }, [])
+
+  // 인증 후 latest/previous + 알림 조회
+  useEffect(() => {
+    if (!user) return
+    generateAlerts(user.id).then(al => setAlerts(al)).catch(() => {})
+  }, [user])
 
   // 인증 후 latest/previous 조회
   useEffect(() => {
@@ -152,6 +172,19 @@ export default function DashboardPage() {
   if (!latest) {
     return <DashboardEmpty onStart={() => router.push('/calculator')} />
   }
+
+  function dismissAlert(id: string) {
+    const next = new Set(dismissed)
+    next.add(id)
+    setDismissed(next)
+    try {
+      sessionStorage.setItem('dismissed_alerts', JSON.stringify(Array.from(next)))
+    } catch { /* ignore */ }
+  }
+
+  const visibleAlerts = alerts.filter(a => !dismissed.has(a.id))
+  const displayAlerts = showAll ? visibleAlerts : visibleAlerts.slice(0, 3)
+  const hiddenCount   = visibleAlerts.length > 3 ? visibleAlerts.length - 3 : 0
 
   const isBiz    = latest.mode === 'business'
   const days     = latest.result_days
@@ -310,6 +343,15 @@ export default function DashboardPage() {
               {todayMsg}
             </p>
           </Card>
+
+          {/* 📢 알림 */}
+          <AlertSection
+            alerts={displayAlerts}
+            hiddenCount={hiddenCount}
+            showAll={showAll}
+            onDismiss={dismissAlert}
+            onShowAll={() => setShowAll(true)}
+          />
 
           {/* 추이 차트 */}
           <PeriodTabs value={period} onChange={setPeriod} />
@@ -612,6 +654,110 @@ function BusinessTrendCharts({
         />
       </ChartCard>
     </>
+  )
+}
+
+/* ── 알림 스타일 ────────────────────────────────────────── */
+const ALERT_STYLE: Record<Alert['type'], { bg: string; border: string }> = {
+  critical: { bg: '#FFF5F5', border: '#FC8181' },
+  warning:  { bg: '#FFFAF0', border: '#F6AD55' },
+  info:     { bg: '#EBF8FF', border: '#63B3ED' },
+  success:  { bg: '#F0FFF4', border: '#68D391' },
+}
+
+/* ── 알림 섹션 ──────────────────────────────────────────── */
+function AlertSection({ alerts, hiddenCount, showAll, onDismiss, onShowAll }: {
+  alerts: Alert[]
+  hiddenCount: number
+  showAll: boolean
+  onDismiss: (id: string) => void
+  onShowAll: () => void
+}) {
+  return (
+    <div>
+      <p style={{
+        fontSize: 13, fontWeight: 800, color: '#94A3B8',
+        margin: '0 0 10px', letterSpacing: '0.3px',
+      }}>
+        📢 알림
+      </p>
+
+      {alerts.length === 0 ? (
+        <div style={{
+          background: '#F0FFF4', borderRadius: 14,
+          border: '1px solid #68D391',
+          padding: '16px 18px',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <span style={{ fontSize: 20 }}>✨</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#276749', margin: '0 0 2px' }}>
+              모든 지표가 정상이에요!
+            </p>
+            <p style={{ fontSize: 12, color: '#48BB78', margin: 0 }}>
+              좋은 상태를 유지하고 있어요
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {alerts.map(a => (
+            <AlertCard key={a.id} alert={a} onDismiss={onDismiss} />
+          ))}
+          {!showAll && hiddenCount > 0 && (
+            <button
+              onClick={onShowAll}
+              style={{
+                width: '100%', padding: '12px',
+                borderRadius: 12, border: '1.5px dashed #CBD5E1',
+                background: '#fff', color: '#64748B',
+                fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              }}
+            >
+              +{hiddenCount}개 더보기
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── 알림 카드 ──────────────────────────────────────────── */
+function AlertCard({ alert, onDismiss }: { alert: Alert; onDismiss: (id: string) => void }) {
+  const s = ALERT_STYLE[alert.type]
+  return (
+    <div style={{
+      background: s.bg,
+      borderRadius: 14,
+      borderLeft: `3px solid ${s.border}`,
+      padding: '14px 16px',
+      display: 'flex', alignItems: 'flex-start', gap: 10,
+      boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+    }}>
+      <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1.2, marginTop: 1 }}>
+        {alert.emoji}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontSize: 13, fontWeight: 800, color: '#1A1F5E', margin: '0 0 3px' }}>
+          {alert.title}
+        </p>
+        <p style={{ fontSize: 12, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+          {alert.message}
+        </p>
+      </div>
+      <button
+        onClick={() => onDismiss(alert.id)}
+        aria-label="알림 닫기"
+        style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          color: '#CBD5E1', fontSize: 14, padding: '0 0 0 4px',
+          flexShrink: 0, lineHeight: 1, marginTop: 2,
+        }}
+      >
+        ✕
+      </button>
+    </div>
   )
 }
 
