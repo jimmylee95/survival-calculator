@@ -61,6 +61,7 @@ export default function ResultPage() {
   const [toastVisible, setToastVisible]   = useState(false)
   const [toastMsg, setToastMsg]           = useState('✓ 클립보드에 복사됐어요!')
   const [savingImg, setSavingImg]         = useState(false)
+  const [isCapturing, setIsCapturing]     = useState(false)
   const { shareViaKakao, isKakaoReady }   = useKakaoShare()
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -120,7 +121,10 @@ export default function ResultPage() {
     diffDays        = myRate - avgRate  // 저축률 차이 (%)
   }
 
-  const aboveAvg = isBusiness ? diffDays >= 0 : diffDays >= 0
+  // percentile = CDF (높을수록 상위권)
+  // topPercentile = "상위 X%"에서 X 값 (낮을수록 상위권, 상위 5% = 상위 5%)
+  const topPercentile = Math.round((100 - percentile) * 10) / 10
+  const aboveAvg = percentile >= 50  // CDF 50% 이상 = 평균 이상
 
   const improvedDays = Infinity
 
@@ -181,8 +185,8 @@ export default function ResultPage() {
     const days = isFinite(realisticDays) ? Math.floor(realisticDays) : '∞'
     const url  = typeof window !== 'undefined' ? window.location.origin : ''
     return isBusiness
-      ? `나의 사업 런웨이는 ${days}일! 상위 ${percentile}%\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
-      : `나의 퇴사까지 ${days}일! 상위 ${percentile}%\n직장인 퇴사 계산기로 확인해보세요\n👉 ${url}`
+      ? `나의 사업 런웨이는 ${days}일! 상위 ${topPercentile}%\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
+      : `나의 퇴사까지 ${days}일! 상위 ${topPercentile}%\n직장인 퇴사 계산기로 확인해보세요\n👉 ${url}`
   }
 
   async function handleShare() {
@@ -205,6 +209,8 @@ export default function ResultPage() {
   async function saveResultImage() {
     if (!cardRef.current || savingImg) return
     setSavingImg(true)
+    setIsCapturing(true)
+    await new Promise(r => setTimeout(r, 120))  // DOM 업데이트 대기
     try {
       const html2canvas = (await import('html2canvas')).default
       const canvas = await html2canvas(cardRef.current, {
@@ -221,6 +227,7 @@ export default function ResultPage() {
     } catch {
       showToast('이미지 저장에 실패했어요')
     } finally {
+      setIsCapturing(false)
       setSavingImg(false)
     }
   }
@@ -251,11 +258,11 @@ export default function ResultPage() {
   }
 
   const reaction  = isBusiness ? bizReactions[dangerLevel] : freeReactions[dangerLevel]
-  const mainLabel = isBusiness ? '현실 런웨이' : '탈출까지'
+  const mainLabel = '해방까지'
   const gateOpen  = isLoggedIn !== false
 
-  // 퍼센타일 게이지 위치 (0~100%)
-  const gaugePos = Math.min(Math.max(100 - percentile, 1), 99)
+  // 게이지 점 위치: percentile(CDF)% 위치에 표시 (높을수록 오른쪽 = 상위권)
+  const dotPos = Math.min(Math.max(percentile, 1), 99)
 
   return (
     <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', width: '100%' }}>
@@ -288,6 +295,7 @@ export default function ResultPage() {
                 background: 'rgba(255,255,255,0.15)', border: 'none',
                 borderRadius: 20, padding: '6px 14px',
                 color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                visibility: isCapturing ? 'hidden' : 'visible',
               }}
             >
               ← 수정
@@ -332,7 +340,7 @@ export default function ResultPage() {
                 margin: '0 0 4px', letterSpacing: '-0.5px',
                 filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
               }}>
-                상위 {percentile}%
+                상위 {topPercentile}%
               </p>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px' }}>
                 같은 {industryLabel} 기준
@@ -361,30 +369,23 @@ export default function ResultPage() {
                 </span>
               </div>
 
-              {/* 게이지 바 */}
+              {/* 게이지 바: 빨강 → 노랑 → 초록, 내 위치 흰 원 */}
               <div style={{ position: 'relative', padding: '0 4px' }}>
                 <div style={{
-                  height: 6, borderRadius: 3,
-                  background: 'rgba(255,255,255,0.15)',
-                  position: 'relative', overflow: 'visible',
+                  height: 8, borderRadius: 4,
+                  background: 'linear-gradient(90deg, #FC8181 0%, #F6E05E 50%, #48BB78 100%)',
+                  position: 'relative',
                 }}>
-                  <div style={{
-                    position: 'absolute', left: 0, top: 0, bottom: 0,
-                    width: `${100 - gaugePos}%`,
-                    background: aboveAvg
-                      ? 'linear-gradient(90deg, rgba(72,187,120,0.3), rgba(72,187,120,0.8))'
-                      : 'linear-gradient(90deg, rgba(252,129,129,0.3), rgba(252,129,129,0.8))',
-                    borderRadius: 3,
-                  }} />
-                  {/* 내 위치 점 */}
+                  {/* 내 위치 흰 원 */}
                   <div style={{
                     position: 'absolute',
-                    left: `calc(${100 - gaugePos}% - 6px)`,
-                    top: -4,
-                    width: 14, height: 14, borderRadius: '50%',
+                    left: `${dotPos}%`,
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 16, height: 16, borderRadius: '50%',
                     background: '#fff',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                    border: `2px solid ${aboveAvg ? '#48BB78' : '#FC8181'}`,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
+                    border: '2.5px solid rgba(0,0,0,0.12)',
                   }} />
                 </div>
                 <div style={{
