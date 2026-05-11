@@ -139,6 +139,7 @@ export interface FreelancerInput {
   loanInterest:   number  // 대출이자
   sideIncome:     number  // 부업 수입
   targetAmount:   number  // 목표 금액 (이 금액 모으면 퇴사)
+  jobType?:       string  // 선택한 직군 키
 }
 
 // ── 결과 타입 ─────────────────────────────────────────────
@@ -316,4 +317,17 @@ export function getEscapeLevel(days: number): DangerLevel {
   if (days <= 730)     return 'caution'      // 1~2년
   if (days <= 1825)    return 'warning'      // 2~5년
   return 'critical'                          // 5년 이상
+}
+
+// ── 6. 퍼센타일 계산 (정규분포 근사) ─────────────────────
+// myValue가 업종/직군 평균 대비 상위 몇 %인지 반환 (0~100)
+export function calculatePercentile(myValue: number, avgValue: number): number {
+  if (avgValue <= 0) return 50
+  const stdDev = avgValue * 0.4
+  const z = (myValue - avgValue) / stdDev
+  const t = 1 / (1 + 0.2316419 * Math.abs(z))
+  const d = 0.3989422804 * Math.exp(-z * z / 2)
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.8212560 + t * 1.3302744))))
+  const percentile = z > 0 ? (1 - p) * 100 : p * 100
+  return Math.round(Math.min(Math.max(percentile, 0.1), 99.9) * 10) / 10
 }

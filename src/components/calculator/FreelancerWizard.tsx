@@ -268,7 +268,11 @@ export function FreelancerWizard() {
         }}>
           {step === 0 && (
             <Q1Job selectedJob={selectedJob}
-              onSelect={k => { setSelectedJob(k); setTimeout(goNext, 220) }} />
+              onSelect={k => {
+                setSelectedJob(k)
+                updateFreelancerInput({ jobType: k })
+                setTimeout(goNext, 220)
+              }} />
           )}
           {step === 1 && (
             <Q2Assets input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />

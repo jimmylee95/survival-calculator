@@ -49,6 +49,7 @@ const DEFAULT_FREELANCER: FreelancerInput = {
   loanInterest:    0,
   sideIncome:      0,
   targetAmount:    0,
+  jobType:         '',
 }
 
 const DEFAULT_PERSISTED: PersistedState = {
