@@ -559,7 +559,7 @@ function Q6SideAmount({
         onChange={v => update({ sideIncome: v })}
         presets={SIDE_PRESETS} autoFocus onEnter={onFinish} />
       <ContinueButton onClick={onFinish}
-        disabled={input.sideIncome === 0} label="탈출 D-day 확인하기 🚀" />
+        disabled={input.sideIncome === 0} label="퇴사 D-day 확인하기 🚀" />
     </div>
   )
 }

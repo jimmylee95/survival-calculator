@@ -30,7 +30,7 @@ const DANGER_COLORS: Record<DangerLevel, string> = {
 
 const MODE_META = {
   business:   { bg: '#1A1F5E', label: '사장님 생존 계산기' },
-  freelancer: { bg: '#FF6B35', label: '직장인 탈출 계산기' },
+  freelancer: { bg: '#FF6B35', label: '직장인 퇴사 계산기' },
 }
 
 export default function ResultPage() {
@@ -136,7 +136,7 @@ export default function ResultPage() {
     const url  = typeof window !== 'undefined' ? window.location.origin : ''
     return isBusiness
       ? `나의 사업 런웨이는 ${days}일!\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
-      : `나의 퇴사까지 ${days}일!\n직장인 탈출 계산기로 확인해보세요\n👉 ${url}`
+      : `나의 퇴사까지 ${days}일!\n직장인 퇴사 계산기로 확인해보세요\n👉 ${url}`
   }
 
   async function handleShare() {

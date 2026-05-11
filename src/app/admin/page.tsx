@@ -186,7 +186,7 @@ export default function AdminPage() {
                 <SubRow label="구독 매출" value="₩0" sub="준비중" />
               </BigCard>
               <BigCard>
-                <CardTop label="탈출 계산기 ⓘ" value="₩0" icon="🚀" iconBg="#FFF4EE" />
+                <CardTop label="퇴사 계산기 ⓘ" value="₩0" icon="🚀" iconBg="#FFF4EE" />
                 <ProgressBar pct={ov.totalCalcs > 0 ? (ov.freeCount / ov.totalCalcs) * 100 : 0} color={ORANGE} />
                 <SubRow label="전체 계산" value={`${ov.freeCount}건`} />
                 <SubRow label="오늘 계산" value={`${td.free}건`} />
@@ -393,7 +393,7 @@ export default function AdminPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
               <StatCard label="전체 계산 수" value={ov.totalCalcs.toLocaleString()} color={ACCENT} icon="📊" />
               <StatCard label="사장님 계산기" value={ov.bizCount.toLocaleString()} color={ACCENT} icon="🏪" />
-              <StatCard label="탈출 계산기" value={ov.freeCount.toLocaleString()} color={ORANGE} icon="🚀" />
+              <StatCard label="퇴사 계산기" value={ov.freeCount.toLocaleString()} color={ORANGE} icon="🚀" />
               <StatCard label="오늘 계산" value={td.total.toLocaleString()} color="#1B1E28" icon="📅" />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginBottom: 20 }}>
@@ -403,7 +403,7 @@ export default function AdminPage() {
                   <RevenueDonut biz={ov.bizCount} free={ov.freeCount} total={ov.totalCalcs} />
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <RevenueRow label="사장님 계산기" value={ov.bizCount} total={ov.totalCalcs} color={ACCENT} />
-                    <RevenueRow label="탈출 계산기" value={ov.freeCount} total={ov.totalCalcs} color={ORANGE} />
+                    <RevenueRow label="퇴사 계산기" value={ov.freeCount} total={ov.totalCalcs} color={ORANGE} />
                   </div>
                 </div>
               </BigCard>
@@ -791,7 +791,7 @@ function StackedBarChart({ data }: { data: Record<string, { biz: number; free: n
       </div>
       <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, borderRadius: 2, background: ACCENT }} /><span style={{ fontSize: 12, color: '#6B7280' }}>사장님 계산기</span></div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, borderRadius: 2, background: ORANGE }} /><span style={{ fontSize: 12, color: '#6B7280' }}>탈출 계산기</span></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, borderRadius: 2, background: ORANGE }} /><span style={{ fontSize: 12, color: '#6B7280' }}>퇴사 계산기</span></div>
       </div>
       {tooltip && (
         <div style={{
@@ -803,7 +803,7 @@ function StackedBarChart({ data }: { data: Record<string, { biz: number; free: n
         }}>
           <p style={{ fontSize: 12, fontWeight: 800, color: '#1B1E28', margin: '0 0 8px' }}>📅 {tooltip.date}</p>
           <TipRow emoji="🏪" label="사장님 계산기" value={`${tooltip.biz}건`} valueColor={ACCENT} />
-          <TipRow emoji="🚀" label="탈출 계산기" value={`${tooltip.free}건`} valueColor={ORANGE} />
+          <TipRow emoji="🚀" label="퇴사 계산기" value={`${tooltip.free}건`} valueColor={ORANGE} />
           <div style={{ borderTop: '1px solid #F2F4F6', marginTop: 8, paddingTop: 8 }}>
             <TipRow emoji="📊" label="합계" value={`${tooltip.biz + tooltip.free}건`} />
           </div>
