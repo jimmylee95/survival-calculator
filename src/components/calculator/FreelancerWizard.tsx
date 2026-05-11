@@ -9,20 +9,20 @@ const ACCENT = '#FF6B35'
 const TOTAL = 6
 
 const JOB_BENCHMARKS: Record<string, { label: string; emoji: string; salary: number; expense: number }> = {
-  office:        { label: '사무직',         emoji: '💼', salary: 3_500_000, expense: 2_500_000 },
-  it:            { label: 'IT/개발',        emoji: '💻', salary: 4_500_000, expense: 2_800_000 },
-  sales:         { label: '영업',           emoji: '🤝', salary: 3_200_000, expense: 2_300_000 },
+  office:        { label: '사무직',         emoji: '💼', salary: 3_800_000, expense: 2_500_000 },
+  it:            { label: 'IT/개발',        emoji: '💻', salary: 5_000_000, expense: 2_800_000 },
+  sales:         { label: '영업',           emoji: '🤝', salary: 3_500_000, expense: 2_300_000 },
   creator:       { label: '크리에이터',     emoji: '🎨', salary: 2_500_000, expense: 2_000_000 },
-  finance:       { label: '금융/회계',      emoji: '📊', salary: 5_000_000, expense: 3_000_000 },
+  finance:       { label: '금융/회계',      emoji: '📊', salary: 5_500_000, expense: 3_000_000 },
   marketing:     { label: '마케팅/홍보',    emoji: '📢', salary: 4_000_000, expense: 2_700_000 },
-  construction:  { label: '건설/엔지니어링', emoji: '🏗️', salary: 4_500_000, expense: 2_800_000 },
+  construction:  { label: '건설/엔지니어링', emoji: '🏗️', salary: 4_200_000, expense: 2_800_000 },
   education:     { label: '교육/연구',      emoji: '🎓', salary: 3_500_000, expense: 2_500_000 },
-  medical:       { label: '의료/보건',      emoji: '🏥', salary: 5_500_000, expense: 3_200_000 },
-  logistics:     { label: '물류/유통',      emoji: '🚚', salary: 3_200_000, expense: 2_400_000 },
-  manufacturing: { label: '제조/생산',      emoji: '🏭', salary: 3_500_000, expense: 2_500_000 },
+  medical:       { label: '의료/보건',      emoji: '🏥', salary: 5_000_000, expense: 3_200_000 },
+  logistics:     { label: '물류/유통',      emoji: '🚚', salary: 3_500_000, expense: 2_400_000 },
+  manufacturing: { label: '제조/생산',      emoji: '🏭', salary: 4_000_000, expense: 2_500_000 },
   legal:         { label: '법무',           emoji: '⚖️', salary: 5_500_000, expense: 3_200_000 },
   hr:            { label: 'HR/인사',        emoji: '👥', salary: 3_800_000, expense: 2_600_000 },
-  civil_servant: { label: '공무원',         emoji: '🏛️', salary: 3_000_000, expense: 2_300_000 },
+  civil_servant: { label: '공무원',         emoji: '🏛️', salary: 3_200_000, expense: 2_300_000 },
   other:         { label: '기타',           emoji: '📋', salary: 3_000_000, expense: 2_300_000 },
 }
 
