@@ -16,6 +16,7 @@ export const VARIABLE_RATE: Record<string, number> = {
   transport:    0.40,
   freelance:    0.10,
   shipping:     0.40,
+  professional: 0.20,
   other:        0.35,
 }
 
@@ -109,6 +110,11 @@ export const INDUSTRY_BENCHMARKS: Record<keyof typeof VARIABLE_RATE, IndustryBen
     label: '배송업', emoji: '📦',
     fixedCost: 2_000_000, variableCost: 3_000_000,
     revenue: 10_000_000, avgRunway: 65,
+  },
+  professional: {
+    label: '전문직/사무소', emoji: '⚖️',
+    fixedCost: 3_000_000, variableCost: 3_000_000,
+    revenue: 15_000_000, avgRunway: 100,
   },
   other: {
     label: '기타', emoji: '🏢',

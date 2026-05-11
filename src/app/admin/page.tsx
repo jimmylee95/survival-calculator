@@ -11,7 +11,7 @@ const ORANGE = '#F97316'
 
 const INDUSTRY_LABELS: Record<string, string> = {
   restaurant: '🍽️ 음식점', cafe: '☕ 카페', retail: '🛒 소매/유통',
-  service: '💇 서비스업', delivery: '🛵 배달전문', other: '🏢 기타',
+  service: '💇 서비스업', delivery: '🛵 배달전문', professional: '⚖️ 전문직/사무소', other: '🏢 기타',
 }
 const DANGER_META: Record<string, { label: string; emoji: string; color: string }> = {
   critical: { label: '위험', emoji: '🚨', color: '#FC8181' }, warning: { label: '경고', emoji: '⚠️', color: '#F6AD55' },
