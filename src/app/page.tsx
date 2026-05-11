@@ -3,8 +3,6 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
-import { createClient } from '@/lib/supabase/client'
-import { hasCalculationHistory } from '@/lib/supabase/dashboard'
 
 const CARDS = [
   {
@@ -80,33 +78,6 @@ export default function HomePage() {
 
   const [hasSaved, setHasSaved] = useState(false)
 
-  // 로그인 + 계산 기록 보유자만 /dashboard로 리다이렉트.
-  // 기본값은 false → 홈을 곧바로 보여주고, 확정될 때만 리다이렉트로 전환.
-  const [redirecting, setRedirecting] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-
-    ;(async () => {
-      try {
-        const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (cancelled || !user) return
-
-        const has = await hasCalculationHistory(user.id)
-        if (cancelled || !has) return
-
-        setRedirecting(true)
-        router.replace('/dashboard')
-      } catch (err) {
-        // 어떤 에러가 나도 홈은 그대로 보여주고 리다이렉트만 포기
-        console.error('[home auth check]', err)
-      }
-    })()
-
-    return () => { cancelled = true }
-  }, [router])
-
   useEffect(() => {
     if (!_hydrated) return
     const hasData =
@@ -124,18 +95,6 @@ export default function HomePage() {
 
   function handleResume() {
     router.push('/calculator')
-  }
-
-  // /dashboard로 리다이렉트 중일 때만 로더 표시 (잠깐 깜빡)
-  if (redirecting) {
-    return (
-      <div style={{
-        minHeight: '100dvh', background: '#F8F9FB',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ fontSize: 28 }}>⚡</div>
-      </div>
-    )
   }
 
   return (

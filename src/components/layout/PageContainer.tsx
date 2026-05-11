@@ -17,11 +17,13 @@ export default function PageContainer({ children }: { children: React.ReactNode 
     <div style={{
       width:         '100%',
       maxWidth:      430,
+      margin:        '0 auto',   /* body flex 없이 직접 가운데 정렬 */
       minHeight:     '100dvh',
       position:      'relative',
       overflowX:     'hidden',
-      paddingBottom: 100,        // BottomNav(약 60px + safe-area)에 가리지 않도록
+      paddingBottom: 80,         /* BottomNav 60px + 여유 */
       boxSizing:     'border-box',
+      background:    '#F8F9FB',  /* 앱 콘텐츠 배경 */
     }}>
       {children}
     </div>
