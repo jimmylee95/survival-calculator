@@ -60,7 +60,7 @@ export default function Header() {
         alignItems:     'center',
         gap:            6,
       }}>
-        🤖 AI 계산기
+        🫧 나의 해방 계산기
       </Link>
 
       {user ? (
