@@ -21,14 +21,14 @@ export default function LoginPage() {
         textAlign:    'center',
       }}>
         {/* 로고 */}
-        <div style={{ fontSize: 48, marginBottom: 16 }}>⚡</div>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🫧</div>
         <h1 style={{
           fontSize:     24,
           fontWeight:   900,
           color:        '#1A1F5E',
           marginBottom: 8,
         }}>
-          생존 계산기
+          나의 해방 계산기
         </h1>
         <p style={{
           fontSize:     14,

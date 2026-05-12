@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '어드민 — 생존 계산기',
+  title: '어드민 — 나의 해방 계산기',
   robots: { index: false, follow: false },
 }
 
