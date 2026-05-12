@@ -159,7 +159,7 @@ function ContinueButton({
         boxShadow: disabled ? 'none' : `0 8px 24px ${ACCENT}30`,
         transition: 'all 0.2s', letterSpacing: '-0.3px',
       }}>
-      {label} {!disabled && <span style={{ marginLeft: 6, opacity: 0.7, fontSize: 13, fontWeight: 700 }}>↵</span>}
+      {label}
     </button>
   )
 }
