@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/hooks/useAuth'
+import { createClient } from '@/lib/supabase/client'
 import { useSubscription } from '@/hooks/useSubscription'
+import type { User } from '@supabase/supabase-js'
 
 const FEATURES = [
   { icon: '📊', text: '매일 런웨이 자동 저장 & 추세 분석' },
@@ -14,29 +15,46 @@ const FEATURES = [
   { icon: '✨', text: '향후 추가될 모든 프리미엄 기능' },
 ]
 
+function getGuestCustomerKey(): string {
+  const existing = localStorage.getItem('guest_customer_key')
+  if (existing) return existing
+  const key = 'guest_' + crypto.randomUUID()
+  localStorage.setItem('guest_customer_key', key)
+  return key
+}
+
 export default function SubscribePage() {
   const router   = useRouter()
-  const { user, loading: authLoading } = useAuth({ redirectTo: '/login' })
+  const [user, setUser]           = useState<User | null>(null)
+  const [authLoading, setAuthLoading] = useState(true)
   const { isSubscribed, loading: subLoading } = useSubscription()
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
 
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      setUser(user)
+      setAuthLoading(false)
+    }).catch(() => setAuthLoading(false))
+  }, [])
+
   async function handleSubscribe() {
-    if (!user) return
     setLoading(true)
     setError('')
+
+    const customerKey = user ? user.id : getGuestCustomerKey()
 
     try {
       const { loadTossPayments } = await import('@tosspayments/tosspayments-sdk')
       const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!)
-      const payment = tossPayments.payment({ customerKey: user.id })
+      const payment = tossPayments.payment({ customerKey })
 
       await payment.requestBillingAuth({
         method:        'CARD',
         successUrl:    `${window.location.origin}/subscribe/success`,
         failUrl:       `${window.location.origin}/subscribe/fail`,
-        customerEmail: user.email ?? '',
-        customerName:  user.user_metadata?.name ?? '사용자',
+        customerEmail: user?.email ?? '',
+        customerName:  user?.user_metadata?.name ?? '사용자',
       })
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : '결제창을 열지 못했어요'
@@ -45,10 +63,10 @@ export default function SubscribePage() {
     }
   }
 
-  if (authLoading || subLoading) {
+  if (subLoading) {
     return (
       <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8F9FB' }}>
-        <div style={{ fontSize: 28 }}>⚡</div>
+        <div style={{ fontSize: 28 }}>🫧</div>
       </div>
     )
   }
@@ -65,6 +83,18 @@ export default function SubscribePage() {
           background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)',
           fontSize: 24, cursor: 'pointer', padding: '0 0 24px', display: 'block',
         }}>←</button>
+
+        {/* 비로그인 안내 */}
+        {!user && !authLoading && (
+          <div style={{
+            background: 'rgba(255,255,255,0.12)', borderRadius: 12,
+            padding: '10px 16px', marginBottom: 16, textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+              로그인하면 구독이 계정에 연결됩니다
+            </p>
+          </div>
+        )}
 
         {/* 타이틀 */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
