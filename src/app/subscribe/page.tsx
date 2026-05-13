@@ -91,7 +91,7 @@ export default function SubscribePage() {
             padding: '10px 16px', marginBottom: 16, textAlign: 'center',
           }}>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', margin: 0 }}>
-              로그인하면 구독이 계정에 연결됩니다
+              로그인하면 구독 계정에 연결됩니다
             </p>
           </div>
         )}
