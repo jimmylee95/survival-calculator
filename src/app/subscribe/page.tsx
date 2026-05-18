@@ -7,13 +7,6 @@ import { createClient } from '@/lib/supabase/client'
 import { useSubscription } from '@/hooks/useSubscription'
 import type { User } from '@supabase/supabase-js'
 
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TossPayments: (clientKey: string) => Promise<any>
-  }
-}
-
 const FEATURES = [
   { icon: '📊', text: '매일 런웨이 자동 저장 & 추세 분석' },
   { icon: '🔔', text: '위험 알림 & 행동 처방전' },
@@ -36,9 +29,6 @@ export default function SubscribePage() {
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const { isSubscribed, loading: subLoading } = useSubscription()
-  const [loading, setLoading] = useState(false)
-  const [sdkLoaded, setSdkLoaded] = useState(false)
-  const [error, setError] = useState('')
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data: { user } }) => {
@@ -47,30 +37,23 @@ export default function SubscribePage() {
     }).catch(() => setAuthLoading(false))
   }, [])
 
-  async function handleSubscribe() {
-    if (typeof window === 'undefined' || !window.TossPayments) {
-      setError('결제 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해주세요')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-
-    const customerKey = user ? user.id : getGuestCustomerKey()
-
+  const handleSubscribe = async () => {
     try {
-      const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!
-      const tossPayments = await window.TossPayments(clientKey)
-
+      const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY
+      if (!clientKey) {
+        alert('결제 설정 오류')
+        return
+      }
+      const customerKey = user ? user.id : getGuestCustomerKey()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const tossPayments = await (window as any).TossPayments(clientKey)
       await tossPayments.requestBillingAuth('카드', {
         customerKey,
         successUrl: window.location.origin + '/subscribe/success',
         failUrl: window.location.origin + '/subscribe/fail',
       })
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : '결제창을 열지 못했어요'
-      setError(msg)
-      setLoading(false)
+    } catch (error) {
+      console.error('결제 오류:', error)
     }
   }
 
@@ -82,15 +65,11 @@ export default function SubscribePage() {
     )
   }
 
-  const ctaDisabled = loading || !sdkLoaded
-
   return (
     <>
       <Script
         src="https://js.tosspayments.com/v2/standard"
         strategy="beforeInteractive"
-        onLoad={() => setSdkLoaded(true)}
-        onReady={() => setSdkLoaded(true)}
       />
       <div style={{
         minHeight: '100dvh', background: 'linear-gradient(180deg, #1A1F5E 0%, #2D3581 40%, #F8F9FB 40%)',
@@ -179,24 +158,17 @@ export default function SubscribePage() {
               ) : (
                 <button
                   onClick={handleSubscribe}
-                  disabled={ctaDisabled}
                   style={{
                     width: '100%', height: 56, borderRadius: 14, border: 'none',
-                    background: ctaDisabled ? '#E2E8F0' : 'linear-gradient(135deg, #1A1F5E, #4F46E5)',
-                    color: ctaDisabled ? '#A0AEC0' : '#fff',
-                    fontSize: 16, fontWeight: 900, cursor: ctaDisabled ? 'not-allowed' : 'pointer',
-                    boxShadow: ctaDisabled ? 'none' : '0 8px 24px rgba(26,31,94,0.3)',
+                    background: 'linear-gradient(135deg, #1A1F5E, #4F46E5)',
+                    color: '#fff',
+                    fontSize: 16, fontWeight: 900, cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(26,31,94,0.3)',
                     transition: 'all 0.2s', letterSpacing: '-0.3px',
                   }}
                 >
-                  {loading ? '처리 중...' : !sdkLoaded ? '결제 모듈 불러오는 중...' : '🚀 구독 시작하기'}
+                  🚀 구독 시작하기
                 </button>
-              )}
-
-              {error && (
-                <p style={{ fontSize: 13, color: '#E53E3E', textAlign: 'center', margin: '12px 0 0', fontWeight: 600 }}>
-                  {error}
-                </p>
               )}
 
               <p style={{ fontSize: 12, color: '#A0AEC0', textAlign: 'center', margin: '14px 0 0', lineHeight: 1.6 }}>
