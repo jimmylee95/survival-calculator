@@ -30,7 +30,8 @@ const CARDS: CardConfig[] = [
   },
   {
     mode:    'freelancer',
-    bg:      'linear-gradient(135deg, #FF6B35 0%, #E8590C 100%)',
+    bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
+    bgImage: '/images/nureungi_worker_bg.png',
     icon:    '🚀',
     title:   '직장인 퇴사 계산기',
     desc:    '월급만으로 언제 퇴사할 수 있을까?\n퇴사 D-day를 계산해드려요',
