@@ -4,10 +4,23 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 
-const CARDS = [
+type CardConfig = {
+  mode:     'business' | 'freelancer'
+  bg:       string
+  bgImage?: string
+  icon:     string
+  title:    string
+  desc:     string
+  sub:      string
+  shadow:   string
+  tagline:  string
+}
+
+const CARDS: CardConfig[] = [
   {
-    mode:    'business' as const,
-    bg:      'linear-gradient(135deg, #1A1F5E 0%, #2D3399 100%)',
+    mode:    'business',
+    bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
+    bgImage: '/images/nureungi_business_bg.png',
     icon:    '🔥',
     title:   '사장님 생존 계산기',
     desc:    '통장 잔고가 바닥나기 전에\n몇 일이나 버틸 수 있을까요?',
@@ -16,7 +29,7 @@ const CARDS = [
     tagline: '현실을 직시하는 30초',
   },
   {
-    mode:    'freelancer' as const,
+    mode:    'freelancer',
     bg:      'linear-gradient(135deg, #FF6B35 0%, #E8590C 100%)',
     icon:    '🚀',
     title:   '직장인 퇴사 계산기',
@@ -137,16 +150,20 @@ export default function HomePage() {
               key={card.mode}
               onClick={() => handleSelect(card.mode)}
               style={{
-                width:         '100%',
-                padding:       '28px 24px',
-                borderRadius:  20,
-                background:    card.bg,
-                border:        'none',
-                cursor:        'pointer',
-                textAlign:     'left',
-                boxShadow:     `0 10px 36px ${card.shadow}`,
-                transform:     'translateY(0)',
-                transition:    'transform 0.15s ease, box-shadow 0.15s ease',
+                width:              '100%',
+                padding:            '28px 24px',
+                minHeight:          card.bgImage ? 200 : undefined,
+                borderRadius:       20,
+                background:         card.bg,
+                backgroundSize:     card.bgImage ? 'auto, cover' : undefined,
+                backgroundPosition: card.bgImage ? 'center, right center' : undefined,
+                backgroundRepeat:   card.bgImage ? 'no-repeat, no-repeat' : undefined,
+                border:             'none',
+                cursor:             'pointer',
+                textAlign:          'left',
+                boxShadow:          `0 10px 36px ${card.shadow}`,
+                transform:          'translateY(0)',
+                transition:         'transform 0.15s ease, box-shadow 0.15s ease',
               }}
               onMouseEnter={e => {
                 const t = e.currentTarget
