@@ -27,7 +27,8 @@ const BANNERS: Banner[] = [
     href:  '/self-employed',
   },
   {
-    bg:    'linear-gradient(135deg, #D4A020 0%, #F0C850 100%)',
+    bg:    "url('/images/banner_03.png')",
+    image: '/images/banner_03.png',
     title: '퇴사까지 D-day, 계산해봤어?',
     sub:   '월급쟁이 해방 시뮬레이션',
     href:  '/freelancer',
