@@ -414,7 +414,7 @@ export default function ResultPage() {
           }}>
             <span style={{ fontSize: 14 }}>🫧</span>
             <span style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.3px' }}>
-              나의 해방 계산기 · survival-calculator-ten.vercel.app
+              누렁이의 해방 계산기 · survival-calculator-ten.vercel.app
             </span>
           </div>
         </div>

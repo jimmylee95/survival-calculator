@@ -60,7 +60,7 @@ export default function Header() {
         alignItems:     'center',
         gap:            6,
       }}>
-        🫧 나의 해방 계산기
+        🫧 누렁이의 해방 계산기
       </Link>
 
       {user ? (

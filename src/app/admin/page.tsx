@@ -107,7 +107,7 @@ export default function AdminPage() {
       {/* ══ 사이드바 ══ */}
       <aside style={{ width: 220, background: NAV_BG, position: 'fixed', top: 0, left: 0, height: '100vh', display: 'flex', flexDirection: 'column', zIndex: 50, overflowY: 'auto' }}>
         <div style={{ padding: '22px 20px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}><span style={{ fontSize: 20 }}>🫧</span><span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>나의 해방 계산기</span></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}><span style={{ fontSize: 20 }}>🫧</span><span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>누렁이의 해방 계산기</span></div>
         </div>
         <nav style={{ padding: '14px 10px', flex: 1 }}>
           <NGroup label="Menu">
