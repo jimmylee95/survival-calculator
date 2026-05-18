@@ -189,7 +189,6 @@ type CardConfig = {
   mode:     'business' | 'freelancer'
   bg:       string
   bgImage?: string
-  icon:     string
   title:    string
   desc:     string
   sub:      string
@@ -202,7 +201,6 @@ const CARDS: CardConfig[] = [
     mode:    'business',
     bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
     bgImage: '/images/nureungi_business_bg.png',
-    icon:    '🔥',
     title:   '사장님 생존 계산기',
     desc:    '통장 잔고가 바닥나기 전에\n몇 일이나 버틸 수 있을까요?',
     sub:     '자영업자 · 소상공인',
@@ -213,7 +211,6 @@ const CARDS: CardConfig[] = [
     mode:    'freelancer',
     bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
     bgImage: '/images/nureungi_worker_bg.png',
-    icon:    '🚀',
     title:   '직장인 퇴사 계산기',
     desc:    '월급만으로 언제 퇴사할 수 있을까?\n퇴사 D-day를 계산해드려요',
     sub:     '직장인 · 프리랜서 준비생',
@@ -345,9 +342,8 @@ export default function HomePage() {
                 t.style.boxShadow  = `0 10px 36px ${card.shadow}`
               }}
             >
-              {/* 아이콘 + 태그라인 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <span style={{ fontSize: 36 }}>{card.icon}</span>
+              {/* 태그라인 */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 14 }}>
                 <span style={{
                   fontSize:     11,
                   fontWeight:   700,
