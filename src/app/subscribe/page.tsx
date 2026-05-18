@@ -78,15 +78,14 @@ export default function SubscribePage() {
     const customerKey = user ? user.id : getGuestCustomerKey()
 
     try {
-      // requestSubscription: 결제위젯에서 빌링키 발급 흐름 시작
-      // (타입 정의에는 없지만 런타임에서 지원)
+      // requestBillingAuth: 결제위젯 빌링키 발급 흐름 (런타임 메서드, 타입 미노출)
       await (widgetRef.current as unknown as {
-        requestSubscription: (params: {
+        requestBillingAuth: (params: {
           customerKey: string
           successUrl: string
           failUrl: string
         }) => Promise<void>
-      }).requestSubscription({
+      }).requestBillingAuth({
         customerKey,
         successUrl: `${window.location.origin}/subscribe/success`,
         failUrl:    `${window.location.origin}/subscribe/fail`,
