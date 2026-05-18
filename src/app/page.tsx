@@ -5,15 +5,17 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 
 type Banner = {
-  bg:    string
-  title: string
-  sub:   string
-  href?: string
+  bg:     string
+  title:  string
+  sub:    string
+  href?:  string
+  image?: string
 }
 
 const BANNERS: Banner[] = [
   {
-    bg:    'linear-gradient(135deg, #FF6B35 0%, #FF8F5E 100%)',
+    bg:    "url('/images/banner_01.png')",
+    image: '/images/banner_01.png',
     title: '누렁이는 오늘도 탈출을 준비한다!',
     sub:   '누렁이와 함께 해방으로 가는 여정',
   },
@@ -108,42 +110,49 @@ function BannerCarousel() {
               type="button"
               onClick={() => { if (b.href) router.push(b.href) }}
               style={{
-                flexShrink: 0,
-                width:      '100%',
-                height:     160,
-                background: b.bg,
-                border:     'none',
-                padding:    '20px 24px',
-                display:    'flex',
-                alignItems: 'center',
-                gap:        14,
-                textAlign:  'left',
-                cursor:     b.href ? 'pointer' : 'default',
+                flexShrink:         0,
+                width:              '100%',
+                height:             160,
+                background:         b.bg,
+                backgroundSize:     b.image ? 'cover' : undefined,
+                backgroundPosition: b.image ? 'center' : undefined,
+                backgroundRepeat:   b.image ? 'no-repeat' : undefined,
+                border:             'none',
+                padding:            '20px 24px',
+                display:            'flex',
+                alignItems:         'center',
+                gap:                14,
+                textAlign:          'left',
+                cursor:             b.href ? 'pointer' : 'default',
               }}
             >
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{
-                  fontSize:    16,
-                  fontWeight:  900,
-                  color:       '#fff',
-                  margin:      '0 0 4px',
-                  letterSpacing: '-0.3px',
-                  lineHeight:  1.3,
-                }}>
-                  {b.title}
-                </p>
-                <p style={{
-                  fontSize:   12,
-                  fontWeight: 600,
-                  color:      'rgba(255,255,255,0.85)',
-                  margin:     0,
-                  lineHeight: 1.4,
-                }}>
-                  {b.sub}
-                </p>
-              </div>
-              {/* 우측 이미지 영역 (향후 추가용) */}
-              <div style={{ width: 84, height: 84, flexShrink: 0 }} aria-hidden />
+              {!b.image && (
+                <>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{
+                      fontSize:    16,
+                      fontWeight:  900,
+                      color:       '#fff',
+                      margin:      '0 0 4px',
+                      letterSpacing: '-0.3px',
+                      lineHeight:  1.3,
+                    }}>
+                      {b.title}
+                    </p>
+                    <p style={{
+                      fontSize:   12,
+                      fontWeight: 600,
+                      color:      'rgba(255,255,255,0.85)',
+                      margin:     0,
+                      lineHeight: 1.4,
+                    }}>
+                      {b.sub}
+                    </p>
+                  </div>
+                  {/* 우측 이미지 영역 (향후 추가용) */}
+                  <div style={{ width: 84, height: 84, flexShrink: 0 }} aria-hidden />
+                </>
+              )}
             </button>
           ))}
         </div>
