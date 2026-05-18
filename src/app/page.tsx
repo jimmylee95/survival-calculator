@@ -35,12 +35,27 @@ const BANNERS: Banner[] = [
   },
 ]
 
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 function BannerCarousel() {
   const router = useRouter()
+  const [banners, setBanners] = useState<Banner[]>(BANNERS)
   const [current, setCurrent] = useState(0)
   const [animated, setAnimated] = useState(true)
   const touchStartXRef = useRef<number | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // 클라이언트에서만 셔플 (SSR/CSR 하이드레이션 불일치 방지)
+  useEffect(() => {
+    setBanners(shuffleArray(BANNERS))
+  }, [])
 
   function scheduleAuto() {
     if (intervalRef.current) clearInterval(intervalRef.current)
@@ -56,7 +71,7 @@ function BannerCarousel() {
 
   // 루프 처리: 마지막 클론에 도달하면 transition 끄고 0으로 점프
   useEffect(() => {
-    if (current === BANNERS.length) {
+    if (current === banners.length) {
       const t = setTimeout(() => {
         setAnimated(false)
         setCurrent(0)
@@ -67,7 +82,7 @@ function BannerCarousel() {
       const r = requestAnimationFrame(() => setAnimated(true))
       return () => cancelAnimationFrame(r)
     }
-  }, [current, animated])
+  }, [current, animated, banners.length])
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartXRef.current = e.touches[0].clientX
@@ -90,8 +105,8 @@ function BannerCarousel() {
     scheduleAuto()
   }
 
-  const slides = [...BANNERS, BANNERS[0]]
-  const realIndex = current === BANNERS.length ? 0 : current
+  const slides = [...banners, banners[0]]
+  const realIndex = current === banners.length ? 0 : current
 
   return (
     <div style={{ width: '100%', userSelect: 'none', margin: 0 }}>
@@ -162,7 +177,7 @@ function BannerCarousel() {
 
       {/* 도트 인디케이터 */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 6, padding: '10px 0 0' }}>
-        {BANNERS.map((_, i) => (
+        {banners.map((_, i) => (
           <button
             key={i}
             type="button"
