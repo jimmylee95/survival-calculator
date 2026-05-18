@@ -13,7 +13,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.3",
-    "@tosspayments/tosspayments-sdk": "^2.7.0",
+    "@tosspayments/payment-widget-sdk": "^0.12.1",
     "html2canvas": "^1.4.1",
     "next": "14.2.35",
     "react": "^18",
