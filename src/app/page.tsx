@@ -133,13 +133,13 @@ export default function HomePage() {
             fontSize: 22, color: '#64748B', margin: '0 0 6px', lineHeight: 1.5,
             fontWeight: 800,
           }}>
-            아무도 안 알려주는 내 돈의 유통기한
+            누렁이는 오늘도 탈출을 준비한다!
           </p>
           <p style={{
             fontSize: 20, color: '#1A1F5E', margin: 0, lineHeight: 1.5,
             fontWeight: 900,
           }}>
-            30초면 현실이 보입니다
+            누렁이와 함께 해방으로 가는 여정
           </p>
         </div>
 
