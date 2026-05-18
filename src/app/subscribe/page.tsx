@@ -38,22 +38,26 @@ export default function SubscribePage() {
   }, [])
 
   const handleSubscribe = async () => {
+    console.log('버튼 클릭됨')
     try {
       const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY
-      if (!clientKey) {
-        alert('결제 설정 오류')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (!clientKey || !(window as any).TossPayments) {
+        alert('결제 모듈 로딩 중입니다. 잠시 후 다시 시도해주세요.')
         return
       }
       const customerKey = user ? user.id : getGuestCustomerKey()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const tossPayments = await (window as any).TossPayments(clientKey)
-      await tossPayments.requestBillingAuth('카드', {
+      const tossPayments = (window as any).TossPayments(clientKey)
+      tossPayments.requestBillingAuth('카드', {
         customerKey,
         successUrl: window.location.origin + '/subscribe/success',
         failUrl: window.location.origin + '/subscribe/fail',
       })
-    } catch (error) {
-      console.error('결제 오류:', error)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error?.code === 'USER_CANCEL') return
+      alert('결제 오류: ' + (error?.message ?? error))
     }
   }
 
@@ -68,8 +72,8 @@ export default function SubscribePage() {
   return (
     <>
       <Script
-        src="https://js.tosspayments.com/v2/standard"
-        strategy="beforeInteractive"
+        src="https://js.tosspayments.com/v1/payment"
+        strategy="afterInteractive"
       />
       <div style={{
         minHeight: '100dvh', background: 'linear-gradient(180deg, #1A1F5E 0%, #2D3581 40%, #F8F9FB 40%)',
