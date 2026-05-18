@@ -90,7 +90,7 @@ function BannerCarousel() {
   const realIndex = current === BANNERS.length ? 0 : current
 
   return (
-    <div style={{ width: '100%', userSelect: 'none', margin: '16px 0 0' }}>
+    <div style={{ width: '100%', userSelect: 'none', margin: 0 }}>
       <div style={{ width: '100%', overflow: 'hidden' }}>
         <div
           style={{
@@ -110,10 +110,10 @@ function BannerCarousel() {
               style={{
                 flexShrink: 0,
                 width:      '100%',
-                height:     120,
+                height:     160,
                 background: b.bg,
                 border:     'none',
-                padding:    '16px 24px',
+                padding:    '20px 24px',
                 display:    'flex',
                 alignItems: 'center',
                 gap:        14,
@@ -143,7 +143,7 @@ function BannerCarousel() {
                 </p>
               </div>
               {/* 우측 이미지 영역 (향후 추가용) */}
-              <div style={{ width: 72, height: 72, flexShrink: 0 }} aria-hidden />
+              <div style={{ width: 84, height: 84, flexShrink: 0 }} aria-hidden />
             </button>
           ))}
         </div>
