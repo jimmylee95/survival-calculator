@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { createClient } from '@/lib/supabase/client'
@@ -23,8 +23,6 @@ const FEATURES = [
   { icon: '✨', text: '향후 추가될 모든 프리미엄 기능' },
 ]
 
-const PRICE = 9900
-
 function getGuestCustomerKey(): string {
   const existing = localStorage.getItem('guest_customer_key')
   if (existing) return existing
@@ -39,11 +37,8 @@ export default function SubscribePage() {
   const [authLoading, setAuthLoading] = useState(true)
   const { isSubscribed, loading: subLoading } = useSubscription()
   const [loading, setLoading] = useState(false)
-  const [widgetReady, setWidgetReady] = useState(false)
   const [sdkLoaded, setSdkLoaded] = useState(false)
   const [error, setError] = useState('')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const widgetsRef = useRef<any>(null)
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data: { user } }) => {
@@ -52,49 +47,25 @@ export default function SubscribePage() {
     }).catch(() => setAuthLoading(false))
   }, [])
 
-  useEffect(() => {
-    if (!sdkLoaded || authLoading || subLoading || isSubscribed) return
-    if (typeof window === 'undefined' || !window.TossPayments) return
-
-    let cancelled = false
-    const customerKey = user ? user.id : getGuestCustomerKey()
-
-    ;(async () => {
-      try {
-        const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!
-        const tossPayments = await window.TossPayments(clientKey)
-        const widgets = tossPayments.widgets({ customerKey })
-        await widgets.setAmount({ currency: 'KRW', value: PRICE })
-        await widgets.renderPaymentMethods({
-          selector: '#payment-method',
-          variantKey: 'DEFAULT',
-        })
-        if (cancelled) return
-        widgetsRef.current = widgets
-        setWidgetReady(true)
-      } catch (e: unknown) {
-        if (cancelled) return
-        const msg = e instanceof Error ? e.message : '결제 수단을 불러오지 못했어요'
-        setError(msg)
-      }
-    })()
-
-    return () => { cancelled = true }
-  }, [sdkLoaded, authLoading, subLoading, isSubscribed, user])
-
   async function handleSubscribe() {
-    if (!widgetsRef.current) return
+    if (typeof window === 'undefined' || !window.TossPayments) {
+      setError('결제 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해주세요')
+      return
+    }
+
     setLoading(true)
     setError('')
 
+    const customerKey = user ? user.id : getGuestCustomerKey()
+
     try {
-      await widgetsRef.current.requestPayment({
-        orderId: 'subscription_' + Date.now(),
-        orderName: '해방 플랜 월 구독',
+      const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!
+      const tossPayments = await window.TossPayments(clientKey)
+
+      await tossPayments.requestBillingAuth('카드', {
+        customerKey,
         successUrl: window.location.origin + '/subscribe/success',
         failUrl: window.location.origin + '/subscribe/fail',
-        customerEmail: user?.email ?? '',
-        customerName: user?.user_metadata?.name ?? '',
       })
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : '결제창을 열지 못했어요'
@@ -110,6 +81,8 @@ export default function SubscribePage() {
       </div>
     )
   }
+
+  const ctaDisabled = loading || !sdkLoaded
 
   return (
     <>
@@ -192,13 +165,6 @@ export default function SubscribePage() {
               ))}
             </div>
 
-            {/* 결제위젯 결제 수단 */}
-            {!isSubscribed && (
-              <div style={{ padding: '8px 24px 0' }}>
-                <div id="payment-method" />
-              </div>
-            )}
-
             {/* CTA 버튼 */}
             <div style={{ padding: '20px 24px 28px' }}>
               {isSubscribed ? (
@@ -213,17 +179,17 @@ export default function SubscribePage() {
               ) : (
                 <button
                   onClick={handleSubscribe}
-                  disabled={loading || !widgetReady}
+                  disabled={ctaDisabled}
                   style={{
                     width: '100%', height: 56, borderRadius: 14, border: 'none',
-                    background: (loading || !widgetReady) ? '#E2E8F0' : 'linear-gradient(135deg, #1A1F5E, #4F46E5)',
-                    color: (loading || !widgetReady) ? '#A0AEC0' : '#fff',
-                    fontSize: 16, fontWeight: 900, cursor: (loading || !widgetReady) ? 'not-allowed' : 'pointer',
-                    boxShadow: (loading || !widgetReady) ? 'none' : '0 8px 24px rgba(26,31,94,0.3)',
+                    background: ctaDisabled ? '#E2E8F0' : 'linear-gradient(135deg, #1A1F5E, #4F46E5)',
+                    color: ctaDisabled ? '#A0AEC0' : '#fff',
+                    fontSize: 16, fontWeight: 900, cursor: ctaDisabled ? 'not-allowed' : 'pointer',
+                    boxShadow: ctaDisabled ? 'none' : '0 8px 24px rgba(26,31,94,0.3)',
                     transition: 'all 0.2s', letterSpacing: '-0.3px',
                   }}
                 >
-                  {loading ? '처리 중...' : !widgetReady ? '결제 수단 불러오는 중...' : '🚀 구독 시작하기'}
+                  {loading ? '처리 중...' : !sdkLoaded ? '결제 모듈 불러오는 중...' : '🚀 구독 시작하기'}
                 </button>
               )}
 
