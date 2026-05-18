@@ -1,8 +1,179 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useRef, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
+
+type Banner = {
+  bg:    string
+  title: string
+  sub:   string
+  href:  string
+}
+
+const BANNERS: Banner[] = [
+  {
+    bg:    'linear-gradient(135deg, #FF6B35 0%, #FF8F5E 100%)',
+    title: '사장님, 런웨이 몇 일인지 아세요?',
+    sub:   '30초면 현실이 보입니다',
+    href:  '/self-employed',
+  },
+  {
+    bg:    'linear-gradient(135deg, #4A7FD4 0%, #6B9FE4 100%)',
+    title: '퇴사까지 D-day, 계산해봤어?',
+    sub:   '월급쟁이 탈출 시뮬레이션',
+    href:  '/freelancer',
+  },
+  {
+    bg:    'linear-gradient(135deg, #D4A020 0%, #F0C850 100%)',
+    title: '해방 플랜 오픈! 월 9,900원',
+    sub:   '업종별 상세 분석 잠금 해제',
+    href:  '/subscribe',
+  },
+]
+
+function BannerCarousel() {
+  const router = useRouter()
+  const [current, setCurrent] = useState(0)
+  const [animated, setAnimated] = useState(true)
+  const touchStartXRef = useRef<number | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  function scheduleAuto() {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    intervalRef.current = setInterval(() => {
+      setCurrent(c => c + 1)
+    }, 3000)
+  }
+
+  useEffect(() => {
+    scheduleAuto()
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  }, [])
+
+  // 루프 처리: 마지막 클론에 도달하면 transition 끄고 0으로 점프
+  useEffect(() => {
+    if (current === BANNERS.length) {
+      const t = setTimeout(() => {
+        setAnimated(false)
+        setCurrent(0)
+      }, 450)
+      return () => clearTimeout(t)
+    }
+    if (!animated) {
+      const r = requestAnimationFrame(() => setAnimated(true))
+      return () => cancelAnimationFrame(r)
+    }
+  }, [current, animated])
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartXRef.current = e.touches[0].clientX
+  }
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartXRef.current === null) return
+    const dx = e.changedTouches[0].clientX - touchStartXRef.current
+    touchStartXRef.current = null
+    if (Math.abs(dx) < 40) return
+    if (dx < 0) {
+      setCurrent(c => c + 1)
+    } else {
+      setCurrent(c => (c === 0 ? c : c - 1))
+    }
+    scheduleAuto()
+  }
+
+  function handleDotClick(i: number) {
+    setCurrent(i)
+    scheduleAuto()
+  }
+
+  const slides = [...BANNERS, BANNERS[0]]
+  const realIndex = current === BANNERS.length ? 0 : current
+
+  return (
+    <div style={{ width: '100%', userSelect: 'none', margin: '4px 0 0' }}>
+      <div style={{ width: '100%', overflow: 'hidden' }}>
+        <div
+          style={{
+            display:    'flex',
+            transition: animated ? 'transform 0.45s ease' : 'none',
+            transform:  `translateX(-${current * 100}%)`,
+            touchAction: 'pan-y',
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {slides.map((b, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => router.push(b.href)}
+              style={{
+                flexShrink: 0,
+                width:      '100%',
+                height:     160,
+                background: b.bg,
+                border:     'none',
+                padding:    '20px 24px',
+                display:    'flex',
+                alignItems: 'center',
+                gap:        14,
+                textAlign:  'left',
+                cursor:     'pointer',
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{
+                  fontSize:    17,
+                  fontWeight:  900,
+                  color:       '#fff',
+                  margin:      '0 0 6px',
+                  letterSpacing: '-0.3px',
+                  lineHeight:  1.3,
+                }}>
+                  {b.title}
+                </p>
+                <p style={{
+                  fontSize:   13,
+                  fontWeight: 600,
+                  color:      'rgba(255,255,255,0.85)',
+                  margin:     0,
+                  lineHeight: 1.4,
+                }}>
+                  {b.sub}
+                </p>
+              </div>
+              {/* 우측 이미지 영역 (향후 추가용) */}
+              <div style={{ width: 84, height: 84, flexShrink: 0 }} aria-hidden />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 도트 인디케이터 */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, padding: '10px 0 0' }}>
+        {BANNERS.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => handleDotClick(i)}
+            aria-label={`배너 ${i + 1}`}
+            style={{
+              width:        i === realIndex ? 18 : 6,
+              height:       6,
+              borderRadius: 3,
+              background:   i === realIndex ? '#1A1F5E' : '#CBD5E1',
+              border:       'none',
+              padding:      0,
+              cursor:       'pointer',
+              transition:   'width 0.2s, background 0.2s',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
 
 type CardConfig = {
   mode:     'business' | 'freelancer'
@@ -143,6 +314,9 @@ export default function HomePage() {
             누렁이와 함께 해방으로 가는 여정
           </p>
         </div>
+
+        {/* 롤링 배너 */}
+        <BannerCarousel />
 
         {/* 모드 선택 카드 */}
         <div style={{ padding: '16px 20px 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
