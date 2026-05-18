@@ -46,7 +46,7 @@ function BannerCarousel() {
     if (intervalRef.current) clearInterval(intervalRef.current)
     intervalRef.current = setInterval(() => {
       setCurrent(c => c + 1)
-    }, 3000)
+    }, 5000)
   }
 
   useEffect(() => {
