@@ -101,7 +101,7 @@ function SuccessContent() {
           boxShadow: '0 12px 40px rgba(0,0,0,0.1)',
           padding: '28px 24px', marginBottom: 24,
         }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>🫧</div>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>🐾</div>
           <p style={{ fontSize: 18, fontWeight: 900, color: '#1A1F5E', margin: '0 0 4px' }}>해방 플랜 활성화</p>
           {periodEnd && (
             <p style={{ fontSize: 14, color: '#718096', margin: '0 0 20px' }}>

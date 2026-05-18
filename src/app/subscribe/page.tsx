@@ -64,7 +64,7 @@ export default function SubscribePage() {
   if (subLoading) {
     return (
       <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8F9FB' }}>
-        <div style={{ fontSize: 28 }}>🫧</div>
+        <div style={{ fontSize: 28 }}>🐾</div>
       </div>
     )
   }
@@ -101,7 +101,7 @@ export default function SubscribePage() {
 
           {/* 타이틀 */}
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <div style={{ fontSize: 40, marginBottom: 8 }}>🫧</div>
+            <div style={{ fontSize: 40, marginBottom: 8 }}>🐾</div>
             <h1 style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: '0 0 8px', letterSpacing: '-0.5px' }}>
               해방 플랜
             </h1>

@@ -19,28 +19,28 @@ const geistMono = localFont({
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://survival-calculator.vercel.app'
 
 export const metadata: Metadata = {
-  title:       '누렁이의 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
+  title:       '누렁이 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
   description: '내 사업이 몇 일을 버틸 수 있는지, 퇴사까지 얼마나 남았는지 30초 만에 계산해보세요. 사장님 생존 계산기 · 직장인 퇴사 D-day 계산기.',
   keywords:    ['해방 계산기', '퇴사 계산기', '생존 계산기', '런웨이', '자영업자', '소상공인', '직장인', '퇴사', '손익분기'],
-  authors:     [{ name: '누렁이의 해방 계산기' }],
+  authors:     [{ name: '누렁이 해방 계산기' }],
   openGraph: {
     type:        'website',
     url:          BASE_URL,
-    title:       '누렁이의 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
+    title:       '누렁이 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
     description: '내 사업이 몇 일을 버틸 수 있는지, 퇴사까지 얼마나 남았는지 30초 만에 계산해보세요',
-    siteName:    '누렁이의 해방 계산기',
+    siteName:    '누렁이 해방 계산기',
     images: [
       {
         url:    `${BASE_URL}/og-image.png`,
         width:  1200,
         height: 630,
-        alt:    '누렁이의 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
+        alt:    '누렁이 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
       },
     ],
   },
   twitter: {
     card:        'summary_large_image',
-    title:       '누렁이의 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
+    title:       '누렁이 해방 계산기 — 사장님 생존 계산기 · 직장인 퇴사 계산기',
     description: '내 사업이 몇 일을 버틸 수 있는지, 퇴사까지 얼마나 남았는지 30초 만에 계산해보세요',
     images:      [`${BASE_URL}/og-image.png`],
   },
