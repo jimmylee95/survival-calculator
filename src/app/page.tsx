@@ -8,27 +8,26 @@ type Banner = {
   bg:    string
   title: string
   sub:   string
-  href:  string
+  href?: string
 }
 
 const BANNERS: Banner[] = [
   {
     bg:    'linear-gradient(135deg, #FF6B35 0%, #FF8F5E 100%)',
+    title: '누렁이는 오늘도 탈출을 준비한다!',
+    sub:   '누렁이와 함께 해방으로 가는 여정',
+  },
+  {
+    bg:    'linear-gradient(135deg, #4A7FD4 0%, #6B9FE4 100%)',
     title: '사장님, 런웨이 몇 일인지 아세요?',
     sub:   '30초면 현실이 보입니다',
     href:  '/self-employed',
   },
   {
-    bg:    'linear-gradient(135deg, #4A7FD4 0%, #6B9FE4 100%)',
-    title: '퇴사까지 D-day, 계산해봤어?',
-    sub:   '월급쟁이 탈출 시뮬레이션',
-    href:  '/freelancer',
-  },
-  {
     bg:    'linear-gradient(135deg, #D4A020 0%, #F0C850 100%)',
-    title: '해방 플랜 오픈! 월 9,900원',
-    sub:   '업종별 상세 분석 잠금 해제',
-    href:  '/subscribe',
+    title: '퇴사까지 D-day, 계산해봤어?',
+    sub:   '월급쟁이 해방 시뮬레이션',
+    href:  '/freelancer',
   },
 ]
 
@@ -91,7 +90,7 @@ function BannerCarousel() {
   const realIndex = current === BANNERS.length ? 0 : current
 
   return (
-    <div style={{ width: '100%', userSelect: 'none', margin: '4px 0 0' }}>
+    <div style={{ width: '100%', userSelect: 'none', margin: '16px 0 0' }}>
       <div style={{ width: '100%', overflow: 'hidden' }}>
         <div
           style={{
@@ -107,34 +106,34 @@ function BannerCarousel() {
             <button
               key={i}
               type="button"
-              onClick={() => router.push(b.href)}
+              onClick={() => { if (b.href) router.push(b.href) }}
               style={{
                 flexShrink: 0,
                 width:      '100%',
-                height:     160,
+                height:     120,
                 background: b.bg,
                 border:     'none',
-                padding:    '20px 24px',
+                padding:    '16px 24px',
                 display:    'flex',
                 alignItems: 'center',
                 gap:        14,
                 textAlign:  'left',
-                cursor:     'pointer',
+                cursor:     b.href ? 'pointer' : 'default',
               }}
             >
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{
-                  fontSize:    17,
+                  fontSize:    16,
                   fontWeight:  900,
                   color:       '#fff',
-                  margin:      '0 0 6px',
+                  margin:      '0 0 4px',
                   letterSpacing: '-0.3px',
                   lineHeight:  1.3,
                 }}>
                   {b.title}
                 </p>
                 <p style={{
-                  fontSize:   13,
+                  fontSize:   12,
                   fontWeight: 600,
                   color:      'rgba(255,255,255,0.85)',
                   margin:     0,
@@ -144,7 +143,7 @@ function BannerCarousel() {
                 </p>
               </div>
               {/* 우측 이미지 영역 (향후 추가용) */}
-              <div style={{ width: 84, height: 84, flexShrink: 0 }} aria-hidden />
+              <div style={{ width: 72, height: 72, flexShrink: 0 }} aria-hidden />
             </button>
           ))}
         </div>
@@ -299,23 +298,7 @@ export default function HomePage() {
 
       <div style={{ width: '100%', maxWidth: 430, overflowX: 'hidden' }}>
 
-        {/* 상단 헤더 */}
-        <div style={{ padding: '24px 24px 12px', textAlign: 'center' }}>
-          <p style={{
-            fontSize: 22, color: '#64748B', margin: '0 0 6px', lineHeight: 1.5,
-            fontWeight: 800,
-          }}>
-            누렁이는 오늘도 탈출을 준비한다!
-          </p>
-          <p style={{
-            fontSize: 20, color: '#1A1F5E', margin: 0, lineHeight: 1.5,
-            fontWeight: 900,
-          }}>
-            누렁이와 함께 해방으로 가는 여정
-          </p>
-        </div>
-
-        {/* 롤링 배너 */}
+        {/* 롤링 배너 (히어로 통합) */}
         <BannerCarousel />
 
         {/* 모드 선택 카드 */}
