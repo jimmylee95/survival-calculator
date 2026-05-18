@@ -20,7 +20,8 @@ const BANNERS: Banner[] = [
     sub:   '누렁이와 함께 해방으로 가는 여정',
   },
   {
-    bg:    'linear-gradient(135deg, #4A7FD4 0%, #6B9FE4 100%)',
+    bg:    "url('/images/banner_02.png')",
+    image: '/images/banner_02.png',
     title: '사장님, 런웨이 몇 일인지 아세요?',
     sub:   '30초면 현실이 보입니다',
     href:  '/self-employed',
