@@ -9,7 +9,11 @@ import {
   type DangerLevel,
   formatWon,
   calculatePercentile,
+  calculateGrade,
+  calculateWorkerGrade,
+  GRADE_ORDER,
   INDUSTRY_BENCHMARKS,
+  INDUSTRY_USERS,
 } from '@/utils/calculate'
 import { useKakaoShare }     from '@/hooks/useKakaoShare'
 import { createClient }      from '@/lib/supabase/client'
@@ -66,6 +70,17 @@ export default function ResultPage() {
   const cardRef = useRef<HTMLDivElement>(null)
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+
+  // 등급/순위 잠금 상태
+  const [isUnlocked, setIsUnlocked] = useState(false)
+  const [shareCount, setShareCount] = useState(0)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setIsUnlocked(localStorage.getItem('result_unlocked') === '1')
+    const sc = Number(localStorage.getItem('share_count') ?? '0')
+    setShareCount(Number.isFinite(sc) ? sc : 0)
+  }, [])
 
   useEffect(() => {
     if (_hydrated && !result) router.replace('/calculator')
@@ -125,6 +140,17 @@ export default function ResultPage() {
   // topPercentile = "상위 X%"에서 X 값 (낮을수록 상위권, 상위 5% = 상위 5%)
   const topPercentile = Math.round((100 - percentile) * 10) / 10
   const aboveAvg = percentile >= 50  // CDF 50% 이상 = 평균 이상
+
+  // ── 등급 계산 ─────────────────────────────────────────────
+  const gradeKey = isBusiness
+    ? (businessInput.industryType as string)
+    : (freelancerInput.jobType ?? 'other')
+  const grade = isBusiness
+    ? calculateGrade(realisticDays)
+    : calculateWorkerGrade(freeResult?.escapeDays ?? Infinity)
+  const userCount = INDUSTRY_USERS[gradeKey] ?? 1500
+  const rawRank   = Math.round(userCount * (1 - percentile / 100))
+  const rank      = Math.max(1, Math.min(userCount, rawRank))
 
   const improvedDays = Infinity
 
@@ -203,6 +229,25 @@ export default function ResultPage() {
       await navigator.clipboard.writeText(text)
       showToast('✓ 클립보드에 복사됐어요!')
     } catch { /* ignore */ }
+  }
+
+  // 카톡 공유로 잠금 해제 카운트 증가
+  async function handleShareForUnlock() {
+    await handleShare()
+    const next = Math.min(shareCount + 1, 3)
+    setShareCount(next)
+    localStorage.setItem('share_count', String(next))
+    if (next >= 3) {
+      setIsUnlocked(true)
+      localStorage.setItem('result_unlocked', '1')
+      showToast('🎉 잠금 해제 완료!')
+    } else {
+      showToast(`공유 ${next}/3 — 앞으로 ${3 - next}번 더!`)
+    }
+  }
+
+  function handlePaidUnlock() {
+    alert('결제 기능 준비 중입니다')
   }
 
   // ── 이미지 저장 ───────────────────────────────────────────
@@ -331,72 +376,177 @@ export default function ResultPage() {
               </p>
             )}
 
-            {/* ── 퍼센타일 섹션 ───────────────────────── */}
-            <div style={{ marginTop: 24 }}>
-              {/* 상위 N% 큰 텍스트 */}
-              <p style={{
-                fontSize: 28, fontWeight: 900,
-                color: aboveAvg ? '#FBD38D' : '#FC8181',
-                margin: '0 0 4px', letterSpacing: '-0.5px',
-                filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
+            {/* ── 등급/퍼센타일/순위 (잠금 영역) ──────────── */}
+            <div style={{ position: 'relative', marginTop: 24 }}>
+              <div style={{
+                filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
+                pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
+                userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
+                transition:    'filter 0.3s ease',
               }}>
-                상위 {topPercentile}%
-              </p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px' }}>
-                같은 {industryLabel} 기준
-              </p>
-
-              {/* 평균 대비 뱃지 */}
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
-                <span style={{
-                  padding: '4px 12px', borderRadius: 20,
-                  fontSize: 12, fontWeight: 800,
-                  background: aboveAvg ? 'rgba(72,187,120,0.25)' : 'rgba(252,129,129,0.25)',
-                  color: aboveAvg ? '#9AE6B4' : '#FC8181',
-                  border: `1px solid ${aboveAvg ? 'rgba(72,187,120,0.4)' : 'rgba(252,129,129,0.4)'}`,
-                }}>
-                  {aboveAvg ? '평균 이상 👍' : '위험 구간 ⚠️'}
-                </span>
-                <span style={{
-                  padding: '4px 12px', borderRadius: 20,
-                  fontSize: 12, fontWeight: 700,
-                  background: 'rgba(255,255,255,0.12)',
-                  color: 'rgba(255,255,255,0.8)',
-                }}>
-                  {isBusiness
-                    ? `평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}일`
-                    : `저축률 평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}%p`}
-                </span>
-              </div>
-
-              {/* 게이지 바: 빨강 → 노랑 → 초록, 내 위치 흰 원 */}
-              <div style={{ position: 'relative', padding: '0 4px' }}>
+                {/* 등급 배지 */}
                 <div style={{
-                  height: 8, borderRadius: 4,
-                  background: 'linear-gradient(90deg, #FC8181 0%, #F6E05E 50%, #48BB78 100%)',
-                  position: 'relative',
+                  display: 'inline-flex', alignItems: 'center', gap: 10,
+                  background: 'rgba(0,0,0,0.25)', borderRadius: 999,
+                  padding: '6px 16px 6px 8px', marginBottom: 12,
+                  border: `1.5px solid ${grade.color}80`,
                 }}>
-                  {/* 내 위치 흰 원 */}
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: grade.color, color: '#1A202C',
+                    fontSize: 20, fontWeight: 900, letterSpacing: '-1px',
+                  }}>
+                    {grade.grade}
+                  </span>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>
+                    {grade.emoji} {grade.label}
+                  </span>
+                </div>
+
+                {/* 상위 N% 큰 텍스트 */}
+                <p style={{
+                  fontSize: 28, fontWeight: 900,
+                  color: aboveAvg ? '#FBD38D' : '#FC8181',
+                  margin: '0 0 4px', letterSpacing: '-0.5px',
+                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
+                }}>
+                  상위 {topPercentile}%
+                </p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px' }}>
+                  같은 {industryLabel} 기준
+                </p>
+
+                {/* 평균 대비 뱃지 */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+                  <span style={{
+                    padding: '4px 12px', borderRadius: 20,
+                    fontSize: 12, fontWeight: 800,
+                    background: aboveAvg ? 'rgba(72,187,120,0.25)' : 'rgba(252,129,129,0.25)',
+                    color: aboveAvg ? '#9AE6B4' : '#FC8181',
+                    border: `1px solid ${aboveAvg ? 'rgba(72,187,120,0.4)' : 'rgba(252,129,129,0.4)'}`,
+                  }}>
+                    {aboveAvg ? '평균 이상 👍' : '위험 구간 ⚠️'}
+                  </span>
+                  <span style={{
+                    padding: '4px 12px', borderRadius: 20,
+                    fontSize: 12, fontWeight: 700,
+                    background: 'rgba(255,255,255,0.12)',
+                    color: 'rgba(255,255,255,0.8)',
+                  }}>
+                    {isBusiness
+                      ? `평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}일`
+                      : `저축률 평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}%p`}
+                  </span>
+                </div>
+
+                {/* 게이지 바: 빨강 → 노랑 → 초록, 내 위치 흰 원 */}
+                <div style={{ position: 'relative', padding: '0 4px' }}>
                   <div style={{
-                    position: 'absolute',
-                    left: `${dotPos}%`,
-                    top: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 16, height: 16, borderRadius: '50%',
-                    background: '#fff',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
-                    border: '2.5px solid rgba(0,0,0,0.12)',
-                  }} />
+                    height: 8, borderRadius: 4,
+                    background: 'linear-gradient(90deg, #FC8181 0%, #F6E05E 50%, #48BB78 100%)',
+                    position: 'relative',
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      left: `${dotPos}%`,
+                      top: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: 16, height: 16, borderRadius: '50%',
+                      background: '#fff',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
+                      border: '2.5px solid rgba(0,0,0,0.12)',
+                    }} />
+                  </div>
+                  <div style={{
+                    display: 'flex', justifyContent: 'space-between',
+                    marginTop: 10, fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 600,
+                  }}>
+                    <span>하위</span>
+                    <span>평균</span>
+                    <span>상위</span>
+                  </div>
                 </div>
-                <div style={{
-                  display: 'flex', justifyContent: 'space-between',
-                  marginTop: 10, fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 600,
+
+                {/* 순위 */}
+                <p style={{
+                  fontSize: 13, fontWeight: 700,
+                  color: 'rgba(255,255,255,0.85)',
+                  margin: '20px 0 12px',
                 }}>
-                  <span>하위</span>
-                  <span>평균</span>
-                  <span>상위</span>
+                  같은 {industryLabel} {isBusiness ? '사장님' : '직장인'}{' '}
+                  <span style={{ color: grade.color, fontWeight: 900 }}>
+                    {userCount.toLocaleString()}명
+                  </span>
+                  {' '}중{' '}
+                  <span style={{ color: grade.color, fontWeight: 900 }}>
+                    {rank.toLocaleString()}등
+                  </span>
+                </p>
+
+                {/* 등급 비교 바 */}
+                <div style={{ display: 'flex', gap: 4, width: '100%', marginTop: 8 }}>
+                  {GRADE_ORDER.map(g => {
+                    const isMine = g === grade.grade
+                    return (
+                      <div key={g} style={{
+                        flex: 1, padding: '8px 4px', borderRadius: 8,
+                        background: isMine ? grade.color : 'rgba(255,255,255,0.12)',
+                        textAlign: 'center', fontSize: 12, fontWeight: 800,
+                        color: isMine ? '#1A202C' : 'rgba(255,255,255,0.55)',
+                        border: isMine ? '2px solid #fff' : '2px solid transparent',
+                        opacity: isMine ? 1 : 0.5,
+                      }}>
+                        {g}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
+
+              {/* 잠금 오버레이 */}
+              {!isUnlocked && !isCapturing && (
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.35)', borderRadius: 16,
+                  padding: '16px', zIndex: 10,
+                }}>
+                  <div style={{ fontSize: 40 }}>🔒</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginTop: 8, textAlign: 'center' }}>
+                    내 등급과 순위를 확인해보세요!
+                  </div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 4, textAlign: 'center' }}>
+                    카카오톡 공유 3회 또는 990원으로 해제
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <button
+                      onClick={handleShareForUnlock}
+                      style={{
+                        padding: '12px 16px', borderRadius: 12,
+                        background: '#FEE500', color: '#3C1E1E',
+                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      🐾 카톡 공유 ({shareCount}/3)
+                    </button>
+                    <button
+                      onClick={handlePaidUnlock}
+                      style={{
+                        padding: '12px 16px', borderRadius: 12,
+                        background: '#4A7FD4', color: '#fff',
+                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      💰 990원으로 해제
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <p style={{

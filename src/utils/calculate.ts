@@ -319,6 +319,52 @@ export function getEscapeLevel(days: number): DangerLevel {
   return 'critical'                          // 5년 이상
 }
 
+// ── 5-2. 등급 계산 (S~F) ─────────────────────────────────
+export type Grade = {
+  grade:   string
+  label:   string
+  emoji:   string
+  message: string
+  color:   string
+}
+
+// 자영업자: 런웨이가 길수록 좋음
+export function calculateGrade(runway: number): Grade {
+  if (runway >= 730) return { grade: 'S', label: '해방 완료',     emoji: '🏖️', message: '시간은 누렁이의 것!',       color: '#FFD700' }
+  if (runway >= 365) return { grade: 'A', label: '해방 직전',     emoji: '😎', message: '해방이 보여요!',            color: '#4A7FD4' }
+  if (runway >= 180) return { grade: 'B', label: '안정 운영',     emoji: '😊', message: '이대로 꾸준히!',            color: '#34A853' }
+  if (runway >= 90)  return { grade: 'C', label: '평균 사장님',   emoji: '🤓', message: '전략이 필요해요',           color: '#888888' }
+  if (runway >= 30)  return { grade: 'D', label: '위험 신호',     emoji: '😟', message: '고정비부터 줄여봐요',       color: '#E8A032' }
+  return                     { grade: 'F', label: '긴급 상황',     emoji: '😰', message: '정신 차려, 누렁아!',        color: '#E04444' }
+}
+
+// 직장인: 퇴사 D-day가 짧을수록 좋음
+export function calculateWorkerGrade(dday: number): Grade {
+  if (dday <= 365)  return { grade: 'S', label: '퇴사 준비 완료', emoji: '🏖️', message: '사직서 쓸 준비 완료!',      color: '#FFD700' }
+  if (dday <= 1095) return { grade: 'A', label: '거의 다 왔다',   emoji: '😎', message: '조금만 더!',                color: '#4A7FD4' }
+  if (dday <= 1825) return { grade: 'B', label: '순항 중',        emoji: '😊', message: '좋은 속도예요',             color: '#34A853' }
+  if (dday <= 3650) return { grade: 'C', label: '평균 직장인',    emoji: '🤓', message: '부수입을 만들어봐요',       color: '#888888' }
+  if (dday <= 7300) return { grade: 'D', label: '준비 부족',      emoji: '😟', message: '지출부터 점검!',            color: '#E8A032' }
+  return                    { grade: 'F', label: '월급 노예',     emoji: '😰', message: '누렁아, 일어나!',           color: '#E04444' }
+}
+
+export const GRADE_ORDER: ReadonlyArray<string> = ['S', 'A', 'B', 'C', 'D', 'F']
+
+// ── 5-3. 업종/직군별 가상 사용자 수 (순위 표시용) ─────────
+export const INDUSTRY_USERS: Record<string, number> = {
+  restaurant: 3247, cafe: 2891, bar: 1456, bakery: 1823,
+  delivery: 2134, retail: 2567, service: 1945, fitness: 876,
+  hospital: 654, academy: 1234, laundry: 567, repair: 789,
+  online_shop: 3456, transport: 1098, freelance: 2345,
+  shipping: 876, professional: 543, other: 1234,
+  // 직장인 직군별 (freelancer mode)
+  office: 5482, it: 4321, sales: 2987, creator: 1654,
+  finance: 1876, marketing: 2103, construction: 1567,
+  education: 2345, medical: 1432, logistics: 1789,
+  manufacturing: 2456, legal: 645, hr: 1234,
+  civil_servant: 1987,
+}
+
 // ── 6. 퍼센타일 계산 (정규분포 근사) ─────────────────────
 // myValue가 업종/직군 평균 대비 상위 몇 %인지 반환 (0~100)
 export function calculatePercentile(myValue: number, avgValue: number): number {
