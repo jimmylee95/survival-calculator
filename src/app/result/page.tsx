@@ -394,22 +394,22 @@ export default function ResultPage() {
             )}
           </div>
 
-          {/* ── 데이터 카드 (글래스모피즘, 이미지 위로 살짝 겹침) ──── */}
+          {/* ── 데이터 카드 (글래스모피즘) ───────────────────── */}
           <div style={{
             background: 'rgba(0, 0, 0, 0.45)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '24px 24px 0 0',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            marginTop: -40,
+            marginTop: 0,
             position: 'relative',
             zIndex: 2,
-            padding: '40px 24px 28px',
+            padding: '28px 24px',
             color: '#fff', textAlign: 'center',
             overflow: 'hidden',
           }}>
             {/* 1. 해방까지 + 일수 */}
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 8 }}>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 8px' }}>
                 해방까지
               </p>
@@ -427,22 +427,23 @@ export default function ResultPage() {
               )}
             </div>
 
-            {/* 2. 등급명 + 누렁이 한마디 */}
-            <div style={{ marginBottom: 24 }}>
-              <p style={{
-                fontSize: 18, fontWeight: 900, color: '#fff',
-                margin: '0 0 6px', letterSpacing: '-0.3px',
-              }}>
-                {grade.emoji} {grade.label}
-              </p>
-              <p style={{
-                fontSize: 14, fontWeight: 700,
-                color: 'rgba(255,255,255,0.6)', margin: 0,
-                letterSpacing: '-0.2px', fontStyle: 'italic',
-              }}>
-                🐾 {grade.message}
-              </p>
-            </div>
+            {/* 2. 누렁이 한마디 (메인 메시지) */}
+            <p style={{
+              fontSize: 22, fontWeight: 800, color: theme.accent,
+              margin: '16px 0', letterSpacing: '-0.02em', lineHeight: 1.35,
+              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))',
+            }}>
+              <span style={{ fontSize: 26, marginRight: 6 }}>{grade.emoji}</span>
+              {grade.message}
+            </p>
+
+            {/* 3. 등급명 */}
+            <p style={{
+              fontSize: 16, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
+              margin: '0 0 24px', letterSpacing: '-0.2px',
+            }}>
+              {grade.label}
+            </p>
 
             {/* 3. 상위%/순위 잠금 블록 */}
             <div style={{ marginBottom: 16 }}>
