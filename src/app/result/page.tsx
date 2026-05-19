@@ -408,8 +408,59 @@ export default function ResultPage() {
               </p>
             )}
 
-            {/* ── 등급/퍼센타일/순위 (잠금 영역) ──────────── */}
+            {/* ── 등급 (무료 노출) ────────────────────────── */}
             <div style={{ marginTop: 24 }}>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: 'rgba(0,0,0,0.25)', borderRadius: 999,
+                padding: '6px 16px 6px 8px', marginBottom: 14,
+                border: `1.5px solid ${grade.color}80`,
+              }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: grade.color, color: '#1A202C',
+                  fontSize: 20, fontWeight: 900, letterSpacing: '-1px',
+                }}>
+                  {grade.grade}
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>
+                  {grade.emoji} {grade.label}
+                </span>
+              </div>
+
+              {/* 등급 비교 바 */}
+              <div style={{ display: 'flex', gap: 4, width: '100%', marginBottom: 12 }}>
+                {GRADE_ORDER.map(g => {
+                  const isMine = g === grade.grade
+                  return (
+                    <div key={g} style={{
+                      flex: 1, padding: '8px 4px', borderRadius: 8,
+                      background: isMine ? grade.color : 'rgba(255,255,255,0.12)',
+                      textAlign: 'center', fontSize: 12, fontWeight: 800,
+                      color: isMine ? '#1A202C' : 'rgba(255,255,255,0.55)',
+                      border: isMine ? '2px solid #fff' : '2px solid transparent',
+                      opacity: isMine ? 1 : 0.5,
+                    }}>
+                      {g}
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* 누렁이 한마디 */}
+              <p style={{
+                fontSize: 14, fontWeight: 700,
+                color: 'rgba(255,255,255,0.92)',
+                margin: '0 0 8px',
+                letterSpacing: '-0.2px',
+              }}>
+                🐾 {grade.message}
+              </p>
+            </div>
+
+            {/* ── 상위%/순위/게이지 (잠금 영역) ──────────── */}
+            <div style={{ marginTop: 20 }}>
               {/* 타이틀 — 항상 보임 */}
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -417,7 +468,7 @@ export default function ResultPage() {
                 fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
                 letterSpacing: '-0.2px',
               }}>
-                <span>🏆 내 등급과 순위</span>
+                <span>📊 상위% · 순위 상세</span>
                 {!isUnlocked && !isCapturing && <span aria-label="잠금">🔒</span>}
               </div>
               <div style={{ position: 'relative' }}>
@@ -427,26 +478,6 @@ export default function ResultPage() {
                   userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
                   transition:    'filter 0.3s ease',
                 }}>
-                {/* 등급 배지 */}
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 10,
-                  background: 'rgba(0,0,0,0.25)', borderRadius: 999,
-                  padding: '6px 16px 6px 8px', marginBottom: 12,
-                  border: `1.5px solid ${grade.color}80`,
-                }}>
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    width: 36, height: 36, borderRadius: '50%',
-                    background: grade.color, color: '#1A202C',
-                    fontSize: 20, fontWeight: 900, letterSpacing: '-1px',
-                  }}>
-                    {grade.grade}
-                  </span>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>
-                    {grade.emoji} {grade.label}
-                  </span>
-                </div>
-
                 {/* 상위 N% 큰 텍스트 */}
                 <p style={{
                   fontSize: 28, fontWeight: 900,
@@ -526,25 +557,6 @@ export default function ResultPage() {
                     {rank.toLocaleString()}등
                   </span>
                 </p>
-
-                {/* 등급 비교 바 */}
-                <div style={{ display: 'flex', gap: 4, width: '100%', marginTop: 8 }}>
-                  {GRADE_ORDER.map(g => {
-                    const isMine = g === grade.grade
-                    return (
-                      <div key={g} style={{
-                        flex: 1, padding: '8px 4px', borderRadius: 8,
-                        background: isMine ? grade.color : 'rgba(255,255,255,0.12)',
-                        textAlign: 'center', fontSize: 12, fontWeight: 800,
-                        color: isMine ? '#1A202C' : 'rgba(255,255,255,0.55)',
-                        border: isMine ? '2px solid #fff' : '2px solid transparent',
-                        opacity: isMine ? 1 : 0.5,
-                      }}>
-                        {g}
-                      </div>
-                    )
-                  })}
-                </div>
               </div>
 
               {/* 잠금 오버레이 */}
@@ -558,7 +570,7 @@ export default function ResultPage() {
                 }}>
                   <div style={{ fontSize: 40 }}>🔒</div>
                   <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginTop: 8, textAlign: 'center' }}>
-                    내 등급과 순위를 확인해보세요!
+                    상위 % · 정확한 순위 확인하기
                   </div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 4, textAlign: 'center' }}>
                     카카오톡 공유 3회 또는 990원으로 해제
