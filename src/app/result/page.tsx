@@ -6,7 +6,6 @@ import { useCalculatorStore } from '@/store/useCalculatorStore'
 import {
   type BusinessResult,
   type FreelancerResult,
-  type DangerLevel,
   formatWon,
   calculatePercentile,
   calculateGrade,
@@ -43,17 +42,26 @@ const JOB_AVG_SAVINGS_RATE: Record<string, number> = {
   civil_servant: 20, other: 20,
 }
 
-const DANGER_COLORS: Record<DangerLevel, string> = {
-  critical: '#FC8181',
-  warning:  '#F6AD55',
-  caution:  '#ECC94B',
-  safe:     '#68D391',
-  infinite: '#63B3ED',
-}
-
 const MODE_META = {
   business:   { bg: '#1A1F5E', label: '사장님 생존 계산기' },
   freelancer: { bg: '#FF6B35', label: '직장인 퇴사 계산기' },
+}
+
+type GradeTheme = {
+  bg:           string
+  gradientFrom: string
+  text:         string
+  sub:          string
+  accent:       string
+}
+
+const GRADE_BG_COLORS: Record<string, GradeTheme> = {
+  S: { bg: '#2A1F10', gradientFrom: '#8B6B3A', text: '#FFE0A0', sub: '#C4A060', accent: '#FFD700' },
+  A: { bg: '#1A2540', gradientFrom: '#4A6A9A', text: '#A0C8FF', sub: '#6090C0', accent: '#60A5FA' },
+  B: { bg: '#1A2E1A', gradientFrom: '#4A7A4A', text: '#A0E0A0', sub: '#60A060', accent: '#34A853' },
+  C: { bg: '#2A2520', gradientFrom: '#7A6A50', text: '#D4C4A0', sub: '#A09070', accent: '#C4A060' },
+  D: { bg: '#2A2010', gradientFrom: '#8A7030', text: '#E0C060', sub: '#A08830', accent: '#E8A032' },
+  F: { bg: '#2A1A1A', gradientFrom: '#7A3A3A', text: '#FFA0A0', sub: '#C06060', accent: '#E04444' },
 }
 
 function LockedSection({
@@ -136,7 +144,6 @@ export default function ResultPage() {
 
   const meta          = MODE_META[mode]
   const dangerLevel   = result.dangerLevel
-  const runwayColor   = DANGER_COLORS[dangerLevel]
   const realisticDays = result.realisticRunwayDays
   const worstDays     = result.worstRunwayDays
 
@@ -314,26 +321,6 @@ export default function ResultPage() {
     setTimeout(() => setToastVisible(false), 2500)
   }
 
-  // ── 감정 리액션 ───────────────────────────────────────────
-  type Reaction = { emoji: string; label: string; sub: string; bg: string; topColor: string }
-
-  const bizReactions: Record<DangerLevel, Reaction> = {
-    critical: { emoji: '😱', label: '사장님, 비상입니다',     sub: '통장이 비명을 지르고 있어요',              bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)', topColor: '#742A2A' },
-    warning:  { emoji: '😰', label: '위험 신호 감지',         sub: '아직 늦지 않았어요. 하지만 빨리요.',       bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)', topColor: '#744210' },
-    caution:  { emoji: '😐', label: '아슬아슬한 줄타기',      sub: '괜찮아 보이지만... 방심하면 안 돼요',      bg: 'linear-gradient(135deg, #1A1F5E 0%, #2D3399 100%)', topColor: '#1A1F5E' },
-    safe:     { emoji: '😊', label: '아직은 괜찮아요',        sub: '여유 있을 때 다음 수를 준비하세요',        bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)', topColor: '#22543D' },
-    infinite: { emoji: '🤑', label: '사장님이 이 구역의 미친존재', sub: '흑자 운영 중! 확장을 고민할 때예요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)', topColor: '#2A4365' },
-  }
-
-  const freeReactions: Record<DangerLevel, Reaction> = {
-    critical: { emoji: '💀', label: '퇴사는... 다음 생에?',    sub: '현재 속도로는 탈출이 요원해요',          bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)', topColor: '#742A2A' },
-    warning:  { emoji: '😤', label: '멀지만 보이긴 해요',      sub: '부업 하나면 확 당겨질 수 있어요',        bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)', topColor: '#744210' },
-    caution:  { emoji: '👀', label: '출구가 보이기 시작했다!', sub: '조금만 더! 터널 끝에 빛이 보여요',       bg: 'linear-gradient(135deg, #FF6B35 0%, #E8590C 100%)', topColor: '#FF6B35' },
-    safe:     { emoji: '🔥', label: '곧이에요! 사직서 준비!',  sub: '1년 안에 탈출 가능! 플랜B를 세우세요',   bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)', topColor: '#22543D' },
-    infinite: { emoji: '🏆', label: '이미 자유인이시네요!',    sub: '목표 달성! 이제 회사가 당신을 필요로 해요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)', topColor: '#2A4365' },
-  }
-
-  const reaction  = isBusiness ? bizReactions[dangerLevel] : freeReactions[dangerLevel]
   const gateOpen  = isLoggedIn !== false
 
   // 게이지 점 위치: percentile(CDF)% 위치에 표시 (높을수록 오른쪽 = 상위권)
@@ -346,6 +333,9 @@ export default function ResultPage() {
   }
   const gradeImage = GRADE_IMAGE_MAP[grade.grade] ?? null
 
+  // 등급별 톤 (이미지/데이터 영역 통일 배경 + 텍스트 컬러)
+  const theme = GRADE_BG_COLORS[grade.grade] ?? GRADE_BG_COLORS.C
+
   return (
     <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', width: '100%' }}>
       <div style={{ width: '100%', maxWidth: 430, overflowX: 'hidden' }}>
@@ -356,7 +346,7 @@ export default function ResultPage() {
           {/* ── 상단 등급 이미지 (정사각형 풀너비) ──────────── */}
           <div style={{
             position: 'relative', width: '100%', aspectRatio: '1 / 1',
-            background: reaction.bg, overflow: 'hidden',
+            background: theme.bg, overflow: 'hidden',
             display: 'block',
           }}>
             {gradeImage ? (
@@ -372,11 +362,11 @@ export default function ResultPage() {
                 width: '100%', height: '100%',
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                gap: 12, color: '#fff', padding: 24, textAlign: 'center',
+                gap: 12, color: theme.text, padding: 24, textAlign: 'center',
               }}>
                 <div style={{
                   fontSize: 160, fontWeight: 900,
-                  color: grade.color, letterSpacing: '-6px', lineHeight: 1,
+                  color: theme.accent, letterSpacing: '-6px', lineHeight: 1,
                   filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.35))',
                 }}>
                   {grade.grade}
@@ -387,13 +377,13 @@ export default function ResultPage() {
               </div>
             )}
 
-            {/* 하단 → 데이터 영역 연결 그라데이션 오버레이 */}
+            {/* 하단 → 데이터 영역 연결 그라데이션 오버레이 (이미지 → 어두운 등급 톤) */}
             <div
               aria-hidden
               style={{
                 position: 'absolute', left: 0, right: 0, bottom: 0,
                 height: '50%', pointerEvents: 'none',
-                background: `linear-gradient(to bottom, transparent 0%, ${reaction.topColor} 100%)`,
+                background: `linear-gradient(to bottom, transparent 0%, ${theme.gradientFrom} 70%, ${theme.bg} 100%)`,
               }}
             />
 
@@ -416,24 +406,24 @@ export default function ResultPage() {
 
           {/* ── 데이터 카드 (이미지와 끊김 없이 연결) ────────── */}
           <div style={{
-            background: reaction.bg, padding: '8px 24px 28px',
-            color: '#fff', textAlign: 'center', position: 'relative',
+            background: theme.bg, padding: '8px 24px 28px',
+            color: theme.text, textAlign: 'center', position: 'relative',
             overflow: 'hidden', marginTop: 0, borderRadius: 0,
           }}>
             {/* 1. 해방까지 + 일수 */}
             <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 8px' }}>
+              <p style={{ fontSize: 14, color: theme.text, fontWeight: 700, margin: '0 0 8px', opacity: 0.85 }}>
                 해방까지
               </p>
               <p style={{
-                fontSize: 72, fontWeight: 900, color: runwayColor,
+                fontSize: 72, fontWeight: 900, color: theme.accent,
                 margin: 0, lineHeight: 1, letterSpacing: '-2px',
-                filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))',
+                filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
               }}>
                 <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
               </p>
               {isFinite(realisticDays) && (
-                <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '4px 0 0' }}>
+                <p style={{ fontSize: 20, color: theme.sub, fontWeight: 700, margin: '4px 0 0' }}>
                   일
                 </p>
               )}
@@ -442,15 +432,15 @@ export default function ResultPage() {
             {/* 2. 등급명 + 누렁이 한마디 */}
             <div style={{ marginBottom: 24 }}>
               <p style={{
-                fontSize: 18, fontWeight: 900, color: '#fff',
+                fontSize: 18, fontWeight: 900, color: theme.text,
                 margin: '0 0 6px', letterSpacing: '-0.3px',
               }}>
                 {grade.emoji} {grade.label}
               </p>
               <p style={{
                 fontSize: 14, fontWeight: 700,
-                color: 'rgba(255,255,255,0.9)', margin: 0,
-                letterSpacing: '-0.2px',
+                color: theme.sub, margin: 0,
+                letterSpacing: '-0.2px', fontStyle: 'italic',
               }}>
                 🐾 {grade.message}
               </p>
@@ -461,7 +451,7 @@ export default function ResultPage() {
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 marginBottom: 12,
-                fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
+                fontSize: 13, fontWeight: 800, color: theme.text,
                 letterSpacing: '-0.2px',
               }}>
                 <span>📊 상위 % · 정확한 순위</span>
@@ -475,13 +465,13 @@ export default function ResultPage() {
               }}>
                 <p style={{
                   fontSize: 28, fontWeight: 900,
-                  color: aboveAvg ? '#FBD38D' : '#FC8181',
+                  color: theme.accent,
                   margin: '0 0 4px', letterSpacing: '-0.5px',
-                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
+                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))',
                 }}>
                   상위 {topPercentile}%
                 </p>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px' }}>
+                <p style={{ fontSize: 12, color: theme.sub, fontWeight: 600, margin: '0 0 12px' }}>
                   같은 {industryLabel} 기준
                 </p>
 
@@ -489,17 +479,17 @@ export default function ResultPage() {
                   <span style={{
                     padding: '4px 12px', borderRadius: 20,
                     fontSize: 12, fontWeight: 800,
-                    background: aboveAvg ? 'rgba(72,187,120,0.25)' : 'rgba(252,129,129,0.25)',
+                    background: aboveAvg ? 'rgba(72,187,120,0.18)' : 'rgba(252,129,129,0.18)',
                     color: aboveAvg ? '#9AE6B4' : '#FC8181',
-                    border: `1px solid ${aboveAvg ? 'rgba(72,187,120,0.4)' : 'rgba(252,129,129,0.4)'}`,
+                    border: `1px solid ${aboveAvg ? 'rgba(72,187,120,0.35)' : 'rgba(252,129,129,0.35)'}`,
                   }}>
                     {aboveAvg ? '평균 이상 👍' : '위험 구간 ⚠️'}
                   </span>
                   <span style={{
                     padding: '4px 12px', borderRadius: 20,
                     fontSize: 12, fontWeight: 700,
-                    background: 'rgba(255,255,255,0.12)',
-                    color: 'rgba(255,255,255,0.8)',
+                    background: 'rgba(255,255,255,0.08)',
+                    color: theme.text,
                   }}>
                     {isBusiness
                       ? `평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}일`
@@ -520,13 +510,13 @@ export default function ResultPage() {
                       transform: 'translate(-50%, -50%)',
                       width: 16, height: 16, borderRadius: '50%',
                       background: '#fff',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
-                      border: '2.5px solid rgba(0,0,0,0.12)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                      border: '2.5px solid rgba(0,0,0,0.18)',
                     }} />
                   </div>
                   <div style={{
                     display: 'flex', justifyContent: 'space-between',
-                    marginTop: 10, fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 600,
+                    marginTop: 10, fontSize: 10, color: theme.sub, fontWeight: 600,
                   }}>
                     <span>하위</span>
                     <span>평균</span>
@@ -536,15 +526,15 @@ export default function ResultPage() {
 
                 <p style={{
                   fontSize: 13, fontWeight: 700,
-                  color: 'rgba(255,255,255,0.85)',
+                  color: theme.text,
                   margin: '20px 0 0',
                 }}>
                   같은 {industryLabel} {isBusiness ? '사장님' : '직장인'}{' '}
-                  <span style={{ color: grade.color, fontWeight: 900 }}>
+                  <span style={{ color: theme.accent, fontWeight: 900 }}>
                     {userCount.toLocaleString()}명
                   </span>
                   {' '}중{' '}
-                  <span style={{ color: grade.color, fontWeight: 900 }}>
+                  <span style={{ color: theme.accent, fontWeight: 900 }}>
                     {rank.toLocaleString()}등
                   </span>
                 </p>
@@ -563,7 +553,7 @@ export default function ResultPage() {
                     padding: '12px 18px', borderRadius: 12,
                     background: '#FEE500', color: '#3C1E1E',
                     fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                   }}
                 >
                   🐾 카톡 공유 ({shareCount}/3)
@@ -572,9 +562,9 @@ export default function ResultPage() {
                   onClick={handlePaidUnlock}
                   style={{
                     padding: '12px 18px', borderRadius: 12,
-                    background: '#4A7FD4', color: '#fff',
+                    background: theme.accent, color: '#1A202C',
                     fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                   }}
                 >
                   💰 990원으로 해제
