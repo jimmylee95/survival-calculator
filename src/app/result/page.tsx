@@ -331,7 +331,8 @@ export default function ResultPage() {
     S: '/images/result_hero_S.png',
     A: '/images/result_hero_A.png',
     B: '/images/result_hero_B.png',
-    C: null, D: null, F: null,
+    C: '/images/result_hero_C.png',
+    D: null, F: null,
   }
   const gradeImage = GRADE_IMAGE_MAP[grade.grade] ?? null
 
