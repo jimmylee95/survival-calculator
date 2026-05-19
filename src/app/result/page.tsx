@@ -329,7 +329,8 @@ export default function ResultPage() {
   // 등급별 히어로 이미지 (없으면 폴백 배경)
   const GRADE_IMAGE_MAP: Record<string, string | null> = {
     S: '/images/result_hero_S.png',
-    A: null, B: null, C: null, D: null, F: null,
+    A: '/images/result_hero_A.png',
+    B: null, C: null, D: null, F: null,
   }
   const gradeImage = GRADE_IMAGE_MAP[grade.grade] ?? null
 
