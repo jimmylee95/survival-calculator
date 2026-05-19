@@ -315,22 +315,22 @@ export default function ResultPage() {
   }
 
   // ── 감정 리액션 ───────────────────────────────────────────
-  type Reaction = { emoji: string; label: string; sub: string; bg: string }
+  type Reaction = { emoji: string; label: string; sub: string; bg: string; topColor: string }
 
   const bizReactions: Record<DangerLevel, Reaction> = {
-    critical: { emoji: '😱', label: '사장님, 비상입니다',     sub: '통장이 비명을 지르고 있어요',              bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)' },
-    warning:  { emoji: '😰', label: '위험 신호 감지',         sub: '아직 늦지 않았어요. 하지만 빨리요.',       bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)' },
-    caution:  { emoji: '😐', label: '아슬아슬한 줄타기',      sub: '괜찮아 보이지만... 방심하면 안 돼요',      bg: 'linear-gradient(135deg, #1A1F5E 0%, #2D3399 100%)' },
-    safe:     { emoji: '😊', label: '아직은 괜찮아요',        sub: '여유 있을 때 다음 수를 준비하세요',        bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)' },
-    infinite: { emoji: '🤑', label: '사장님이 이 구역의 미친존재', sub: '흑자 운영 중! 확장을 고민할 때예요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)' },
+    critical: { emoji: '😱', label: '사장님, 비상입니다',     sub: '통장이 비명을 지르고 있어요',              bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)', topColor: '#742A2A' },
+    warning:  { emoji: '😰', label: '위험 신호 감지',         sub: '아직 늦지 않았어요. 하지만 빨리요.',       bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)', topColor: '#744210' },
+    caution:  { emoji: '😐', label: '아슬아슬한 줄타기',      sub: '괜찮아 보이지만... 방심하면 안 돼요',      bg: 'linear-gradient(135deg, #1A1F5E 0%, #2D3399 100%)', topColor: '#1A1F5E' },
+    safe:     { emoji: '😊', label: '아직은 괜찮아요',        sub: '여유 있을 때 다음 수를 준비하세요',        bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)', topColor: '#22543D' },
+    infinite: { emoji: '🤑', label: '사장님이 이 구역의 미친존재', sub: '흑자 운영 중! 확장을 고민할 때예요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)', topColor: '#2A4365' },
   }
 
   const freeReactions: Record<DangerLevel, Reaction> = {
-    critical: { emoji: '💀', label: '퇴사는... 다음 생에?',    sub: '현재 속도로는 탈출이 요원해요',          bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)' },
-    warning:  { emoji: '😤', label: '멀지만 보이긴 해요',      sub: '부업 하나면 확 당겨질 수 있어요',        bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)' },
-    caution:  { emoji: '👀', label: '출구가 보이기 시작했다!', sub: '조금만 더! 터널 끝에 빛이 보여요',       bg: 'linear-gradient(135deg, #FF6B35 0%, #E8590C 100%)' },
-    safe:     { emoji: '🔥', label: '곧이에요! 사직서 준비!',  sub: '1년 안에 탈출 가능! 플랜B를 세우세요',   bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)' },
-    infinite: { emoji: '🏆', label: '이미 자유인이시네요!',    sub: '목표 달성! 이제 회사가 당신을 필요로 해요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)' },
+    critical: { emoji: '💀', label: '퇴사는... 다음 생에?',    sub: '현재 속도로는 탈출이 요원해요',          bg: 'linear-gradient(135deg, #742A2A 0%, #C53030 100%)', topColor: '#742A2A' },
+    warning:  { emoji: '😤', label: '멀지만 보이긴 해요',      sub: '부업 하나면 확 당겨질 수 있어요',        bg: 'linear-gradient(135deg, #744210 0%, #C05621 100%)', topColor: '#744210' },
+    caution:  { emoji: '👀', label: '출구가 보이기 시작했다!', sub: '조금만 더! 터널 끝에 빛이 보여요',       bg: 'linear-gradient(135deg, #FF6B35 0%, #E8590C 100%)', topColor: '#FF6B35' },
+    safe:     { emoji: '🔥', label: '곧이에요! 사직서 준비!',  sub: '1년 안에 탈출 가능! 플랜B를 세우세요',   bg: 'linear-gradient(135deg, #22543D 0%, #276749 100%)', topColor: '#22543D' },
+    infinite: { emoji: '🏆', label: '이미 자유인이시네요!',    sub: '목표 달성! 이제 회사가 당신을 필요로 해요', bg: 'linear-gradient(135deg, #2A4365 0%, #2B6CB0 100%)', topColor: '#2A4365' },
   }
 
   const reaction  = isBusiness ? bizReactions[dangerLevel] : freeReactions[dangerLevel]
@@ -357,6 +357,7 @@ export default function ResultPage() {
           <div style={{
             position: 'relative', width: '100%', aspectRatio: '1 / 1',
             background: reaction.bg, overflow: 'hidden',
+            display: 'block',
           }}>
             {gradeImage ? (
               <img
@@ -386,6 +387,16 @@ export default function ResultPage() {
               </div>
             )}
 
+            {/* 하단 → 데이터 영역 연결 그라데이션 오버레이 */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute', left: 0, right: 0, bottom: 0,
+                height: '50%', pointerEvents: 'none',
+                background: `linear-gradient(to bottom, transparent 0%, ${reaction.topColor} 100%)`,
+              }}
+            />
+
             {!isCapturing && (
               <button
                 onClick={() => router.back()}
@@ -395,6 +406,7 @@ export default function ResultPage() {
                   borderRadius: 20, padding: '6px 14px',
                   color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
                   backdropFilter: 'blur(4px)',
+                  zIndex: 2,
                 }}
               >
                 ← 수정
@@ -402,11 +414,11 @@ export default function ResultPage() {
             )}
           </div>
 
-          {/* ── 데이터 카드 ─────────────────────────────── */}
+          {/* ── 데이터 카드 (이미지와 끊김 없이 연결) ────────── */}
           <div style={{
-            background: reaction.bg, padding: '32px 24px 28px',
+            background: reaction.bg, padding: '8px 24px 28px',
             color: '#fff', textAlign: 'center', position: 'relative',
-            overflow: 'hidden',
+            overflow: 'hidden', marginTop: 0, borderRadius: 0,
           }}>
             {/* 1. 해방까지 + 일수 */}
             <div style={{ marginBottom: 24 }}>
