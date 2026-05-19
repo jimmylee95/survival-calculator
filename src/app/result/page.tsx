@@ -377,16 +377,6 @@ export default function ResultPage() {
               </div>
             )}
 
-            {/* 하단 → 데이터 영역 연결 그라데이션 오버레이 (이미지 → 어두운 등급 톤) */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute', left: 0, right: 0, bottom: 0,
-                height: '50%', pointerEvents: 'none',
-                background: `linear-gradient(to bottom, transparent 0%, ${theme.gradientFrom} 70%, ${theme.bg} 100%)`,
-              }}
-            />
-
             {!isCapturing && (
               <button
                 onClick={() => router.back()}
@@ -404,15 +394,23 @@ export default function ResultPage() {
             )}
           </div>
 
-          {/* ── 데이터 카드 (이미지와 끊김 없이 연결) ────────── */}
+          {/* ── 데이터 카드 (글래스모피즘, 이미지 위로 살짝 겹침) ──── */}
           <div style={{
-            background: theme.bg, padding: '8px 24px 28px',
-            color: theme.text, textAlign: 'center', position: 'relative',
-            overflow: 'hidden', marginTop: 0, borderRadius: 0,
+            background: 'rgba(0, 0, 0, 0.45)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '24px 24px 0 0',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            marginTop: -40,
+            position: 'relative',
+            zIndex: 2,
+            padding: '40px 24px 28px',
+            color: '#fff', textAlign: 'center',
+            overflow: 'hidden',
           }}>
             {/* 1. 해방까지 + 일수 */}
             <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 14, color: theme.text, fontWeight: 700, margin: '0 0 8px', opacity: 0.85 }}>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 8px' }}>
                 해방까지
               </p>
               <p style={{
@@ -423,7 +421,7 @@ export default function ResultPage() {
                 <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
               </p>
               {isFinite(realisticDays) && (
-                <p style={{ fontSize: 20, color: theme.sub, fontWeight: 700, margin: '4px 0 0' }}>
+                <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', fontWeight: 700, margin: '4px 0 0' }}>
                   일
                 </p>
               )}
@@ -432,14 +430,14 @@ export default function ResultPage() {
             {/* 2. 등급명 + 누렁이 한마디 */}
             <div style={{ marginBottom: 24 }}>
               <p style={{
-                fontSize: 18, fontWeight: 900, color: theme.text,
+                fontSize: 18, fontWeight: 900, color: '#fff',
                 margin: '0 0 6px', letterSpacing: '-0.3px',
               }}>
                 {grade.emoji} {grade.label}
               </p>
               <p style={{
                 fontSize: 14, fontWeight: 700,
-                color: theme.sub, margin: 0,
+                color: 'rgba(255,255,255,0.6)', margin: 0,
                 letterSpacing: '-0.2px', fontStyle: 'italic',
               }}>
                 🐾 {grade.message}
@@ -451,7 +449,7 @@ export default function ResultPage() {
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 marginBottom: 12,
-                fontSize: 13, fontWeight: 800, color: theme.text,
+                fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
                 letterSpacing: '-0.2px',
               }}>
                 <span>📊 상위 % · 정확한 순위</span>
@@ -467,11 +465,11 @@ export default function ResultPage() {
                   fontSize: 28, fontWeight: 900,
                   color: theme.accent,
                   margin: '0 0 4px', letterSpacing: '-0.5px',
-                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))',
+                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
                 }}>
                   상위 {topPercentile}%
                 </p>
-                <p style={{ fontSize: 12, color: theme.sub, fontWeight: 600, margin: '0 0 12px' }}>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px' }}>
                   같은 {industryLabel} 기준
                 </p>
 
@@ -489,7 +487,7 @@ export default function ResultPage() {
                     padding: '4px 12px', borderRadius: 20,
                     fontSize: 12, fontWeight: 700,
                     background: 'rgba(255,255,255,0.08)',
-                    color: theme.text,
+                    color: 'rgba(255,255,255,0.8)',
                   }}>
                     {isBusiness
                       ? `평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}일`
@@ -516,7 +514,7 @@ export default function ResultPage() {
                   </div>
                   <div style={{
                     display: 'flex', justifyContent: 'space-between',
-                    marginTop: 10, fontSize: 10, color: theme.sub, fontWeight: 600,
+                    marginTop: 10, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontWeight: 600,
                   }}>
                     <span>하위</span>
                     <span>평균</span>
@@ -526,7 +524,7 @@ export default function ResultPage() {
 
                 <p style={{
                   fontSize: 13, fontWeight: 700,
-                  color: theme.text,
+                  color: 'rgba(255,255,255,0.85)',
                   margin: '20px 0 0',
                 }}>
                   같은 {industryLabel} {isBusiness ? '사장님' : '직장인'}{' '}
