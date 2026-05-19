@@ -57,6 +57,38 @@ const MODE_META = {
   freelancer: { bg: '#FF6B35', label: '직장인 퇴사 계산기' },
 }
 
+function LockedSection({
+  title,
+  locked,
+  children,
+}: {
+  title:    string
+  locked:   boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        padding: '0 4px 8px',
+        fontSize: 13, fontWeight: 800, color: '#4A5568',
+        letterSpacing: '-0.2px',
+      }}>
+        <span>{title}</span>
+        {locked && <span aria-label="잠금">🔒</span>}
+      </div>
+      <div style={{
+        filter:        locked ? 'blur(8px)' : 'none',
+        pointerEvents: locked ? 'none' : 'auto',
+        userSelect:    locked ? 'none' : 'auto',
+        transition:    'filter 0.3s ease',
+      }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export default function ResultPage() {
   const router = useRouter()
   const { mode, result, businessInput, freelancerInput, _hydrated } =
@@ -377,13 +409,24 @@ export default function ResultPage() {
             )}
 
             {/* ── 등급/퍼센타일/순위 (잠금 영역) ──────────── */}
-            <div style={{ position: 'relative', marginTop: 24 }}>
+            <div style={{ marginTop: 24 }}>
+              {/* 타이틀 — 항상 보임 */}
               <div style={{
-                filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
-                pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
-                userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
-                transition:    'filter 0.3s ease',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                marginBottom: 12,
+                fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
+                letterSpacing: '-0.2px',
               }}>
+                <span>🏆 내 등급과 순위</span>
+                {!isUnlocked && !isCapturing && <span aria-label="잠금">🔒</span>}
+              </div>
+              <div style={{ position: 'relative' }}>
+                <div style={{
+                  filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
+                  pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
+                  userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
+                  transition:    'filter 0.3s ease',
+                }}>
                 {/* 등급 배지 */}
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: 10,
@@ -547,6 +590,7 @@ export default function ResultPage() {
                   </div>
                 </div>
               )}
+              </div>
             </div>
 
             <p style={{
@@ -573,62 +617,56 @@ export default function ResultPage() {
         {/* ── 카드 섹션 ───────────────────────────────── */}
         <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-          {/* 프리미엄 잠금 영역 (시나리오/벤치마크/인사이트/시뮬레이터/처방전) */}
-          <div style={{ position: 'relative' }}>
-            {!isUnlocked && !isCapturing && (
-              <div style={{
-                position: 'absolute', top: 8, right: 8, zIndex: 5,
-                width: 32, height: 32, borderRadius: '50%',
-                background: 'rgba(0,0,0,0.55)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-              }} aria-label="잠금">🔒</div>
-            )}
-            <div style={{
-              filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
-              pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
-              userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
-              transition:    'filter 0.3s ease',
-              display:       'flex',
-              flexDirection: 'column',
-              gap:           14,
-            }}>
-              <ScenarioCard items={scenarios} />
+          <LockedSection title="🎯 시나리오별 런웨이" locked={!isUnlocked && !isCapturing}>
+            <ScenarioCard items={scenarios} />
+          </LockedSection>
 
-              {insights.length > 0 && <InsightCard items={insights} />}
+          {insights.length > 0 && (
+            <LockedSection title="💡 핵심 인사이트" locked={!isUnlocked && !isCapturing}>
+              <InsightCard items={insights} />
+            </LockedSection>
+          )}
 
-              {isBusiness && (
-                <BenchmarkCard
-                  input={businessInput}
-                  currentDays={realisticDays}
-                  isLoggedIn={gateOpen}
-                />
-              )}
+          {isBusiness && (
+            <LockedSection
+              title={`📊 ${industryLabel} 업종 대비 내 위치`}
+              locked={!isUnlocked && !isCapturing}
+            >
+              <BenchmarkCard
+                input={businessInput}
+                currentDays={realisticDays}
+                isLoggedIn={gateOpen}
+              />
+            </LockedSection>
+          )}
 
-              {isBusiness && (
-                <LoginGate
-                  isLoggedIn={gateOpen}
-                  message="시뮬레이터를 사용해보세요"
-                  sub="로그인하면 무제한으로 가정해볼 수 있어요"
-                >
-                  <CostSlider input={businessInput} currentDays={realisticDays} />
-                </LoginGate>
-              )}
+          {isBusiness && (
+            <LockedSection title="🎛️ 런웨이 시뮬레이터" locked={!isUnlocked && !isCapturing}>
+              <LoginGate
+                isLoggedIn={gateOpen}
+                message="시뮬레이터를 사용해보세요"
+                sub="로그인하면 무제한으로 가정해볼 수 있어요"
+              >
+                <CostSlider input={businessInput} currentDays={realisticDays} />
+              </LoginGate>
+            </LockedSection>
+          )}
 
-              {!isBusiness && (
-                <LoginGate
-                  isLoggedIn={gateOpen}
-                  message="시뮬레이터를 사용해보세요"
-                  sub="로그인하면 무제한으로 가정해볼 수 있어요"
-                >
-                  <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
-                </LoginGate>
-              )}
+          {!isBusiness && (
+            <LockedSection title="🎛️ 탈출 시뮬레이터" locked={!isUnlocked && !isCapturing}>
+              <LoginGate
+                isLoggedIn={gateOpen}
+                message="시뮬레이터를 사용해보세요"
+                sub="로그인하면 무제한으로 가정해볼 수 있어요"
+              >
+                <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
+              </LoginGate>
+            </LockedSection>
+          )}
 
-              <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
-            </div>
-          </div>
+          <LockedSection title="💊 처방전" locked={!isUnlocked && !isCapturing}>
+            <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
+          </LockedSection>
 
           {!gateOpen && (
             <>
