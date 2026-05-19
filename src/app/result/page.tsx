@@ -11,7 +11,6 @@ import {
   calculatePercentile,
   calculateGrade,
   calculateWorkerGrade,
-  GRADE_ORDER,
   INDUSTRY_BENCHMARKS,
   INDUSTRY_USERS,
 } from '@/utils/calculate'
@@ -335,11 +334,17 @@ export default function ResultPage() {
   }
 
   const reaction  = isBusiness ? bizReactions[dangerLevel] : freeReactions[dangerLevel]
-  const mainLabel = '해방까지'
   const gateOpen  = isLoggedIn !== false
 
   // 게이지 점 위치: percentile(CDF)% 위치에 표시 (높을수록 오른쪽 = 상위권)
   const dotPos = Math.min(Math.max(percentile, 1), 99)
+
+  // 등급별 히어로 이미지 (없으면 폴백 배경)
+  const GRADE_IMAGE_MAP: Record<string, string | null> = {
+    S: '/images/result_hero_S.png',
+    A: null, B: null, C: null, D: null, F: null,
+  }
+  const gradeImage = GRADE_IMAGE_MAP[grade.grade] ?? null
 
   return (
     <div style={{ minHeight: '100dvh', background: '#F8F9FB', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', width: '100%' }}>
@@ -348,137 +353,114 @@ export default function ResultPage() {
         {/* ── 이미지 캡처 대상 카드 ─────────────────────── */}
         <div ref={cardRef}>
 
-          {/* ── 히어로 ─────────────────────────────────── */}
+          {/* ── 상단 등급 이미지 (정사각형 풀너비) ──────────── */}
           <div style={{
-            background: reaction.bg, padding: '48px 24px 40px',
-            textAlign: 'center', position: 'relative', overflow: 'hidden',
-            transition: 'background 0.5s',
+            position: 'relative', width: '100%', aspectRatio: '1 / 1',
+            background: reaction.bg, overflow: 'hidden',
           }}>
-            <div style={{
-              position: 'absolute', top: -60, right: -60,
-              width: 200, height: 200, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.05)',
-            }} />
-            <div style={{
-              position: 'absolute', bottom: -40, left: -40,
-              width: 160, height: 160, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.05)',
-            }} />
-
-            <button
-              onClick={() => router.back()}
-              style={{
-                position: 'absolute', top: 16, left: 20,
-                background: 'rgba(255,255,255,0.15)', border: 'none',
-                borderRadius: 20, padding: '6px 14px',
-                color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                visibility: isCapturing ? 'hidden' : 'visible',
-              }}
-            >
-              ← 수정
-            </button>
-
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontWeight: 600, margin: '0 0 12px' }}>
-              {meta.label}
-            </p>
-
-            <div style={{ fontSize: 48, marginBottom: 8, filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }}>
-              {reaction.emoji}
-            </div>
-
-            <p style={{ fontSize: 16, fontWeight: 800, color: 'rgba(255,255,255,0.9)', margin: '0 0 16px', letterSpacing: '-0.3px' }}>
-              {reaction.label}
-            </p>
-
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontWeight: 700, margin: '0 0 8px' }}>
-              {mainLabel}
-            </p>
-
-            <p style={{
-              fontSize: 72, fontWeight: 900, color: runwayColor,
-              margin: '0 0 4px', lineHeight: 1, letterSpacing: '-2px',
-              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))',
-            }}>
-              <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
-            </p>
-
-            {isFinite(realisticDays) && (
-              <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '4px 0 0' }}>
-                일
-              </p>
-            )}
-
-            {/* ── 등급 (무료 노출) ────────────────────────── */}
-            <div style={{ marginTop: 24 }}>
+            {gradeImage ? (
+              <img
+                src={gradeImage}
+                alt={`${grade.grade} 등급 — ${grade.label}`}
+                style={{
+                  display: 'block', width: '100%', height: '100%', objectFit: 'cover',
+                }}
+              />
+            ) : (
               <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 10,
-                background: 'rgba(0,0,0,0.25)', borderRadius: 999,
-                padding: '6px 16px 6px 8px', marginBottom: 14,
-                border: `1.5px solid ${grade.color}80`,
+                width: '100%', height: '100%',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 12, color: '#fff', padding: 24, textAlign: 'center',
               }}>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  width: 36, height: 36, borderRadius: '50%',
-                  background: grade.color, color: '#1A202C',
-                  fontSize: 20, fontWeight: 900, letterSpacing: '-1px',
+                <div style={{
+                  fontSize: 160, fontWeight: 900,
+                  color: grade.color, letterSpacing: '-6px', lineHeight: 1,
+                  filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.35))',
                 }}>
                   {grade.grade}
-                </span>
-                <span style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 800 }}>
                   {grade.emoji} {grade.label}
-                </span>
+                </div>
               </div>
+            )}
 
-              {/* 등급 비교 바 */}
-              <div style={{ display: 'flex', gap: 4, width: '100%', marginBottom: 12 }}>
-                {GRADE_ORDER.map(g => {
-                  const isMine = g === grade.grade
-                  return (
-                    <div key={g} style={{
-                      flex: 1, padding: '8px 4px', borderRadius: 8,
-                      background: isMine ? grade.color : 'rgba(255,255,255,0.12)',
-                      textAlign: 'center', fontSize: 12, fontWeight: 800,
-                      color: isMine ? '#1A202C' : 'rgba(255,255,255,0.55)',
-                      border: isMine ? '2px solid #fff' : '2px solid transparent',
-                      opacity: isMine ? 1 : 0.5,
-                    }}>
-                      {g}
-                    </div>
-                  )
-                })}
-              </div>
+            {!isCapturing && (
+              <button
+                onClick={() => router.back()}
+                style={{
+                  position: 'absolute', top: 16, left: 16,
+                  background: 'rgba(0,0,0,0.45)', border: 'none',
+                  borderRadius: 20, padding: '6px 14px',
+                  color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                  backdropFilter: 'blur(4px)',
+                }}
+              >
+                ← 수정
+              </button>
+            )}
+          </div>
 
-              {/* 누렁이 한마디 */}
+          {/* ── 데이터 카드 ─────────────────────────────── */}
+          <div style={{
+            background: reaction.bg, padding: '32px 24px 28px',
+            color: '#fff', textAlign: 'center', position: 'relative',
+            overflow: 'hidden',
+          }}>
+            {/* 1. 해방까지 + 일수 */}
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 8px' }}>
+                해방까지
+              </p>
+              <p style={{
+                fontSize: 72, fontWeight: 900, color: runwayColor,
+                margin: 0, lineHeight: 1, letterSpacing: '-2px',
+                filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))',
+              }}>
+                <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
+              </p>
+              {isFinite(realisticDays) && (
+                <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '4px 0 0' }}>
+                  일
+                </p>
+              )}
+            </div>
+
+            {/* 2. 등급명 + 누렁이 한마디 */}
+            <div style={{ marginBottom: 24 }}>
+              <p style={{
+                fontSize: 18, fontWeight: 900, color: '#fff',
+                margin: '0 0 6px', letterSpacing: '-0.3px',
+              }}>
+                {grade.emoji} {grade.label}
+              </p>
               <p style={{
                 fontSize: 14, fontWeight: 700,
-                color: 'rgba(255,255,255,0.92)',
-                margin: '0 0 8px',
+                color: 'rgba(255,255,255,0.9)', margin: 0,
                 letterSpacing: '-0.2px',
               }}>
                 🐾 {grade.message}
               </p>
             </div>
 
-            {/* ── 상위%/순위/게이지 (잠금 영역) ──────────── */}
-            <div style={{ marginTop: 20 }}>
-              {/* 타이틀 — 항상 보임 */}
+            {/* 3. 상위%/순위 잠금 블록 */}
+            <div style={{ marginBottom: 16 }}>
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 marginBottom: 12,
                 fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
                 letterSpacing: '-0.2px',
               }}>
-                <span>📊 상위% · 순위 상세</span>
+                <span>📊 상위 % · 정확한 순위</span>
                 {!isUnlocked && !isCapturing && <span aria-label="잠금">🔒</span>}
               </div>
-              <div style={{ position: 'relative' }}>
-                <div style={{
-                  filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
-                  pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
-                  userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
-                  transition:    'filter 0.3s ease',
-                }}>
-                {/* 상위 N% 큰 텍스트 */}
+              <div style={{
+                filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
+                pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
+                userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
+                transition:    'filter 0.3s ease',
+              }}>
                 <p style={{
                   fontSize: 28, fontWeight: 900,
                   color: aboveAvg ? '#FBD38D' : '#FC8181',
@@ -491,7 +473,6 @@ export default function ResultPage() {
                   같은 {industryLabel} 기준
                 </p>
 
-                {/* 평균 대비 뱃지 */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
                   <span style={{
                     padding: '4px 12px', borderRadius: 20,
@@ -514,7 +495,6 @@ export default function ResultPage() {
                   </span>
                 </div>
 
-                {/* 게이지 바: 빨강 → 노랑 → 초록, 내 위치 흰 원 */}
                 <div style={{ position: 'relative', padding: '0 4px' }}>
                   <div style={{
                     height: 8, borderRadius: 4,
@@ -542,11 +522,10 @@ export default function ResultPage() {
                   </div>
                 </div>
 
-                {/* 순위 */}
                 <p style={{
                   fontSize: 13, fontWeight: 700,
                   color: 'rgba(255,255,255,0.85)',
-                  margin: '20px 0 12px',
+                  margin: '20px 0 0',
                 }}>
                   같은 {industryLabel} {isBusiness ? '사장님' : '직장인'}{' '}
                   <span style={{ color: grade.color, fontWeight: 900 }}>
@@ -558,62 +537,41 @@ export default function ResultPage() {
                   </span>
                 </p>
               </div>
-
-              {/* 잠금 오버레이 */}
-              {!isUnlocked && !isCapturing && (
-                <div style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center',
-                  background: 'rgba(0,0,0,0.35)', borderRadius: 16,
-                  padding: '16px', zIndex: 10,
-                }}>
-                  <div style={{ fontSize: 40 }}>🔒</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginTop: 8, textAlign: 'center' }}>
-                    상위 % · 정확한 순위 확인하기
-                  </div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 4, textAlign: 'center' }}>
-                    카카오톡 공유 3회 또는 990원으로 해제
-                  </div>
-
-                  <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <button
-                      onClick={handleShareForUnlock}
-                      style={{
-                        padding: '12px 16px', borderRadius: 12,
-                        background: '#FEE500', color: '#3C1E1E',
-                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      🐾 카톡 공유 ({shareCount}/3)
-                    </button>
-                    <button
-                      onClick={handlePaidUnlock}
-                      style={{
-                        padding: '12px 16px', borderRadius: 12,
-                        background: '#4A7FD4', color: '#fff',
-                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      💰 990원으로 해제
-                    </button>
-                  </div>
-                </div>
-              )}
-              </div>
             </div>
 
-            <p style={{
-              fontSize: 14, color: 'rgba(255,255,255,0.85)',
-              margin: '20px 0 0', lineHeight: 1.6, fontWeight: 600,
-            }}>
-              {reaction.sub}
-            </p>
+            {/* 4. 해제 버튼 (잠금 시에만 노출) */}
+            {!isUnlocked && !isCapturing && (
+              <div style={{
+                display: 'flex', gap: 8, marginTop: 4,
+                flexWrap: 'wrap', justifyContent: 'center',
+              }}>
+                <button
+                  onClick={handleShareForUnlock}
+                  style={{
+                    padding: '12px 18px', borderRadius: 12,
+                    background: '#FEE500', color: '#3C1E1E',
+                    fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  🐾 카톡 공유 ({shareCount}/3)
+                </button>
+                <button
+                  onClick={handlePaidUnlock}
+                  style={{
+                    padding: '12px 18px', borderRadius: 12,
+                    background: '#4A7FD4', color: '#fff',
+                    fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  💰 990원으로 해제
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* ── 브랜딩 (이미지 저장 시 포함) ─────────────── */}
+          {/* ── 5. 브랜딩 바 ───────────────────────────── */}
           <div style={{
             background: '#1A1F5E', padding: '10px 20px',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
