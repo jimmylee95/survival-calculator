@@ -573,39 +573,62 @@ export default function ResultPage() {
         {/* ── 카드 섹션 ───────────────────────────────── */}
         <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-          <ScenarioCard items={scenarios} />
+          {/* 프리미엄 잠금 영역 (시나리오/벤치마크/인사이트/시뮬레이터/처방전) */}
+          <div style={{ position: 'relative' }}>
+            {!isUnlocked && !isCapturing && (
+              <div style={{
+                position: 'absolute', top: 8, right: 8, zIndex: 5,
+                width: 32, height: 32, borderRadius: '50%',
+                background: 'rgba(0,0,0,0.55)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 16,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+              }} aria-label="잠금">🔒</div>
+            )}
+            <div style={{
+              filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
+              pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
+              userSelect:    (isUnlocked || isCapturing) ? 'auto' : 'none',
+              transition:    'filter 0.3s ease',
+              display:       'flex',
+              flexDirection: 'column',
+              gap:           14,
+            }}>
+              <ScenarioCard items={scenarios} />
 
-          {insights.length > 0 && <InsightCard items={insights} />}
+              {insights.length > 0 && <InsightCard items={insights} />}
 
-          {isBusiness && (
-            <BenchmarkCard
-              input={businessInput}
-              currentDays={realisticDays}
-              isLoggedIn={gateOpen}
-            />
-          )}
+              {isBusiness && (
+                <BenchmarkCard
+                  input={businessInput}
+                  currentDays={realisticDays}
+                  isLoggedIn={gateOpen}
+                />
+              )}
 
-          {isBusiness && (
-            <LoginGate
-              isLoggedIn={gateOpen}
-              message="시뮬레이터를 사용해보세요"
-              sub="로그인하면 무제한으로 가정해볼 수 있어요"
-            >
-              <CostSlider input={businessInput} currentDays={realisticDays} />
-            </LoginGate>
-          )}
+              {isBusiness && (
+                <LoginGate
+                  isLoggedIn={gateOpen}
+                  message="시뮬레이터를 사용해보세요"
+                  sub="로그인하면 무제한으로 가정해볼 수 있어요"
+                >
+                  <CostSlider input={businessInput} currentDays={realisticDays} />
+                </LoginGate>
+              )}
 
-          {!isBusiness && (
-            <LoginGate
-              isLoggedIn={gateOpen}
-              message="시뮬레이터를 사용해보세요"
-              sub="로그인하면 무제한으로 가정해볼 수 있어요"
-            >
-              <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
-            </LoginGate>
-          )}
+              {!isBusiness && (
+                <LoginGate
+                  isLoggedIn={gateOpen}
+                  message="시뮬레이터를 사용해보세요"
+                  sub="로그인하면 무제한으로 가정해볼 수 있어요"
+                >
+                  <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
+                </LoginGate>
+              )}
 
-          <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
+              <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
+            </div>
+          </div>
 
           {!gateOpen && (
             <>
