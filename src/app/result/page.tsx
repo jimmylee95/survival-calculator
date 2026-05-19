@@ -378,6 +378,16 @@ export default function ResultPage() {
               </div>
             )}
 
+            {/* 하단 → 글래스 카드 연결 그라데이션 (이미지 살짝 어둡게) */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute', left: 0, right: 0, bottom: 0,
+                height: '30%', pointerEvents: 'none',
+                background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 100%)',
+              }}
+            />
+
             {!isCapturing && (
               <button
                 onClick={() => router.back()}
@@ -395,17 +405,17 @@ export default function ResultPage() {
             )}
           </div>
 
-          {/* ── 데이터 카드 (글래스모피즘) ───────────────────── */}
+          {/* ── 데이터 카드 (글래스모피즘, 이미지 하단과 겹침) ──── */}
           <div style={{
-            background: 'rgba(0, 0, 0, 0.45)',
+            background: 'rgba(0, 0, 0, 0.55)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '24px 24px 0 0',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            marginTop: 0,
+            marginTop: -30,
             position: 'relative',
             zIndex: 2,
-            padding: '28px 24px',
+            padding: '20px 24px 28px',
             color: '#fff', textAlign: 'center',
             overflow: 'hidden',
           }}>
