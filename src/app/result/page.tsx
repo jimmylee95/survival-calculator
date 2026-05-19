@@ -440,11 +440,12 @@ export default function ResultPage() {
 
             {/* 2. 누렁이 한마디 (메인 메시지) */}
             <p style={{
-              fontSize: 22, fontWeight: 800, color: theme.accent,
-              margin: '16px 0', letterSpacing: '-0.02em', lineHeight: 1.35,
+              fontSize: 28, fontWeight: 900, color: theme.accent,
+              margin: '20px 0', letterSpacing: '-0.03em', lineHeight: 1.3,
+              textAlign: 'center',
               filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))',
             }}>
-              <span style={{ fontSize: 26, marginRight: 6 }}>{grade.emoji}</span>
+              <span style={{ fontSize: 32, marginRight: 6 }}>{grade.emoji}</span>
               {grade.message}
             </p>
 
