@@ -379,7 +379,7 @@ export default function AdminPage() {
                 <p style={{ fontSize: 16, fontWeight: 800, color: '#1B1E28', margin: '16px 0 6px' }}>구독 기능 준비 중</p>
                 <p style={{ fontSize: 13, color: '#8B95A1', margin: 0 }}>유료 플랜이 출시되면 여기서 구독 현황과 매출 지표를 확인할 수 있습니다</p>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 20 }}>
-                  {['스탠다드 ₩9,900/월', '프리미엄 ₩19,900/월', '팀 ₩49,900/월'].map(p => (
+                  {['스탠다드 ₩4,900/월', '프리미엄 ₩19,900/월', '팀 ₩49,900/월'].map(p => (
                     <div key={p} style={{ padding: '8px 16px', background: '#F2F4F6', borderRadius: 20, fontSize: 12, color: '#8B95A1', fontWeight: 600 }}>{p}</div>
                   ))}
                 </div>

@@ -122,7 +122,7 @@ export default function SubscribePage() {
               padding: '32px 24px', textAlign: 'center',
             }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 900, color: '#fff', letterSpacing: '-1px' }}>9,900</span>
+                <span style={{ fontSize: 42, fontWeight: 900, color: '#fff', letterSpacing: '-1px' }}>4,900</span>
                 <span style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>원</span>
                 <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginLeft: 2 }}>/ 월</span>
               </div>
@@ -177,7 +177,7 @@ export default function SubscribePage() {
 
               <p style={{ fontSize: 12, color: '#A0AEC0', textAlign: 'center', margin: '14px 0 0', lineHeight: 1.6 }}>
                 신용·체크카드 결제 · 첫 결제 후 매월 자동 갱신<br />
-                카드 등록 후 즉시 9,900원이 청구됩니다
+                카드 등록 후 즉시 4,900원이 청구됩니다
               </p>
             </div>
           </div>

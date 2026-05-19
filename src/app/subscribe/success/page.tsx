@@ -110,7 +110,7 @@ function SuccessContent() {
           )}
           <div style={{ background: '#F0FFF4', borderRadius: 12, padding: '12px 16px' }}>
             <p style={{ fontSize: 13, color: '#276749', fontWeight: 700, margin: 0 }}>
-              ✓ 월 9,900원 · 자동 갱신
+              ✓ 월 4,900원 · 자동 갱신
             </p>
           </div>
         </div>

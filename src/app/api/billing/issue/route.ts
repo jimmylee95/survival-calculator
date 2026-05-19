@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     headers: { Authorization: TOSS_AUTH, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       customerKey,
-      amount:        9900,
+      amount:        4900,
       orderId,
       orderName:     '해방 플랜 월 구독',
       customerEmail: user.email ?? '',
