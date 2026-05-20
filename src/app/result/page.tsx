@@ -440,23 +440,22 @@ export default function ResultPage() {
               )}
             </div>
 
-            {/* 2. 누렁이 한마디 (메인 메시지) */}
+            {/* 2. 한줄 타이틀 (메인 헤드라인) */}
             <p style={{
               fontSize: 28, fontWeight: 900, color: theme.accent,
-              margin: '20px 0', letterSpacing: '-0.03em', lineHeight: 1.3,
+              margin: '20px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.3,
               textAlign: 'center',
               filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))',
             }}>
-              <span style={{ fontSize: 32, marginRight: 6 }}>{grade.emoji}</span>
-              {grade.message}
+              🐾 {grade.title}
             </p>
 
-            {/* 3. 등급명 */}
+            {/* 3. 서브 메시지 */}
             <p style={{
               fontSize: 16, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
               margin: '0 0 24px', letterSpacing: '-0.2px',
             }}>
-              {grade.label}
+              {grade.message}
             </p>
 
             {/* 4. 상위%/순위 잠금 블록 (오버레이로 항목 리스트 + 해제 버튼) */}

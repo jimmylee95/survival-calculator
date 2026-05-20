@@ -322,30 +322,31 @@ export function getEscapeLevel(days: number): DangerLevel {
 // ── 5-2. 등급 계산 (S~F) ─────────────────────────────────
 export type Grade = {
   grade:   string
-  label:   string
+  title:   string   // 한줄 타이틀 (위트 있는 헤드라인)
+  label:   string   // 짧은 등급명 (이미지 대체 폴백용)
   emoji:   string
-  message: string
+  message: string   // 서브 메시지 (이모지 포함)
   color:   string
 }
 
 // 자영업자: 런웨이가 길수록 좋음
 export function calculateGrade(runway: number): Grade {
-  if (runway >= 730) return { grade: 'S', label: '해방 완료',     emoji: '🏖️', message: '시간은 누렁이의 것!',       color: '#FFD700' }
-  if (runway >= 365) return { grade: 'A', label: '해방 직전',     emoji: '😎', message: '해방이 보여요!',            color: '#4A7FD4' }
-  if (runway >= 180) return { grade: 'B', label: '안정 운영',     emoji: '😊', message: '이대로 꾸준히!',            color: '#34A853' }
-  if (runway >= 90)  return { grade: 'C', label: '평균 사장님',   emoji: '🤓', message: '전략이 필요해요',           color: '#888888' }
-  if (runway >= 30)  return { grade: 'D', label: '위험 신호',     emoji: '😟', message: '고정비부터 줄여봐요',       color: '#E8A032' }
-  return                     { grade: 'F', label: '긴급 상황',     emoji: '😰', message: '정신 차려, 누렁아!',        color: '#E04444' }
+  if (runway >= 730) return { grade: 'S', title: '장사의 신',                       label: '해방 완료',     emoji: '🏖️', message: '😎 해방이 보여요!',           color: '#FFD700' }
+  if (runway >= 365) return { grade: 'A', title: '좀 치는데?',                      label: '해방 직전',     emoji: '😎', message: '😎 해방이 보여요!',           color: '#4A7FD4' }
+  if (runway >= 180) return { grade: 'B', title: '아직 치킨은 시켜 먹을 수 있다',   label: '안정 운영',     emoji: '😊', message: '😊 이대로 꾸준히!',           color: '#34A853' }
+  if (runway >= 90)  return { grade: 'C', title: '라면에 계란은 넣어도 되나...',    label: '평균 사장님',   emoji: '🤓', message: '🤓 전략이 필요해요',          color: '#888888' }
+  if (runway >= 30)  return { grade: 'D', title: '알바는 집에 보내야겠지?',         label: '위험 신호',     emoji: '😟', message: '😟 고정비부터 줄여봐요',      color: '#E8A032' }
+  return                     { grade: 'F', title: '누렁아, 정신 차려!',              label: '긴급 상황',     emoji: '😰', message: '😰 지금 당장 움직여야 해요',  color: '#E04444' }
 }
 
 // 직장인: 퇴사 D-day가 짧을수록 좋음
 export function calculateWorkerGrade(dday: number): Grade {
-  if (dday <= 365)  return { grade: 'S', label: '퇴사 준비 완료', emoji: '🏖️', message: '사직서 쓸 준비 완료!',      color: '#FFD700' }
-  if (dday <= 1095) return { grade: 'A', label: '거의 다 왔다',   emoji: '😎', message: '조금만 더!',                color: '#4A7FD4' }
-  if (dday <= 1825) return { grade: 'B', label: '순항 중',        emoji: '😊', message: '좋은 속도예요',             color: '#34A853' }
-  if (dday <= 3650) return { grade: 'C', label: '평균 직장인',    emoji: '🤓', message: '부수입을 만들어봐요',       color: '#888888' }
-  if (dday <= 7300) return { grade: 'D', label: '준비 부족',      emoji: '😟', message: '지출부터 점검!',            color: '#E8A032' }
-  return                    { grade: 'F', label: '월급 노예',     emoji: '😰', message: '누렁아, 일어나!',           color: '#E04444' }
+  if (dday <= 365)  return { grade: 'S', title: '인사팀이 몇층이더라~',       label: '퇴사 준비 완료', emoji: '🏖️', message: '🏖️ 시간은 누렁이의 것!',     color: '#FFD700' }
+  if (dday <= 1095) return { grade: 'A', title: '사직서 양식을 찾아볼까?',    label: '거의 다 왔다',   emoji: '😎', message: '😎 해방이 보여요!',            color: '#4A7FD4' }
+  if (dday <= 1825) return { grade: 'B', title: '그래도 우리 회사 괜찮아ㅎㅎ', label: '순항 중',       emoji: '😊', message: '😊 이대로 꾸준히!',            color: '#34A853' }
+  if (dday <= 3650) return { grade: 'C', title: '야근을 좀 해볼까?',          label: '평균 직장인',    emoji: '🤓', message: '🤓 부수입을 만들어봐요',       color: '#888888' }
+  if (dday <= 7300) return { grade: 'D', title: '밖은 전쟁터라고 했던가...',   label: '준비 부족',      emoji: '😟', message: '😟 지출부터 점검!',            color: '#E8A032' }
+  return                    { grade: 'F', title: '충성! 충성! 뭐든지 시켜주세요', label: '월급 노예',    emoji: '😰', message: '😰 일어나, 누렁아!',           color: '#E04444' }
 }
 
 export const GRADE_ORDER: ReadonlyArray<string> = ['S', 'A', 'B', 'C', 'D', 'F']
