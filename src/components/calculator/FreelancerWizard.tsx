@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { formatWon } from '@/utils/calculate'
+import { RegionSelect } from './RegionSelect'
 
 const ACCENT = '#FF6B35'
-const TOTAL = 6
+const TOTAL = 7
 
 const JOB_BENCHMARKS: Record<string, { label: string; emoji: string; salary: number; expense: number }> = {
   office:        { label: '사무직',         emoji: '💼', salary: 3_800_000, expense: 2_500_000 },
@@ -275,27 +276,30 @@ export function FreelancerWizard() {
               }} />
           )}
           {step === 1 && (
-            <Q2Assets input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
+            <Q2Region input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
           )}
           {step === 2 && (
-            <Q3Salary input={freelancerInput} update={updateFreelancerInput}
-              benchmark={benchmark} onNext={goNext} />
+            <Q3Assets input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
           )}
           {step === 3 && (
-            <Q4Expense input={freelancerInput} update={updateFreelancerInput}
+            <Q4Salary input={freelancerInput} update={updateFreelancerInput}
               benchmark={benchmark} onNext={goNext} />
           )}
           {step === 4 && (
-            <Q5Target input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
+            <Q5Expense input={freelancerInput} update={updateFreelancerInput}
+              benchmark={benchmark} onNext={goNext} />
           )}
           {step === 5 && (
-            <Q6SideAsk
+            <Q6Target input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
+          )}
+          {step === 6 && (
+            <Q7SideAsk
               onYes={goNext}
               onNo={() => { updateFreelancerInput({ sideIncome: 0 }); finish() }}
             />
           )}
-          {step === 6 && (
-            <Q6SideAmount input={freelancerInput} update={updateFreelancerInput} onFinish={finish} />
+          {step === 7 && (
+            <Q7SideAmount input={freelancerInput} update={updateFreelancerInput} onFinish={finish} />
           )}
         </div>
       </div>
@@ -360,8 +364,34 @@ function Q1Job({
   )
 }
 
-/* ───── Q2: 현재 자산 ─────────────────────────────────── */
-function Q2Assets({
+/* ───── Q2: 지역 선택 ─────────────────────────────────── */
+function Q2Region({
+  input, update, onNext,
+}: {
+  input: { region?: string; district?: string }
+  update: (p: Record<string, unknown>) => void
+  onNext: () => void
+}) {
+  return (
+    <div>
+      <QuestionTitle num={2} text={<>직장이<br />어디에 있나요?</>}
+        sub="같은 지역 직장인들과 비교해드려요" />
+      <RegionSelect
+        region={input.region ?? ''}
+        district={input.district ?? ''}
+        onChange={(region, district) => update({ region, district })}
+        onNext={onNext}
+      />
+      <ContinueButton
+        onClick={onNext}
+        disabled={!input.region || !input.district}
+      />
+    </div>
+  )
+}
+
+/* ───── Q3: 현재 자산 ─────────────────────────────────── */
+function Q3Assets({
   input, update, onNext,
 }: {
   input: { assets: number }
@@ -370,7 +400,7 @@ function Q2Assets({
 }) {
   return (
     <div>
-      <QuestionTitle num={2} text={<>지금까지<br />얼마나 모았어요?</>}
+      <QuestionTitle num={3} text={<>지금까지<br />얼마나 모았어요?</>}
         sub="현금, 주식, 부동산 등 모두 합산해주세요" />
       <AmountInput value={input.assets}
         onChange={v => update({ assets: v })}
@@ -380,8 +410,8 @@ function Q2Assets({
   )
 }
 
-/* ───── Q3: 월급 ──────────────────────────────────────── */
-function Q3Salary({
+/* ───── Q4: 월급 ──────────────────────────────────────── */
+function Q4Salary({
   input, update, benchmark, onNext,
 }: {
   input: { salary: number }
@@ -391,7 +421,7 @@ function Q3Salary({
 }) {
   return (
     <div>
-      <QuestionTitle num={3} text={<>월급은<br />얼마 받으세요?</>}
+      <QuestionTitle num={4} text={<>월급은<br />얼마 받으세요?</>}
         sub="실수령액(세후) 기준" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
@@ -413,8 +443,8 @@ function Q3Salary({
   )
 }
 
-/* ───── Q4: 월 생활비 ─────────────────────────────────── */
-function Q4Expense({
+/* ───── Q5: 월 생활비 ─────────────────────────────────── */
+function Q5Expense({
   input, update, benchmark, onNext,
 }: {
   input: { monthlyExpense: number }
@@ -424,7 +454,7 @@ function Q4Expense({
 }) {
   return (
     <div>
-      <QuestionTitle num={4} text={<>매달 생활비는<br />얼마인가요?</>}
+      <QuestionTitle num={5} text={<>매달 생활비는<br />얼마인가요?</>}
         sub="월세 + 식비 + 교통 + 보험 등 전부 합쳐서" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
@@ -446,8 +476,8 @@ function Q4Expense({
   )
 }
 
-/* ───── Q5: 목표 금액 (큰 버튼 4개 + 직접 입력) ──────────── */
-function Q5Target({
+/* ───── Q6: 목표 금액 (큰 버튼 4개 + 직접 입력) ──────────── */
+function Q6Target({
   input, update, onNext,
 }: {
   input: { targetAmount: number }
@@ -459,7 +489,7 @@ function Q5Target({
   if (custom) {
     return (
       <div>
-        <QuestionTitle num={5} text={<>얼마 모이면<br />퇴사할 건가요?</>}
+        <QuestionTitle num={6} text={<>얼마 모이면<br />퇴사할 건가요?</>}
           sub="목표 금액을 직접 입력해주세요" />
         <AmountInput value={input.targetAmount}
           onChange={v => update({ targetAmount: v })}
@@ -479,7 +509,7 @@ function Q5Target({
 
   return (
     <div>
-      <QuestionTitle num={5} text={<>얼마 모이면<br />퇴사할 건가요?</>}
+      <QuestionTitle num={6} text={<>얼마 모이면<br />퇴사할 건가요?</>}
         sub="목표 금액을 골라주세요" />
       <div style={{
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12,
@@ -519,11 +549,11 @@ function Q5Target({
   )
 }
 
-/* ───── Q6-A: 부업 수입 있음/없음 (큰 버튼 2개) ──────────── */
-function Q6SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
+/* ───── Q7-A: 부업 수입 있음/없음 (큰 버튼 2개) ──────────── */
+function Q7SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   return (
     <div>
-      <QuestionTitle num={6} text={<>부업 수입이<br />있으세요?</>}
+      <QuestionTitle num={7} text={<>부업 수입이<br />있으세요?</>}
         sub="없으면 바로 결과를 보여드릴게요" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button onClick={onYes}
@@ -557,8 +587,8 @@ function Q6SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   )
 }
 
-/* ───── Q6-B: 부업 수입 금액 입력 ─────────────────────── */
-function Q6SideAmount({
+/* ───── Q7-B: 부업 수입 금액 입력 ─────────────────────── */
+function Q7SideAmount({
   input, update, onFinish,
 }: {
   input: { sideIncome: number }
@@ -567,7 +597,7 @@ function Q6SideAmount({
 }) {
   return (
     <div>
-      <QuestionTitle num={6} text={<>부업 수입은<br />한 달에 얼마예요?</>}
+      <QuestionTitle num={7} text={<>부업 수입은<br />한 달에 얼마예요?</>}
         sub="평균 금액으로 입력해주세요" />
       <AmountInput value={input.sideIncome}
         onChange={v => update({ sideIncome: v })}

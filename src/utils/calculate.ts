@@ -130,6 +130,8 @@ export interface BusinessInput {
   fixedCost:      number
   loanInterest:   number
   industryType:   keyof typeof VARIABLE_RATE
+  region?:        string  // 시/도 (예: 서울)
+  district?:      string  // 시/군/구 (예: 강남구)
 }
 
 export interface FreelancerInput {
@@ -140,6 +142,8 @@ export interface FreelancerInput {
   sideIncome:     number  // 부업 수입
   targetAmount:   number  // 목표 금액 (이 금액 모으면 퇴사)
   jobType?:       string  // 선택한 직군 키
+  region?:        string  // 시/도
+  district?:      string  // 시/군/구
 }
 
 // ── 결과 타입 ─────────────────────────────────────────────

@@ -40,6 +40,8 @@ const DEFAULT_BUSINESS: BusinessInput = {
   fixedCost:       0,
   loanInterest:    0,
   industryType:    'restaurant',
+  region:          '',
+  district:        '',
 }
 
 const DEFAULT_FREELANCER: FreelancerInput = {
@@ -50,6 +52,8 @@ const DEFAULT_FREELANCER: FreelancerInput = {
   sideIncome:      0,
   targetAmount:    0,
   jobType:         '',
+  region:          '',
+  district:        '',
 }
 
 const DEFAULT_PERSISTED: PersistedState = {
