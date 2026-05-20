@@ -112,48 +112,54 @@ function BannerCarousel() {
               type="button"
               onClick={() => { if (b.href) router.push(b.href) }}
               style={{
-                flexShrink:         0,
-                width:              '100%',
-                height:             160,
-                background:         b.bg,
-                backgroundSize:     b.image ? 'cover' : undefined,
-                backgroundPosition: b.image ? 'center' : undefined,
-                backgroundRepeat:   b.image ? 'no-repeat' : undefined,
-                border:             'none',
-                padding:            '20px 24px',
-                display:            'flex',
-                alignItems:         'center',
-                gap:                14,
-                textAlign:          'left',
-                cursor:             b.href ? 'pointer' : 'default',
+                flexShrink: 0,
+                width:      '100%',
+                maxWidth:   '100%',
+                padding:    0,
+                border:     'none',
+                background: b.image ? 'transparent' : b.bg,
+                cursor:     b.href ? 'pointer' : 'default',
+                overflow:   'hidden',
+                display:    'block',
               }}
             >
-              {!b.image && (
-                <>
+              {b.image ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={b.image}
+                  alt={b.title}
+                  style={{
+                    display:   'block',
+                    width:     '100%',
+                    height:    'auto',
+                    maxWidth:  '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+              ) : (
+                <div style={{
+                  width: '100%', minHeight: 160,
+                  padding: '20px 24px',
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  textAlign: 'left',
+                }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{
-                      fontSize:    16,
-                      fontWeight:  900,
-                      color:       '#fff',
-                      margin:      '0 0 4px',
-                      letterSpacing: '-0.3px',
-                      lineHeight:  1.3,
+                      fontSize: 16, fontWeight: 900, color: '#fff',
+                      margin: '0 0 4px', letterSpacing: '-0.3px', lineHeight: 1.3,
                     }}>
                       {b.title}
                     </p>
                     <p style={{
-                      fontSize:   12,
-                      fontWeight: 600,
-                      color:      'rgba(255,255,255,0.85)',
-                      margin:     0,
-                      lineHeight: 1.4,
+                      fontSize: 12, fontWeight: 600,
+                      color: 'rgba(255,255,255,0.85)',
+                      margin: 0, lineHeight: 1.4,
                     }}>
                       {b.sub}
                     </p>
                   </div>
-                  {/* 우측 이미지 영역 (향후 추가용) */}
                   <div style={{ width: 84, height: 84, flexShrink: 0 }} aria-hidden />
-                </>
+                </div>
               )}
             </button>
           ))}
