@@ -19,10 +19,8 @@ import { CountUpNumber }    from '@/components/result/CountUpNumber'
 import { ScenarioCard }     from '@/components/result/ScenarioCard'
 import { InsightCard }      from '@/components/result/InsightCard'
 import { PrescriptionCard } from '@/components/result/PrescriptionCard'
-import { CostSlider }       from '@/components/result/CostSlider'
 import { BenchmarkCard }    from '@/components/result/BenchmarkCard'
-import { FreelancerSlider } from '@/components/result/FreelancerSlider'
-import { LoginGate, LoginPromptCard } from '@/components/result/LoginGate'
+import { LoginPromptCard }  from '@/components/result/LoginGate'
 
 // JOB_BENCHMARKS는 FreelancerWizard에서 관리하므로 여기서 별도 정의
 const JOB_LABELS: Record<string, string> = {
@@ -61,6 +59,75 @@ const GRADE_BG_COLORS: Record<string, GradeTheme> = {
   B: { bg: '#1A2E1A', gradientFrom: '#4A7A4A', text: '#A0E0A0', sub: '#60A060', accent: '#34A853' },
   C: { bg: '#2A2520', gradientFrom: '#7A6A50', text: '#D4C4A0', sub: '#A09070', accent: '#C4A060' },
   D: { bg: '#2A1A1A', gradientFrom: '#7A3A3A', text: '#FFA0A0', sub: '#C06060', accent: '#E04444' },
+}
+
+function GradeComparisonTable({ isBusiness }: { isBusiness: boolean }) {
+  const headers = isBusiness
+    ? ['등급', '월 매출', '고정비', '순이익', '생존 기간']
+    : ['등급', '연봉', '월 저축액', '생활비', '탈출 가능']
+  const rows = isBusiness
+    ? [
+        ['S', '5,200만', '180만', '420만', '720일'],
+        ['A', '4,500만', '200만', '350만', '480일'],
+        ['B', '3,800만', '230만', '280만', '300일'],
+        ['C', '2,500만', '220만', '150만', '120일'],
+        ['D', '1,200만', '180만', '-50만', '45일'],
+      ]
+    : [
+        ['S', '8,500만', '320만', '180만', '365일'],
+        ['A', '6,500만', '240만', '190만', '720일'],
+        ['B', '4,800만', '150만', '200만', '1500일'],
+        ['C', '3,500만', '80만',  '210만', '3000일'],
+        ['D', '2,800만', '20만',  '220만', '6000일'],
+      ]
+  return (
+    <div style={{
+      background: '#fff', borderRadius: 16,
+      padding: '14px 12px',
+      border: '1px solid #E2E8F0',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.04)',
+    }}>
+      <div style={{
+        filter: 'blur(5px)',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        pointerEvents: 'none',
+      }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+          <thead>
+            <tr style={{ borderBottom: '1.5px solid #E2E8F0' }}>
+              {headers.map((h, i) => (
+                <th key={i} style={{
+                  padding: '8px 4px', fontWeight: 800, color: '#1A202C',
+                  textAlign: i === 0 ? 'left' : 'right',
+                }}>
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri} style={{
+                borderBottom: ri < rows.length - 1 ? '1px solid #F1F5F9' : 'none',
+              }}>
+                {row.map((cell, ci) => (
+                  <td key={ci} style={{
+                    padding: '8px 4px',
+                    fontWeight: ci === 0 ? 800 : 600,
+                    color: ci === 0 ? '#1A202C' : '#4A5568',
+                    textAlign: ci === 0 ? 'left' : 'right',
+                  }}>
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
 }
 
 function LockedSection({
@@ -742,40 +809,26 @@ export default function ResultPage() {
           )}
 
           <LockedSection
-            title="등급별 결과 확인하기"
+            title="S등급 결과 확인하기"
             desc={isBusiness
-              ? 'S/A/B/C/D/F 등급별 사장님들의 핵심 지표를 비교해보세요'
-              : 'S/A/B/C/D/F 등급별 직장인들의 핵심 지표를 비교해보세요'}
+              ? '상위 5% 사장님의 핵심 지표를 확인해보세요'
+              : '상위 5% 직장인의 핵심 지표를 확인해보세요'}
             locked={!isUnlocked && !isCapturing}
           >
             <ScenarioCard items={scenarios} />
           </LockedSection>
 
-          {isBusiness && (
-            <LockedSection title="만약에 계산기" locked={!isUnlocked && !isCapturing}>
-              <LoginGate
-                isLoggedIn={gateOpen}
-                message="만약에 계산기를 사용해보세요"
-                sub="로그인하면 무제한으로 가정해볼 수 있어요"
-              >
-                <CostSlider input={businessInput} currentDays={realisticDays} />
-              </LoginGate>
-            </LockedSection>
-          )}
+          <LockedSection
+            title="등급별 결과 확인하기"
+            desc={isBusiness
+              ? 'S/A/B/C/D 등급별 사장님들의 핵심 지표를 비교해보세요'
+              : 'S/A/B/C/D 등급별 직장인들의 핵심 지표를 비교해보세요'}
+            locked={!isUnlocked && !isCapturing}
+          >
+            <GradeComparisonTable isBusiness={isBusiness} />
+          </LockedSection>
 
-          {!isBusiness && (
-            <LockedSection title="만약에 계산기" locked={!isUnlocked && !isCapturing}>
-              <LoginGate
-                isLoggedIn={gateOpen}
-                message="만약에 계산기를 사용해보세요"
-                sub="로그인하면 무제한으로 가정해볼 수 있어요"
-              >
-                <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
-              </LoginGate>
-            </LockedSection>
-          )}
-
-          <LockedSection title="누렁이의 조언" locked={!isUnlocked && !isCapturing}>
+          <LockedSection title="누렁이의 현실 조언" locked={!isUnlocked && !isCapturing}>
             <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
           </LockedSection>
 
