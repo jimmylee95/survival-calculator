@@ -462,7 +462,7 @@ export default function ResultPage() {
             {/* 4. 상위%/순위 잠금 블록 (오버레이로 항목 리스트 + 해제 버튼) */}
             <div style={{
               position: 'relative',
-              minHeight: (!isUnlocked && !isCapturing) ? 460 : 'auto',
+              minHeight: (!isUnlocked && !isCapturing) ? 520 : 'auto',
             }}>
               {/* 블러 처리된 실제 데이터 (배경) */}
               <div style={{
@@ -556,40 +556,44 @@ export default function ResultPage() {
                   alignItems: 'center', justifyContent: 'center',
                   gap: 12, zIndex: 10, padding: 20,
                 }}>
-                  <div style={{ fontSize: 32 }}>🔒</div>
                   <div style={{
-                    fontSize: 16, fontWeight: 800, color: '#fff',
-                    textAlign: 'center', letterSpacing: '-0.2px',
+                    fontSize: 17, fontWeight: 900, color: '#fff',
+                    textAlign: 'center', letterSpacing: '-0.3px', lineHeight: 1.3,
                   }}>
-                    아래 정보가 숨겨져 있어요!
+                    🐾 누렁이가 준비한 분석 결과
+                  </div>
+                  <div style={{
+                    fontSize: 12, color: 'rgba(255,255,255,0.65)',
+                    textAlign: 'center', fontWeight: 600,
+                    marginTop: -4,
+                  }}>
+                    카톡 공유 3회로 무료 확인하세요!
                   </div>
                   <div style={{
                     display: 'flex', flexDirection: 'column', gap: 8,
-                    width: '100%', maxWidth: 280,
+                    width: '100%', maxWidth: 300,
                   }}>
                     {[
-                      { icon: '🏆', text: '같은 업종 내 정확한 순위' },
-                      { icon: '📊', text: '상위 몇 % 인지' },
-                      { icon: '📈', text: '시나리오별 런웨이 예측' },
-                      { icon: '🔍', text: '업종 평균 대비 내 위치' },
-                      { icon: '💡', text: '핵심 인사이트 & 처방전' },
-                      { icon: '🎮', text: '런웨이 시뮬레이터' },
+                      { icon: '🏆', title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
+                      { icon: '📊', title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 업종에서 내 위치를 한눈에 확인할 수 있어요' },
+                      { icon: '📈', title: '최악의 경우, 런웨이는 며칠?',     desc: '매출이 줄거나 비용이 늘면 어떻게 될지 시뮬레이션해요' },
+                      { icon: '💡', title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 처방전을 알려드려요' },
                     ].map((item, i) => (
                       <div key={i} style={{
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        background: 'rgba(255,255,255,0.1)',
-                        borderRadius: 10, padding: '8px 12px',
-                        backdropFilter: 'blur(4px)',
-                        WebkitBackdropFilter: 'blur(4px)',
-                        border: '1px solid rgba(255,255,255,0.08)',
+                        display: 'flex', gap: 12, alignItems: 'flex-start',
+                        background: 'rgba(255,255,255,0.08)',
+                        borderRadius: 12, padding: '12px 14px',
+                        border: '1px solid rgba(255,255,255,0.06)',
                       }}>
-                        <span style={{ fontSize: 16 }}>{item.icon}</span>
-                        <span style={{
-                          fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: 600,
-                          textAlign: 'left',
-                        }}>
-                          {item.text}
-                        </span>
+                        <span style={{ fontSize: 20, flexShrink: 0, marginTop: 2 }}>{item.icon}</span>
+                        <div style={{ textAlign: 'left' }}>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', lineHeight: 1.3 }}>
+                            {item.title}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3, lineHeight: 1.4 }}>
+                            {item.desc}
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -622,6 +626,19 @@ export default function ResultPage() {
                       💰 990원으로 해제
                     </button>
                   </div>
+
+                  {/* 사회적 증거 — 누적 확인 인원 */}
+                  <p style={{
+                    fontSize: 12, fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    margin: 0, textAlign: 'center',
+                  }}>
+                    이미{' '}
+                    <span style={{ color: theme.accent, fontWeight: 900 }}>
+                      {userCount.toLocaleString()}명
+                    </span>
+                    의 {isBusiness ? '사장님' : '직장인'}이 확인했어요
+                  </p>
                 </div>
               )}
             </div>
