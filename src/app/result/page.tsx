@@ -671,12 +671,12 @@ export default function ResultPage() {
 
                   {/* 사회적 증거 — 누적 확인 인원 */}
                   <p style={{
-                    fontSize: 12, fontWeight: 700,
-                    color: 'rgba(255,255,255,0.7)',
-                    margin: 0, textAlign: 'center',
+                    fontSize: 16, fontWeight: 700,
+                    color: 'rgba(255,255,255,0.8)',
+                    margin: '16px 0', textAlign: 'center',
                   }}>
                     이미{' '}
-                    <span style={{ color: '#03C75A', fontWeight: 900 }}>
+                    <span style={{ fontSize: 18, color: '#03C75A', fontWeight: 900 }}>
                       {userCount.toLocaleString()}명
                     </span>
                     의 {isBusiness ? '사장님' : '직장인'}이 확인했어요
