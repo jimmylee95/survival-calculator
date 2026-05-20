@@ -702,10 +702,6 @@ export default function ResultPage() {
         {/* ── 카드 섹션 ───────────────────────────────── */}
         <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-          <LockedSection title="만약 이렇게 되면?" locked={!isUnlocked && !isCapturing}>
-            <ScenarioCard items={scenarios} />
-          </LockedSection>
-
           {insights.length > 0 && (
             <LockedSection title="핵심 진단" locked={!isUnlocked && !isCapturing}>
               <InsightCard items={insights} />
@@ -724,6 +720,10 @@ export default function ResultPage() {
               />
             </LockedSection>
           )}
+
+          <LockedSection title="만약 이렇게 되면?" locked={!isUnlocked && !isCapturing}>
+            <ScenarioCard items={scenarios} />
+          </LockedSection>
 
           {isBusiness && (
             <LockedSection title="만약에 계산기" locked={!isUnlocked && !isCapturing}>
