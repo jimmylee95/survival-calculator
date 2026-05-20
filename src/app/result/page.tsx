@@ -422,24 +422,24 @@ export default function ResultPage() {
             overflow: 'hidden',
           }}>
             {/* 1. 누렁이 해방까지 + 일수 */}
-            <div style={{ marginBottom: 8 }}>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 8px' }}>
+            <div>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 16px' }}>
                 누렁이 해방까지
               </p>
               <p style={{
-                margin: 0, lineHeight: 1,
+                margin: '0 0 24px', lineHeight: 1,
                 display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 2,
                 filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
               }}>
                 <span style={{
-                  fontSize: 48, fontWeight: 900, color: theme.accent,
-                  letterSpacing: '-1.5px',
+                  fontSize: 64, fontWeight: 900, color: theme.accent,
+                  letterSpacing: '-2px',
                 }}>
                   <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
                 </span>
                 {isFinite(realisticDays) && (
                   <span style={{
-                    fontSize: 24, fontWeight: 700, color: theme.accent,
+                    fontSize: 32, fontWeight: 700, color: theme.accent,
                   }}>
                     일
                   </span>
@@ -449,8 +449,8 @@ export default function ResultPage() {
 
             {/* 2. 한줄 타이틀 (메인 헤드라인) */}
             <p style={{
-              fontSize: 28, fontWeight: 900, color: theme.accent,
-              margin: '20px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.3,
+              fontSize: 34, fontWeight: 900, color: theme.accent,
+              margin: '0 0 12px', letterSpacing: '-0.03em', lineHeight: 1.3,
               textAlign: 'center',
               filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))',
             }}>
@@ -459,8 +459,8 @@ export default function ResultPage() {
 
             {/* 3. 서브 메시지 */}
             <p style={{
-              fontSize: 16, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
-              margin: '0 0 8px', letterSpacing: '-0.2px',
+              fontSize: 18, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
+              margin: '0 0 20px', letterSpacing: '-0.2px',
             }}>
               {grade.message}
             </p>
@@ -469,7 +469,7 @@ export default function ResultPage() {
             {!isUnlocked && !isCapturing && (
               <p style={{
                 fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 600,
-                margin: '16px 0 12px',
+                margin: '24px 0 12px',
                 animation: 'bounce-y 1.6s ease-in-out infinite',
               }}>
                 {isBusiness ? '사장님' : '누렁이'}의 자세한 분석 결과가 준비됐어요 👇
