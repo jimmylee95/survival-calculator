@@ -393,12 +393,17 @@ function Q3Salary({
     <div>
       <QuestionTitle num={3} text={<>월급은<br />얼마 받으세요?</>}
         sub="실수령액(세후) 기준" />
-      <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        padding: '8px 14px', borderRadius: 20, background: '#FFF1E6',
-        marginBottom: 24, fontSize: 13, fontWeight: 700, color: '#C2410C',
-      }}>
-        💵 {benchmark.label} 평균 {formatWon(benchmark.salary)}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 14px', borderRadius: 20, background: '#FFF1E6',
+          fontSize: 13, fontWeight: 700, color: '#C2410C',
+        }}>
+          💵 {benchmark.label} 평균 {formatWon(benchmark.salary)}
+        </div>
+        <p style={{ margin: '4px 0 0 14px', fontSize: 10, color: 'rgba(194, 65, 12, 0.4)', fontWeight: 600 }}>
+          고용노동부·경총 통계 기반
+        </p>
       </div>
       <AmountInput value={input.salary}
         onChange={v => update({ salary: v })}
@@ -421,12 +426,17 @@ function Q4Expense({
     <div>
       <QuestionTitle num={4} text={<>매달 생활비는<br />얼마인가요?</>}
         sub="월세 + 식비 + 교통 + 보험 등 전부 합쳐서" />
-      <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        padding: '8px 14px', borderRadius: 20, background: '#FEF3C7',
-        marginBottom: 24, fontSize: 13, fontWeight: 700, color: '#92400E',
-      }}>
-        🏠 {benchmark.label} 평균 {formatWon(benchmark.expense)}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 14px', borderRadius: 20, background: '#FEF3C7',
+          fontSize: 13, fontWeight: 700, color: '#92400E',
+        }}>
+          🏠 {benchmark.label} 평균 {formatWon(benchmark.expense)}
+        </div>
+        <p style={{ margin: '4px 0 0 14px', fontSize: 10, color: 'rgba(146, 64, 14, 0.4)', fontWeight: 600 }}>
+          고용노동부·경총 통계 기반
+        </p>
       </div>
       <AmountInput value={input.monthlyExpense}
         onChange={v => update({ monthlyExpense: v })}
