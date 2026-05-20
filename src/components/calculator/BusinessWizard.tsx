@@ -166,15 +166,16 @@ function ContinueButton({
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Typeform-style Business Wizard (5 questions)
+   Typeform-style Business Wizard (6 questions)
 
    internal step:
-     0 = industry
-     1 = balance
-     2 = fixed cost
-     3 = revenue
-     4 = loan ask (yes/no)
-     5 = loan amount (sub-step of Q5)
+     0 = industry        (Q1)
+     1 = balance         (Q2)
+     2 = fixed cost      (Q3)
+     3 = revenue         (Q4)
+     4 = loan ask        (Q5-A)
+     5 = loan amount     (Q5-B, sub-step of Q5)
+     6 = region          (Q6, last → finish)
    ═══════════════════════════════════════════════════════════ */
 export function BusinessWizard() {
   const router = useRouter()
@@ -196,6 +197,10 @@ export function BusinessWizard() {
     if (step === 0) { router.back(); return }
     setAnimKey(k => k + 1)
     setStep(s => s - 1)
+  }
+  function jumpTo(n: number) {
+    setAnimKey(k => k + 1)
+    setStep(n)
   }
   function finish() {
     calculate()
@@ -248,27 +253,27 @@ export function BusinessWizard() {
             <Q1Industry input={businessInput} update={updateBusinessInput} onNext={goNext} />
           )}
           {step === 1 && (
-            <Q2Region input={businessInput} update={updateBusinessInput} onNext={goNext} />
+            <Q2Balance input={businessInput} update={updateBusinessInput} onNext={goNext} />
           )}
           {step === 2 && (
-            <Q3Balance input={businessInput} update={updateBusinessInput} onNext={goNext} />
+            <Q3Fixed input={businessInput} update={updateBusinessInput}
+              benchmark={benchmark} onNext={goNext} />
           )}
           {step === 3 && (
-            <Q4Fixed input={businessInput} update={updateBusinessInput}
+            <Q4Revenue input={businessInput} update={updateBusinessInput}
               benchmark={benchmark} onNext={goNext} />
           )}
           {step === 4 && (
-            <Q5Revenue input={businessInput} update={updateBusinessInput}
-              benchmark={benchmark} onNext={goNext} />
-          )}
-          {step === 5 && (
-            <Q6LoanAsk
+            <Q5LoanAsk
               onYes={goNext}
-              onNo={() => { updateBusinessInput({ loanInterest: 0 }); finish() }}
+              onNo={() => { updateBusinessInput({ loanInterest: 0 }); jumpTo(6) }}
             />
           )}
+          {step === 5 && (
+            <Q5LoanAmount input={businessInput} update={updateBusinessInput} onNext={goNext} />
+          )}
           {step === 6 && (
-            <Q6LoanAmount input={businessInput} update={updateBusinessInput} onFinish={finish} />
+            <Q6Region input={businessInput} update={updateBusinessInput} onFinish={finish} />
           )}
         </div>
       </div>
@@ -338,34 +343,8 @@ function Q1Industry({
   )
 }
 
-/* ───── Q2: 지역 선택 ─────────────────────────────────── */
-function Q2Region({
-  input, update, onNext,
-}: {
-  input: { region?: string; district?: string }
-  update: (p: Record<string, unknown>) => void
-  onNext: () => void
-}) {
-  return (
-    <div>
-      <QuestionTitle num={2} text={<>업장이<br />어디에 있나요?</>}
-        sub="같은 지역 사장님들과 비교해드려요" />
-      <RegionSelect
-        region={input.region ?? ''}
-        district={input.district ?? ''}
-        onChange={(region, district) => update({ region, district })}
-        onNext={onNext}
-      />
-      <ContinueButton
-        onClick={onNext}
-        disabled={!input.region || !input.district}
-      />
-    </div>
-  )
-}
-
-/* ───── Q3: 통장 잔고 ─────────────────────────────────── */
-function Q3Balance({
+/* ───── Q2: 통장 잔고 ─────────────────────────────────── */
+function Q2Balance({
   input, update, onNext,
 }: {
   input: { balance: number }
@@ -374,7 +353,7 @@ function Q3Balance({
 }) {
   return (
     <div>
-      <QuestionTitle num={3} text={<>사업 통장에<br />얼마나 있으세요?</>}
+      <QuestionTitle num={2} text={<>사업 통장에<br />얼마나 있으세요?</>}
         sub="대략적인 금액도 괜찮아요" />
       <AmountInput value={input.balance}
         onChange={v => update({ balance: v })}
@@ -384,8 +363,8 @@ function Q3Balance({
   )
 }
 
-/* ───── Q4: 월 고정비 ─────────────────────────────────── */
-function Q4Fixed({
+/* ───── Q3: 월 고정비 ─────────────────────────────────── */
+function Q3Fixed({
   input, update, benchmark, onNext,
 }: {
   input: { fixedCost: number }
@@ -395,7 +374,7 @@ function Q4Fixed({
 }) {
   return (
     <div>
-      <QuestionTitle num={4} text={<>매달 고정으로<br />나가는 돈은?</>}
+      <QuestionTitle num={3} text={<>매달 고정으로<br />나가는 돈은?</>}
         sub="임대료, 인건비, 보험, 통신비 등" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
@@ -417,8 +396,8 @@ function Q4Fixed({
   )
 }
 
-/* ───── Q5: 월 매출 ──────────────────────────────────── */
-function Q5Revenue({
+/* ───── Q4: 월 매출 ──────────────────────────────────── */
+function Q4Revenue({
   input, update, benchmark, onNext,
 }: {
   input: { monthlyRevenue: number }
@@ -428,7 +407,7 @@ function Q5Revenue({
 }) {
   return (
     <div>
-      <QuestionTitle num={5} text={<>매달 매출은<br />얼마인가요?</>}
+      <QuestionTitle num={4} text={<>매달 매출은<br />얼마인가요?</>}
         sub="최근 3개월 평균 매출을 입력해주세요" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
@@ -459,12 +438,12 @@ function Q5Revenue({
   )
 }
 
-/* ───── Q6-A: 대출 이자 있음/없음 (큰 버튼 2개) ──────────── */
-function Q6LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
+/* ───── Q5-A: 대출 이자 있음/없음 (큰 버튼 2개) ──────────── */
+function Q5LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   return (
     <div>
-      <QuestionTitle num={6} text={<>대출 이자가<br />있으세요?</>}
-        sub="없으면 바로 결과를 보여드릴게요" />
+      <QuestionTitle num={5} text={<>대출 이자가<br />있으세요?</>}
+        sub="없으면 바로 지역 선택으로 넘어가요" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button onClick={onYes}
           style={{
@@ -489,7 +468,7 @@ function Q6LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
           <span style={{ fontSize: 32 }}>😎</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 19, fontWeight: 900, color: '#1A1F5E' }}>없어요</div>
-            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>바로 결과 보기</div>
+            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>지역 선택으로 이동</div>
           </div>
         </button>
       </div>
@@ -497,23 +476,49 @@ function Q6LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   )
 }
 
-/* ───── Q6-B: 대출 이자 금액 입력 ────────────────────── */
-function Q6LoanAmount({
-  input, update, onFinish,
+/* ───── Q5-B: 대출 이자 금액 입력 ────────────────────── */
+function Q5LoanAmount({
+  input, update, onNext,
 }: {
   input: { loanInterest: number }
+  update: (p: Record<string, unknown>) => void
+  onNext: () => void
+}) {
+  return (
+    <div>
+      <QuestionTitle num={5} text={<>매달 이자가<br />얼마인가요?</>}
+        sub="원금 제외, 이자 금액만 입력" />
+      <AmountInput value={input.loanInterest}
+        onChange={v => update({ loanInterest: v })}
+        presets={LOAN_PRESETS} autoFocus onEnter={onNext} />
+      <ContinueButton onClick={onNext} disabled={input.loanInterest === 0} />
+    </div>
+  )
+}
+
+/* ───── Q6: 지역 선택 (마지막) ────────────────────────── */
+function Q6Region({
+  input, update, onFinish,
+}: {
+  input: { region?: string; district?: string }
   update: (p: Record<string, unknown>) => void
   onFinish: () => void
 }) {
   return (
     <div>
-      <QuestionTitle num={6} text={<>매달 이자가<br />얼마인가요?</>}
-        sub="원금 제외, 이자 금액만 입력" />
-      <AmountInput value={input.loanInterest}
-        onChange={v => update({ loanInterest: v })}
-        presets={LOAN_PRESETS} autoFocus onEnter={onFinish} />
-      <ContinueButton onClick={onFinish}
-        disabled={input.loanInterest === 0} label="결과 확인하기 🧮" />
+      <QuestionTitle num={6} text={<>업장이<br />어디에 있나요?</>}
+        sub="같은 지역 사장님들과 비교해드려요" />
+      <RegionSelect
+        region={input.region ?? ''}
+        district={input.district ?? ''}
+        onChange={(region, district) => update({ region, district })}
+        onNext={onFinish}
+      />
+      <ContinueButton
+        onClick={onFinish}
+        disabled={!input.region || !input.district}
+        label="결과 확인하기 🧮"
+      />
     </div>
   )
 }
