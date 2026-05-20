@@ -660,7 +660,7 @@ export default function ResultPage() {
                       onClick={handlePaidUnlock}
                       style={{
                         padding: '12px 18px', borderRadius: 12,
-                        background: theme.accent, color: '#1A202C',
+                        background: '#03C75A', color: '#fff',
                         fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                       }}
@@ -676,7 +676,7 @@ export default function ResultPage() {
                     margin: 0, textAlign: 'center',
                   }}>
                     이미{' '}
-                    <span style={{ color: theme.accent, fontWeight: 900 }}>
+                    <span style={{ color: '#03C75A', fontWeight: 900 }}>
                       {userCount.toLocaleString()}명
                     </span>
                     의 {isBusiness ? '사장님' : '직장인'}이 확인했어요
