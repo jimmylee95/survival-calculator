@@ -903,7 +903,7 @@ export default function ResultPage() {
                       }}
                     >
                       <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px' }}>
-                        공유하고 확인하기
+                        공유하고 확인
                       </span>
                       <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>
                         카톡 공유 3명하고 확인
@@ -923,7 +923,7 @@ export default function ResultPage() {
                       }}
                     >
                       <span style={{ fontSize: 15, fontWeight: 800, color: '#000000', letterSpacing: '-0.2px' }}>
-                        바로 확인하기
+                        바로 확인
                       </span>
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#000000', opacity: 0.7 }}>
                         990원 결제하고 확인
