@@ -459,17 +459,12 @@ export default function ResultPage() {
               {grade.label}
             </p>
 
-            {/* 3. 상위%/순위 잠금 블록 */}
-            <div style={{ marginBottom: 16 }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                marginBottom: 12,
-                fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
-                letterSpacing: '-0.2px',
-              }}>
-                <span>📊 상위 % · 정확한 순위</span>
-                {!isUnlocked && !isCapturing && <span aria-label="잠금">🔒</span>}
-              </div>
+            {/* 4. 상위%/순위 잠금 블록 (오버레이로 항목 리스트 + 해제 버튼) */}
+            <div style={{
+              position: 'relative',
+              minHeight: (!isUnlocked && !isCapturing) ? 460 : 'auto',
+            }}>
+              {/* 블러 처리된 실제 데이터 (배경) */}
               <div style={{
                 filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(8px)',
                 pointerEvents: (isUnlocked || isCapturing) ? 'auto' : 'none',
@@ -552,38 +547,84 @@ export default function ResultPage() {
                   </span>
                 </p>
               </div>
-            </div>
 
-            {/* 4. 해제 버튼 (잠금 시에만 노출) */}
-            {!isUnlocked && !isCapturing && (
-              <div style={{
-                display: 'flex', gap: 8, marginTop: 4,
-                flexWrap: 'wrap', justifyContent: 'center',
-              }}>
-                <button
-                  onClick={handleShareForUnlock}
-                  style={{
-                    padding: '12px 18px', borderRadius: 12,
-                    background: '#FEE500', color: '#3C1E1E',
-                    fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  🐾 카톡 공유 ({shareCount}/3)
-                </button>
-                <button
-                  onClick={handlePaidUnlock}
-                  style={{
-                    padding: '12px 18px', borderRadius: 12,
-                    background: theme.accent, color: '#1A202C',
-                    fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  💰 990원으로 해제
-                </button>
-              </div>
-            )}
+              {/* 잠금 오버레이 — 숨겨진 항목 리스트 + 해제 버튼 */}
+              {!isUnlocked && !isCapturing && (
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  gap: 12, zIndex: 10, padding: 20,
+                }}>
+                  <div style={{ fontSize: 32 }}>🔒</div>
+                  <div style={{
+                    fontSize: 16, fontWeight: 800, color: '#fff',
+                    textAlign: 'center', letterSpacing: '-0.2px',
+                  }}>
+                    아래 정보가 숨겨져 있어요!
+                  </div>
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', gap: 8,
+                    width: '100%', maxWidth: 280,
+                  }}>
+                    {[
+                      { icon: '🏆', text: '같은 업종 내 정확한 순위' },
+                      { icon: '📊', text: '상위 몇 % 인지' },
+                      { icon: '📈', text: '시나리오별 런웨이 예측' },
+                      { icon: '🔍', text: '업종 평균 대비 내 위치' },
+                      { icon: '💡', text: '핵심 인사이트 & 처방전' },
+                      { icon: '🎮', text: '런웨이 시뮬레이터' },
+                    ].map((item, i) => (
+                      <div key={i} style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        background: 'rgba(255,255,255,0.1)',
+                        borderRadius: 10, padding: '8px 12px',
+                        backdropFilter: 'blur(4px)',
+                        WebkitBackdropFilter: 'blur(4px)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                      }}>
+                        <span style={{ fontSize: 16 }}>{item.icon}</span>
+                        <span style={{
+                          fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: 600,
+                          textAlign: 'left',
+                        }}>
+                          {item.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 해제 버튼 */}
+                  <div style={{
+                    display: 'flex', gap: 8, marginTop: 8,
+                    flexWrap: 'wrap', justifyContent: 'center',
+                  }}>
+                    <button
+                      onClick={handleShareForUnlock}
+                      style={{
+                        padding: '12px 18px', borderRadius: 12,
+                        background: '#FEE500', color: '#3C1E1E',
+                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      }}
+                    >
+                      🐾 카톡 공유 ({shareCount}/3)
+                    </button>
+                    <button
+                      onClick={handlePaidUnlock}
+                      style={{
+                        padding: '12px 18px', borderRadius: 12,
+                        background: theme.accent, color: '#1A202C',
+                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      }}
+                    >
+                      💰 990원으로 해제
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ── 5. 브랜딩 바 ───────────────────────────── */}
