@@ -298,8 +298,8 @@ function Q1Industry({
 }) {
   return (
     <div>
-      <QuestionTitle num={1} text={<>어떤 사업을<br />하고 계세요?</>}
-        sub="업종에 맞는 평균값을 알려드릴게요" />
+      <QuestionTitle num={1} text={<>‘나도 사장님이다’<br />내 피땀 눈물이<br />들어간 업종은?</>}
+        sub="카페, 치킨집, 식당 등" />
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -353,8 +353,8 @@ function Q2Balance({
 }) {
   return (
     <div>
-      <QuestionTitle num={2} text={<>사업 통장에<br />얼마나 있으세요?</>}
-        sub="대략적인 금액도 괜찮아요" />
+      <QuestionTitle num={2} text={<>월세랑 세금 내기 전, 지금<br />통장에 당장 가용 가능한<br />‘순수 잔고’는?</>}
+        sub="통장 잔고" />
       <AmountInput value={input.balance}
         onChange={v => update({ balance: v })}
         presets={BALANCE_PRESETS} autoFocus onEnter={onNext} />
@@ -374,8 +374,8 @@ function Q3Fixed({
 }) {
   return (
     <div>
-      <QuestionTitle num={3} text={<>매달 고정으로<br />나가는 돈은?</>}
-        sub="임대료, 인건비, 보험, 통신비 등" />
+      <QuestionTitle num={3} text={<>매달 숨만 쉬어도<br />통장에서 무섭게 빠져나가는<br />‘고정비(월세+이자+인건비)’는?</>}
+        sub="매달 고정 지출" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -407,8 +407,8 @@ function Q4Revenue({
 }) {
   return (
     <div>
-      <QuestionTitle num={4} text={<>매달 매출은<br />얼마인가요?</>}
-        sub="최근 3개월 평균 매출을 입력해주세요" />
+      <QuestionTitle num={4} text={<>카드 수수료 빼고<br />배달앱 떼고 내 손에 쥐어지는<br />‘평균 월 매출’은?</>}
+        sub="최근 3개월 평균 매출" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -506,8 +506,8 @@ function Q6Region({
 }) {
   return (
     <div>
-      <QuestionTitle num={6} text={<>업장이<br />어디에 있나요?</>}
-        sub="같은 지역 사장님들과 비교해드려요" />
+      <QuestionTitle num={6} text={<>매달 건물주 좋은 일<br />시켜주는 내 매장 위치는?</>}
+        sub="상권 지역 선택" />
       <RegionSelect
         region={input.region ?? ''}
         district={input.district ?? ''}

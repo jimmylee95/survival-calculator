@@ -328,8 +328,8 @@ function Q1Job({
 }) {
   return (
     <div>
-      <QuestionTitle num={1} text={<>어떤 일을<br />하고 계세요?</>}
-        sub="직군에 맞는 평균값을 알려드릴게요" />
+      <QuestionTitle num={1} text={<>현재 내 뼈를<br />갈아 넣고 있는 직종은?</>}
+        sub="사무직, IT/개발, 영업 등" />
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -379,8 +379,8 @@ function Q2Assets({
 }) {
   return (
     <div>
-      <QuestionTitle num={2} text={<>지금까지<br />얼마나 모았어요?</>}
-        sub="현금, 주식, 부동산 등 모두 합산해주세요" />
+      <QuestionTitle num={2} text={<>퇴사 후 숨만 쉬어도<br />버틸 수 있는 내<br />‘비상금’ 총액은?</>}
+        sub="예적금, 주식, 영끌 자산 합산" />
       <AmountInput value={input.assets}
         onChange={v => update({ assets: v })}
         presets={ASSET_PRESETS} autoFocus onEnter={onNext} />
@@ -400,8 +400,8 @@ function Q3Salary({
 }) {
   return (
     <div>
-      <QuestionTitle num={3} text={<>월급은<br />얼마 받으세요?</>}
-        sub="실수령액(세후) 기준" />
+      <QuestionTitle num={3} text={<>통장을 스치듯 지나가는 내<br />‘사이버 머니<br />(세후 월급)’는?</>}
+        sub="실수령액 기준" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -433,8 +433,8 @@ function Q4Expense({
 }) {
   return (
     <div>
-      <QuestionTitle num={4} text={<>매달 생활비는<br />얼마인가요?</>}
-        sub="월세 + 식비 + 교통 + 보험 등 전부 합쳐서" />
+      <QuestionTitle num={4} text={<>숨만 쉬어도 나가는 고정비 +<br />스트레스 풀려고 지른<br />‘시발비용’ 합계는?</>}
+        sub="월세, 식비, 핫김 비용 포함 한 달 지출" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -468,8 +468,8 @@ function Q5Target({
   if (custom) {
     return (
       <div>
-        <QuestionTitle num={5} text={<>얼마 모이면<br />퇴사할 건가요?</>}
-          sub="목표 금액을 직접 입력해주세요" />
+        <QuestionTitle num={5} text={<>‘진짜 이 돈 모으면<br />사표 던진다’ 하는<br />내 목표 금액은?</>}
+          sub="파이어족 목표 자금" />
         <AmountInput value={input.targetAmount}
           onChange={v => update({ targetAmount: v })}
           autoFocus onEnter={onNext} />
@@ -488,8 +488,8 @@ function Q5Target({
 
   return (
     <div>
-      <QuestionTitle num={5} text={<>얼마 모이면<br />퇴사할 건가요?</>}
-        sub="목표 금액을 골라주세요" />
+      <QuestionTitle num={5} text={<>‘진짜 이 돈 모으면<br />사표 던진다’ 하는<br />내 목표 금액은?</>}
+        sub="파이어족 목표 자금" />
       <div style={{
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12,
       }}>
@@ -532,8 +532,8 @@ function Q5Target({
 function Q6SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   return (
     <div>
-      <QuestionTitle num={6} text={<>부업 수입이<br />있으세요?</>}
-        sub="없으면 바로 지역 선택으로 넘어가요" />
+      <QuestionTitle num={6} text={<>요즘 유행하는 N잡러,<br />나도 몰래 꿀 빠는<br />‘부업 파이프라인’이 있나요?</>}
+        sub="있음(부업 중) / 없음(월급 올인)" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button onClick={onYes}
           style={{
@@ -596,8 +596,8 @@ function Q7Region({
 }) {
   return (
     <div>
-      <QuestionTitle num={7} text={<>직장이<br />어디에 있나요?</>}
-        sub="같은 지역 직장인들과 비교해드려요" />
+      <QuestionTitle num={7} text={<>지옥철을 타고<br />출근하는 회사 위치는?</>}
+        sub="서울/경기 등 지역 선택" />
       <RegionSelect
         region={input.region ?? ''}
         district={input.district ?? ''}
