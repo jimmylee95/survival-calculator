@@ -468,18 +468,26 @@ export default function ResultPage() {
                 borderTop: '1px solid rgba(255,255,255,0.08)',
                 borderLeft: '1px solid rgba(255,255,255,0.08)',
               }} />
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginBottom: 6 }}>
-                누렁이가 한마디
-              </div>
               <div style={{
-                fontSize: 34, fontWeight: 900, color: '#FFFFFF',
-                marginBottom: 6, letterSpacing: '-0.03em', lineHeight: 1.3,
+                fontSize: 11, fontWeight: 600,
+                color: 'rgba(255,255,255,0.4)',
+                letterSpacing: '0.05em',
+                marginBottom: 8,
               }}>
-                {grade.title}
+                누렁이의 한마디
               </div>
               <div style={{
-                fontSize: 18, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
-                letterSpacing: '-0.2px',
+                fontSize: 34, fontWeight: 800, fontStyle: 'normal',
+                color: '#FFFFFF',
+                marginBottom: 10,
+                letterSpacing: '-0.02em', lineHeight: 1.4,
+              }}>
+                &ldquo;{grade.title}&rdquo;
+              </div>
+              <div style={{
+                fontSize: 16, fontWeight: 500,
+                color: 'rgba(255,255,255,0.7)',
+                letterSpacing: '-0.01em',
               }}>
                 {grade.message}
               </div>
