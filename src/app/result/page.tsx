@@ -620,32 +620,95 @@ export default function ResultPage() {
                   }}>
                     {(isBusiness
                       ? [
-                          { title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
-                          { title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 업종에서 내 위치를 한눈에 확인할 수 있어요' },
+                          { title: '내 순위는 몇 등일까?', desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
+                          {
+                            title: 'S등급 사장님의 계산 결과가 궁금하지 않으세요?',
+                            desc:  '동일 업종 S등급 사장님의 핵심 지표를 확인해보세요',
+                            preview: {
+                              rows: [
+                                { label: '월 매출', value: '₩4,200만원' },
+                                { label: '고정비', value: '₩185만원' },
+                                { label: '순이익', value: '₩320만원' },
+                              ],
+                              footer: '🔒 990원으로 전체 결과 확인',
+                            },
+                          },
                           { title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '매출이 줄거나 비용이 늘면 어떻게 될지 미리 계산해봐요' },
                           { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                         ]
                       : [
-                          { title: '내 순위는 몇 등일까?',           desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
-                          { title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 직종에서 내 위치를 한눈에 확인할 수 있어요' },
+                          { title: '내 순위는 몇 등일까?', desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
+                          {
+                            title: 'S등급 직장인의 계산 결과가 궁금하지 않으세요?',
+                            desc:  '동일 직군 S등급 직장인의 핵심 지표를 확인해보세요',
+                            preview: {
+                              rows: [
+                                { label: '연봉',     value: '₩6,800만원' },
+                                { label: '월 저축액', value: '₩240만원' },
+                                { label: '생활비',   value: '₩185만원' },
+                              ],
+                              footer: '🔒 990원으로 전체 결과 확인',
+                            },
+                          },
                           { title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '연봉이 줄거나 지출이 늘면 어떻게 될지 미리 계산해봐요' },
                           { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
                         ]
-                    ).map((item, i) => (
-                      <div key={i} style={{
-                        background: 'rgba(255,255,255,0.08)',
-                        borderRadius: 12, padding: '12px 14px',
-                        border: '1px solid rgba(255,255,255,0.06)',
-                        textAlign: 'left',
-                      }}>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', lineHeight: 1.3 }}>
-                          {item.title}
+                    ).map((item, i) => {
+                      const preview = (item as { preview?: { rows: { label: string; value: string }[]; footer: string } }).preview
+                      return (
+                        <div key={i} style={{
+                          background: 'rgba(255,255,255,0.08)',
+                          borderRadius: 12, padding: '12px 14px',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                          textAlign: 'left',
+                        }}>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', lineHeight: 1.3 }}>
+                            {item.title}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3, lineHeight: 1.4 }}>
+                            {item.desc}
+                          </div>
+
+                          {preview && (
+                            <div style={{ marginTop: 10 }}>
+                              <div style={{
+                                display: 'flex', flexDirection: 'column', gap: 6,
+                                padding: '10px 12px',
+                                background: 'rgba(0,0,0,0.25)',
+                                borderRadius: 10,
+                                border: '1px solid rgba(255,255,255,0.05)',
+                              }}>
+                                {preview.rows.map((row, j) => (
+                                  <div key={j} style={{
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                  }}>
+                                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
+                                      {row.label}
+                                    </span>
+                                    <span style={{
+                                      fontSize: 13, color: '#fff', fontWeight: 800,
+                                      filter: 'blur(5px)',
+                                      userSelect: 'none',
+                                      WebkitUserSelect: 'none',
+                                    }}>
+                                      {row.value}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                              <div style={{
+                                marginTop: 8,
+                                fontSize: 11, fontWeight: 700,
+                                color: 'rgba(255,255,255,0.6)',
+                                textAlign: 'center',
+                              }}>
+                                {preview.footer}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3, lineHeight: 1.4 }}>
-                          {item.desc}
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
 
                   {/* 해제 버튼 */}
