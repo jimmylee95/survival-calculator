@@ -892,26 +892,40 @@ export default function ResultPage() {
                     <button
                       onClick={handleShareForUnlock}
                       style={{
-                        padding: '12px 18px', borderRadius: 12,
+                        padding: '10px 18px', borderRadius: 12, minHeight: 56,
                         background: '#FEE500', color: '#3C1E1E',
-                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                        border: 'none', cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center', gap: 2,
+                        textAlign: 'center',
                       }}
                     >
-                      🐾 카톡 공유 ({shareCount}/3)
+                      <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px' }}>
+                        공유하고 확인하기
+                      </span>
+                      <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>
+                        카톡 공유 3명하고 확인
+                      </span>
                     </button>
                     <button
                       onClick={handlePaidUnlock}
                       style={{
-                        padding: '12px 18px', borderRadius: 12,
+                        padding: '10px 18px', borderRadius: 12, minHeight: 56,
                         background: '#03C75A', color: '#000000',
-                        fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
+                        border: 'none', cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center', gap: 2,
                         textAlign: 'center',
                       }}
                     >
-                      💰 990원으로 해제
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#000000', letterSpacing: '-0.2px' }}>
+                        바로 확인하기
+                      </span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#000000', opacity: 0.7 }}>
+                        990원 결제하고 확인
+                      </span>
                     </button>
                   </div>
 
