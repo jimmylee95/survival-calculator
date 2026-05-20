@@ -31,7 +31,7 @@ export function ScenarioCard({ items }: Props) {
         borderBottom: '1px solid #F1F5F9',
       }}>
         <p style={{ fontSize: 13, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>
-          📊 시나리오별 런웨이
+          📊 상황별 예측
         </p>
       </div>
 

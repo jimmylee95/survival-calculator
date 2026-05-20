@@ -317,7 +317,7 @@ export default function AdminPage() {
                 </div>
               </BigCard>
             </div>
-            <WCard title="리텐션 개선 인사이트">
+            <WCard title="리텐션 개선 진단">
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
                 <InsightCard
                   icon="📊"
@@ -367,7 +367,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div style={{ marginTop: 4, padding: '12px 14px', background: '#FFFBEB', borderRadius: 10, border: '1px solid #FDE68A' }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', margin: '0 0 2px' }}>💡 벤치마크</p>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', margin: '0 0 2px' }}>💡 업종 평균</p>
                     <p style={{ fontSize: 11, color: '#A16207', margin: 0 }}>SaaS 평균 유료 전환율은 2~5%입니다. 구독 기능 출시 후 목표를 설정해보세요.</p>
                   </div>
                 </div>

@@ -227,7 +227,7 @@ export default function DashboardPage() {
             color: 'rgba(255,255,255,0.7)',
             margin: '0 0 8px', letterSpacing: '0.3px',
           }}>
-            {isBiz ? '사장님의 런웨이' : '탈출까지'}
+            {isBiz ? '사장님이 버틸 수 있는 날' : '탈출까지'}
           </p>
 
           {days != null ? (
@@ -636,7 +636,7 @@ function BusinessTrendCharts({
 
   return (
     <>
-      <ChartCard title="📈 런웨이 추이" sub="계산 기록 기반">
+      <ChartCard title="📈 버틸 수 있는 날 추이" sub="계산 기록 기반">
         <TrendChart
           points={trendPoints}
           unit="일"

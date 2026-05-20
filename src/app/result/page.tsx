@@ -249,7 +249,7 @@ export default function ResultPage() {
     const days = isFinite(realisticDays) ? Math.floor(realisticDays) : '∞'
     const url  = typeof window !== 'undefined' ? window.location.origin : ''
     return isBusiness
-      ? `나의 사업 런웨이는 ${days}일! 상위 ${topPercentile}%\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
+      ? `나는 ${days}일 버틸 수 있어요! 상위 ${topPercentile}%\n사장님 생존 계산기로 확인해보세요\n👉 ${url}`
       : `나의 퇴사까지 ${days}일! 상위 ${topPercentile}%\n직장인 퇴사 계산기로 확인해보세요\n👉 ${url}`
   }
 
@@ -576,8 +576,8 @@ export default function ResultPage() {
                     {[
                       { icon: '🏆', title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
                       { icon: '📊', title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 업종에서 내 위치를 한눈에 확인할 수 있어요' },
-                      { icon: '📈', title: '최악의 경우, 런웨이는 며칠?',     desc: '매출이 줄거나 비용이 늘면 어떻게 될지 시뮬레이션해요' },
-                      { icon: '💡', title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 처방전을 알려드려요' },
+                      { icon: '📈', title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '매출이 줄거나 비용이 늘면 어떻게 될지 미리 계산해봐요' },
+                      { icon: '💡', title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                     ].map((item, i) => (
                       <div key={i} style={{
                         display: 'flex', gap: 12, alignItems: 'flex-start',
@@ -660,19 +660,19 @@ export default function ResultPage() {
         {/* ── 카드 섹션 ───────────────────────────────── */}
         <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-          <LockedSection title="🎯 시나리오별 런웨이" locked={!isUnlocked && !isCapturing}>
+          <LockedSection title="🤔 만약 이렇게 되면?" locked={!isUnlocked && !isCapturing}>
             <ScenarioCard items={scenarios} />
           </LockedSection>
 
           {insights.length > 0 && (
-            <LockedSection title="💡 핵심 인사이트" locked={!isUnlocked && !isCapturing}>
+            <LockedSection title="💡 핵심 진단" locked={!isUnlocked && !isCapturing}>
               <InsightCard items={insights} />
             </LockedSection>
           )}
 
           {isBusiness && (
             <LockedSection
-              title={`📊 ${industryLabel} 업종 대비 내 위치`}
+              title="🏪 우리 업종에서 나는 어디쯤?"
               locked={!isUnlocked && !isCapturing}
             >
               <BenchmarkCard
@@ -684,10 +684,10 @@ export default function ResultPage() {
           )}
 
           {isBusiness && (
-            <LockedSection title="🎛️ 런웨이 시뮬레이터" locked={!isUnlocked && !isCapturing}>
+            <LockedSection title="🤔 만약에 계산기" locked={!isUnlocked && !isCapturing}>
               <LoginGate
                 isLoggedIn={gateOpen}
-                message="시뮬레이터를 사용해보세요"
+                message="만약에 계산기를 사용해보세요"
                 sub="로그인하면 무제한으로 가정해볼 수 있어요"
               >
                 <CostSlider input={businessInput} currentDays={realisticDays} />
@@ -696,10 +696,10 @@ export default function ResultPage() {
           )}
 
           {!isBusiness && (
-            <LockedSection title="🎛️ 탈출 시뮬레이터" locked={!isUnlocked && !isCapturing}>
+            <LockedSection title="🤔 만약에 계산기" locked={!isUnlocked && !isCapturing}>
               <LoginGate
                 isLoggedIn={gateOpen}
-                message="시뮬레이터를 사용해보세요"
+                message="만약에 계산기를 사용해보세요"
                 sub="로그인하면 무제한으로 가정해볼 수 있어요"
               >
                 <FreelancerSlider input={freelancerInput} currentDays={realisticDays} />
@@ -707,7 +707,7 @@ export default function ResultPage() {
             </LockedSection>
           )}
 
-          <LockedSection title="💊 처방전" locked={!isUnlocked && !isCapturing}>
+          <LockedSection title="🐾 누렁이의 조언" locked={!isUnlocked && !isCapturing}>
             <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
           </LockedSection>
 

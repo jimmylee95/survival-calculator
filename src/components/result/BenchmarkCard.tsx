@@ -67,7 +67,7 @@ export function BenchmarkCard({ input, currentDays, isLoggedIn = true }: Props) 
                 업종 평균 대비 {pctOfAvg}%
               </p>
               <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
-                {benchmark.label} 평균 런웨이 {avgDays}일 기준
+                {benchmark.label} 평균 {avgDays}일 기준
               </p>
             </div>
           </div>
@@ -79,7 +79,7 @@ export function BenchmarkCard({ input, currentDays, isLoggedIn = true }: Props) 
         {/* 내 런웨이 */}
         <div style={{ marginBottom: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#1A1F5E' }}>내 런웨이</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#1A1F5E' }}>내 결과</span>
             <span style={{ fontSize: 12, fontWeight: 800, color: overallGrade.color }}>
               {isFinite(currentDays) ? `${Math.floor(currentDays)}일` : '∞'}
             </span>

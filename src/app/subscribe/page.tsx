@@ -8,9 +8,9 @@ import { useSubscription } from '@/hooks/useSubscription'
 import type { User } from '@supabase/supabase-js'
 
 const FEATURES = [
-  { icon: '📊', text: '매일 런웨이 자동 저장 & 추세 분석' },
-  { icon: '🔔', text: '위험 알림 & 행동 처방전' },
-  { icon: '🎯', text: '업종별 벤치마크 상세 비교' },
+  { icon: '📊', text: '매일 자동으로 내 상황 체크' },
+  { icon: '🔔', text: '위험할 때 누렁이가 알려줘요' },
+  { icon: '🎯', text: '우리 업종은 보통 얼마나 벌까?' },
   { icon: '📸', text: '결과 이미지 다운로드 (무제한)' },
   { icon: '🤝', text: '커뮤니티 기능 우선 접근' },
   { icon: '✨', text: '향후 추가될 모든 프리미엄 기능' },

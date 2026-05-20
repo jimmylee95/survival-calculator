@@ -63,10 +63,10 @@ export function CostSlider({ input, currentDays }: Props) {
       }}>
         <div>
           <p style={{ fontSize: 14, fontWeight: 800, color: '#1A1F5E', margin: '0 0 2px' }}>
-            🎛️ 런웨이 시뮬레이터
+            🤔 만약에 계산기
           </p>
           <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>
-            슬라이더를 움직여 생존일 변화를 확인하세요
+            슬라이더를 움직여 며칠 더 버틸 수 있는지 확인하세요
           </p>
         </div>
         {(fixedChange !== 0 || revenueChange !== 0) && (
@@ -91,7 +91,7 @@ export function CostSlider({ input, currentDays }: Props) {
         transition: 'background 0.3s',
       }}>
         <p style={{ fontSize: 12, color: '#64748B', fontWeight: 600, margin: '0 0 6px' }}>
-          {fixedChange === 0 && revenueChange === 0 ? '현재 런웨이' : '시뮬레이션 결과'}
+          {fixedChange === 0 && revenueChange === 0 ? '현재 버틸 수 있는 날' : '예상 결과'}
         </p>
         <p style={{
           fontSize: 44, fontWeight: 900, color: simColor,

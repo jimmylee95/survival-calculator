@@ -233,7 +233,7 @@ function HistoryCard({
   const days    = record.result_days
   const isBiz   = record.mode === 'business'
   const ind     = industryLabel(record)
-  const dayLbl  = isBiz ? '런웨이' : '탈출까지'
+  const dayLbl  = isBiz ? '버틸 수 있는 날' : '탈출까지'
 
   return (
     <button onClick={onClick}

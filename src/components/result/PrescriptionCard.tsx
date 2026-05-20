@@ -56,7 +56,7 @@ const BIZ_PRESCRIPTIONS: Record<DangerLevel, Prescription> = {
   safe: {
     emoji:   '✅',
     title:   '사장님, 지금은 안전해요!',
-    desc:    '런웨이가 충분해요. 이 여유를 성장에 투자할 때예요.',
+    desc:    '버틸 수 있는 날이 충분해요. 이 여유를 성장에 투자할 때예요.',
     quote:   '"버티는 것에서 끝내지 말고, 이 기회에 한 단계 올라가자."',
     bg:      '#F0FFF4',
     border:  '#C6F6D5',
@@ -197,8 +197,8 @@ export function PrescriptionCard({ level, mode = 'business', isLoggedIn = true }
         {lockedActions.length > 0 && (
           <LoginGate
             isLoggedIn={isLoggedIn}
-            message="더 많은 처방전이 궁금하다면?"
-            sub="로그인하면 모든 처방전을 받아볼 수 있어요"
+            message="더 많은 조언이 궁금하다면?"
+            sub="로그인하면 누렁이의 모든 조언을 받아볼 수 있어요"
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {lockedActions.map(action => (

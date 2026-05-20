@@ -572,7 +572,7 @@ function Step3Done({
               fontSize: 11, fontWeight: 700, color: '#94A3B8',
               margin: '0 0 2px', letterSpacing: '0.2px',
             }}>
-              {isBiz ? '런웨이 변화' : '탈출일 변화'}
+              {isBiz ? '버틸 수 있는 날 변화' : '탈출일 변화'}
             </p>
             <p style={{
               fontSize: 17, fontWeight: 900,

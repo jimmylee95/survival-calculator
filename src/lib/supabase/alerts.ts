@@ -43,9 +43,9 @@ export async function generateAlerts(userId: string): Promise<Alert[]> {
     const days = cur.result_days
     if (days !== null) {
       if (days <= 30) {
-        alerts.push({ id: 'runway-critical', type: 'critical', emoji: '🚨', title: '긴급 점검 필요', message: '런웨이가 30일 미만이에요. 지금 바로 지출을 점검하세요' })
+        alerts.push({ id: 'runway-critical', type: 'critical', emoji: '🚨', title: '긴급 점검 필요', message: '버틸 수 있는 날이 30일 미만이에요. 지금 바로 지출을 점검하세요' })
       } else if (days <= 60) {
-        alerts.push({ id: 'runway-warning', type: 'warning', emoji: '⚠️', title: '주의가 필요해요', message: '런웨이가 2개월 이하예요. 비용 절감 방법을 찾아보세요' })
+        alerts.push({ id: 'runway-warning', type: 'warning', emoji: '⚠️', title: '주의가 필요해요', message: '버틸 수 있는 날이 2개월 이하예요. 비용 절감 방법을 찾아보세요' })
       } else if (days <= 90) {
         alerts.push({ id: 'runway-caution', type: 'info', emoji: '🟡', title: '아직은 괜찮아요', message: '하지만 방심은 금물! 매출 유지에 집중하세요' })
       } else {
@@ -57,9 +57,9 @@ export async function generateAlerts(userId: string): Promise<Alert[]> {
     if (prev && cur.result_days !== null && prev.result_days !== null) {
       const diff = cur.result_days - prev.result_days
       if (diff >= 10) {
-        alerts.push({ id: 'runway-up', type: 'success', emoji: '🎉', title: '런웨이가 늘었어요!', message: `지난번보다 ${diff}일 늘었어요. 좋은 흐름이에요` })
+        alerts.push({ id: 'runway-up', type: 'success', emoji: '🎉', title: '버틸 수 있는 날이 늘었어요!', message: `지난번보다 ${diff}일 늘었어요. 좋은 흐름이에요` })
       } else if (diff <= -10) {
-        alerts.push({ id: 'runway-down', type: 'warning', emoji: '😰', title: '런웨이가 줄었어요', message: `지난번보다 ${Math.abs(diff)}일 줄었어요. 원인을 확인해보세요` })
+        alerts.push({ id: 'runway-down', type: 'warning', emoji: '😰', title: '버틸 수 있는 날이 줄었어요', message: `지난번보다 ${Math.abs(diff)}일 줄었어요. 원인을 확인해보세요` })
       }
     }
 

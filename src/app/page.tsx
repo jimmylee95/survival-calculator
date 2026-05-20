@@ -22,7 +22,7 @@ const BANNERS: Banner[] = [
   {
     bg:    "url('/images/banner_02.png')",
     image: '/images/banner_02.png',
-    title: '사장님, 런웨이 몇 일인지 아세요?',
+    title: '사장님, 며칠이나 버틸 수 있는지 아세요?',
     sub:   '30초면 현실이 보입니다',
     href:  '/self-employed',
   },
