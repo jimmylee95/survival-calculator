@@ -60,8 +60,7 @@ const GRADE_BG_COLORS: Record<string, GradeTheme> = {
   A: { bg: '#1A2540', gradientFrom: '#4A6A9A', text: '#A0C8FF', sub: '#6090C0', accent: '#60A5FA' },
   B: { bg: '#1A2E1A', gradientFrom: '#4A7A4A', text: '#A0E0A0', sub: '#60A060', accent: '#34A853' },
   C: { bg: '#2A2520', gradientFrom: '#7A6A50', text: '#D4C4A0', sub: '#A09070', accent: '#C4A060' },
-  D: { bg: '#2A2010', gradientFrom: '#8A7030', text: '#E0C060', sub: '#A08830', accent: '#E8A032' },
-  F: { bg: '#2A1A1A', gradientFrom: '#7A3A3A', text: '#FFA0A0', sub: '#C06060', accent: '#E04444' },
+  D: { bg: '#2A1A1A', gradientFrom: '#7A3A3A', text: '#FFA0A0', sub: '#C06060', accent: '#E04444' },
 }
 
 function LockedSection({
@@ -195,8 +194,8 @@ export default function ResultPage() {
     ? (businessInput.industryType as string)
     : (freelancerInput.jobType ?? 'other')
   const grade = isBusiness
-    ? calculateGrade(realisticDays)
-    : calculateWorkerGrade(freeResult?.escapeDays ?? Infinity)
+    ? calculateGrade(topPercentile)
+    : calculateWorkerGrade(topPercentile)
   const userCount = INDUSTRY_USERS[gradeKey] ?? 1500
   const rawRank   = Math.round(userCount * (1 - percentile / 100))
   const rank      = Math.max(1, Math.min(userCount, rawRank))
@@ -343,7 +342,7 @@ export default function ResultPage() {
     A: '/images/result_hero_A.png',
     B: '/images/result_hero_B.png',
     C: '/images/result_hero_C.png',
-    D: null, F: null,
+    D: null,
   }
   const gradeImage = GRADE_IMAGE_MAP[grade.grade] ?? null
 
