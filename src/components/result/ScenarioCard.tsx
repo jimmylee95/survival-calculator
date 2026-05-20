@@ -31,7 +31,7 @@ export function ScenarioCard({ items }: Props) {
         borderBottom: '1px solid #F1F5F9',
       }}>
         <p style={{ fontSize: 13, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>
-          📊 상황별 예측
+          상황별 예측
         </p>
       </div>
 

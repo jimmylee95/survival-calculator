@@ -77,12 +77,12 @@ function LockedSection({
     <div>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 6,
-        padding: '0 4px 8px',
-        fontSize: 13, fontWeight: 800, color: '#4A5568',
-        letterSpacing: '-0.2px',
+        padding: '0 4px 10px',
+        fontSize: 18, fontWeight: 800, color: '#1A202C',
+        letterSpacing: '-0.3px',
       }}>
         <span>{title}</span>
-        {locked && <span aria-label="잠금">🔒</span>}
+        {locked && <span aria-label="잠금" style={{ fontSize: 14 }}>🔒</span>}
       </div>
       <div style={{
         filter:        locked ? 'blur(8px)' : 'none',
@@ -611,25 +611,22 @@ export default function ResultPage() {
                     width: '100%', maxWidth: 300,
                   }}>
                     {[
-                      { icon: '🏆', title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
-                      { icon: '📊', title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 업종에서 내 위치를 한눈에 확인할 수 있어요' },
-                      { icon: '📈', title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '매출이 줄거나 비용이 늘면 어떻게 될지 미리 계산해봐요' },
-                      { icon: '💡', title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
+                      { title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
+                      { title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 업종에서 내 위치를 한눈에 확인할 수 있어요' },
+                      { title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '매출이 줄거나 비용이 늘면 어떻게 될지 미리 계산해봐요' },
+                      { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                     ].map((item, i) => (
                       <div key={i} style={{
-                        display: 'flex', gap: 12, alignItems: 'flex-start',
                         background: 'rgba(255,255,255,0.08)',
                         borderRadius: 12, padding: '12px 14px',
                         border: '1px solid rgba(255,255,255,0.06)',
+                        textAlign: 'left',
                       }}>
-                        <span style={{ fontSize: 20, flexShrink: 0, marginTop: 2 }}>{item.icon}</span>
-                        <div style={{ textAlign: 'left' }}>
-                          <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', lineHeight: 1.3 }}>
-                            {item.title}
-                          </div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3, lineHeight: 1.4 }}>
-                            {item.desc}
-                          </div>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', lineHeight: 1.3 }}>
+                          {item.title}
+                        </div>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3, lineHeight: 1.4 }}>
+                          {item.desc}
                         </div>
                       </div>
                     ))}
@@ -697,19 +694,19 @@ export default function ResultPage() {
         {/* ── 카드 섹션 ───────────────────────────────── */}
         <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-          <LockedSection title="🤔 만약 이렇게 되면?" locked={!isUnlocked && !isCapturing}>
+          <LockedSection title="만약 이렇게 되면?" locked={!isUnlocked && !isCapturing}>
             <ScenarioCard items={scenarios} />
           </LockedSection>
 
           {insights.length > 0 && (
-            <LockedSection title="💡 핵심 진단" locked={!isUnlocked && !isCapturing}>
+            <LockedSection title="핵심 진단" locked={!isUnlocked && !isCapturing}>
               <InsightCard items={insights} />
             </LockedSection>
           )}
 
           {isBusiness && (
             <LockedSection
-              title="🏪 우리 업종에서 나는 어디쯤?"
+              title="우리 업종에서 나는 어디쯤?"
               locked={!isUnlocked && !isCapturing}
             >
               <BenchmarkCard
@@ -721,7 +718,7 @@ export default function ResultPage() {
           )}
 
           {isBusiness && (
-            <LockedSection title="🤔 만약에 계산기" locked={!isUnlocked && !isCapturing}>
+            <LockedSection title="만약에 계산기" locked={!isUnlocked && !isCapturing}>
               <LoginGate
                 isLoggedIn={gateOpen}
                 message="만약에 계산기를 사용해보세요"
@@ -733,7 +730,7 @@ export default function ResultPage() {
           )}
 
           {!isBusiness && (
-            <LockedSection title="🤔 만약에 계산기" locked={!isUnlocked && !isCapturing}>
+            <LockedSection title="만약에 계산기" locked={!isUnlocked && !isCapturing}>
               <LoginGate
                 isLoggedIn={gateOpen}
                 message="만약에 계산기를 사용해보세요"
@@ -744,7 +741,7 @@ export default function ResultPage() {
             </LockedSection>
           )}
 
-          <LockedSection title="🐾 누렁이의 조언" locked={!isUnlocked && !isCapturing}>
+          <LockedSection title="누렁이의 조언" locked={!isUnlocked && !isCapturing}>
             <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
           </LockedSection>
 

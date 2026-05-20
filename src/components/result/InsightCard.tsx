@@ -21,7 +21,7 @@ export function InsightCard({ items }: Props) {
       gap:          14,
     }}>
       <p style={{ fontSize: 13, fontWeight: 800, color: '#1A1F5E', margin: 0 }}>
-        💡 핵심 진단
+        핵심 진단
       </p>
 
       {items.map((item, i) => (

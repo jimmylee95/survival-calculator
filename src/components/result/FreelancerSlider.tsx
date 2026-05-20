@@ -60,7 +60,7 @@ export function FreelancerSlider({ input, currentDays }: Props) {
       }}>
         <div>
           <p style={{ fontSize: 14, fontWeight: 800, color: '#1A1F5E', margin: '0 0 2px' }}>
-            🤔 만약에 계산기
+            만약에 계산기
           </p>
           <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>
             슬라이더를 움직여 탈출 시기를 앞당겨 보세요
