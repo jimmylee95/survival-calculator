@@ -618,12 +618,20 @@ export default function ResultPage() {
                     display: 'flex', flexDirection: 'column', gap: 8,
                     width: '100%', maxWidth: 300,
                   }}>
-                    {[
-                      { title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
-                      { title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 업종에서 내 위치를 한눈에 확인할 수 있어요' },
-                      { title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '매출이 줄거나 비용이 늘면 어떻게 될지 미리 계산해봐요' },
-                      { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
-                    ].map((item, i) => (
+                    {(isBusiness
+                      ? [
+                          { title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
+                          { title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 업종에서 내 위치를 한눈에 확인할 수 있어요' },
+                          { title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '매출이 줄거나 비용이 늘면 어떻게 될지 미리 계산해봐요' },
+                          { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
+                        ]
+                      : [
+                          { title: '내 순위는 몇 등일까?',           desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
+                          { title: '상위 몇 %인지 궁금하지 않으세요?', desc: '동일 직종에서 내 위치를 한눈에 확인할 수 있어요' },
+                          { title: '최악의 경우, 며칠 버틸 수 있을까?', desc: '연봉이 줄거나 지출이 늘면 어떻게 될지 미리 계산해봐요' },
+                          { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
+                        ]
+                    ).map((item, i) => (
                       <div key={i} style={{
                         background: 'rgba(255,255,255,0.08)',
                         borderRadius: 12, padding: '12px 14px',
@@ -660,9 +668,11 @@ export default function ResultPage() {
                       onClick={handlePaidUnlock}
                       style={{
                         padding: '12px 18px', borderRadius: 12,
-                        background: '#03C75A', color: '#fff',
+                        background: '#03C75A', color: '#000000',
                         fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        textAlign: 'center',
                       }}
                     >
                       💰 990원으로 해제
