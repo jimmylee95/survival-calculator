@@ -178,6 +178,117 @@ function GradeRankPyramid({
   )
 }
 
+function GradeComparisonTable({ isBusiness }: { isBusiness: boolean }) {
+  const gradeHeaders: { label: string; ratio: string; color: string }[] = [
+    { label: 'S등급', ratio: '상위 5%',  color: '#FF0000' },
+    { label: 'A등급', ratio: '상위 10%', color: '#FF6B00' },
+    { label: 'B등급', ratio: '평균 50%', color: '#FFD700' },
+    { label: 'C등급', ratio: '하위 30%', color: '#4CAF50' },
+    { label: 'D등급', ratio: '하위 10%', color: '#2196F3' },
+  ]
+
+  const rows: { label: string; values: string[] }[] = isBusiness
+    ? [
+        { label: '월 매출',       values: ['5,000만원 이상',  '3,000~5,000만원', '1,000~3,000만원', '500~1,000만원', '500만원 이하'] },
+        { label: '월 순이익',     values: ['1,500만원 이상',  '800~1,500만원',  '300~800만원',    '100~300만원',  '100만원 이하'] },
+        { label: '고정비 비율',    values: ['30% 이하',        '30~45%',         '45~60%',         '60~75%',       '75% 이상'] },
+        { label: '생존 가능 기간', values: ['12개월 이상',     '6~12개월',       '3~6개월',        '1~3개월',      '1개월 이하'] },
+        { label: '부채 수준',     values: ['거의 없음',       '적정 수준',      '보통 수준',      '높음',         '매우 높음'] },
+        { label: '미래 전망',     values: ['매우 밝음 ☀️',    '밝음 🌤️',        '보통 😐',         '어두움 🌧️',     '매우 어두움 ⛈️'] },
+        { label: '생존 점수',     values: ['★★★★★',          '★★★★☆',          '★★★☆☆',          '★★☆☆☆',        '★☆☆☆☆'] },
+      ]
+    : [
+        { label: '연봉',          values: ['8,000만원 이상',  '5,000~8,000만원', '3,000~5,000만원', '2,000~3,000만원', '2,000만원 이하'] },
+        { label: '월 저축액',     values: ['300만원 이상',    '150~300만원',    '50~150만원',     '10~50만원',     '거의 없음'] },
+        { label: '생활비 비율',    values: ['40% 이하',        '40~55%',         '55~70%',         '70~85%',       '85% 이상'] },
+        { label: '탈출 가능 기간', values: ['1년 이내',        '1~3년',          '3~5년',          '5~10년',       '10년 이상'] },
+        { label: '부채 수준',     values: ['거의 없음',       '적정 수준',      '보통 수준',      '높음',         '매우 높음'] },
+        { label: '미래 전망',     values: ['매우 밝음 ☀️',    '밝음 🌤️',        '보통 😐',         '어두움 🌧️',     '매우 어두움 ⛈️'] },
+        { label: '탈출 점수',     values: ['★★★★★',          '★★★★☆',          '★★★☆☆',          '★★☆☆☆',        '★☆☆☆☆'] },
+      ]
+
+  const stickyLabelStyle: React.CSSProperties = {
+    position: 'sticky', left: 0, zIndex: 1,
+    padding: '8px 12px',
+    fontSize: 12, fontWeight: 800,
+    color: '#1A202C',
+    borderRight: '1px solid #E2E8F0',
+    whiteSpace: 'nowrap',
+  }
+
+  return (
+    <div style={{
+      background: '#fff', borderRadius: 16,
+      border: '1px solid #E2E8F0',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.04)',
+      overflowX: 'auto',
+      WebkitOverflowScrolling: 'touch',
+    }}>
+      <table style={{
+        borderCollapse: 'collapse',
+        width: '100%', minWidth: 640,
+        fontSize: 12,
+      }}>
+        <thead>
+          <tr>
+            <th style={{
+              ...stickyLabelStyle,
+              background: '#F8FAFC',
+              borderBottom: '1.5px solid #E2E8F0',
+              textAlign: 'left',
+            }}>
+              구분
+            </th>
+            {gradeHeaders.map((h, i) => (
+              <th key={i} style={{
+                background: h.color, color: '#fff',
+                padding: '10px 12px',
+                fontWeight: 800, fontSize: 12,
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+                borderBottom: '1.5px solid #E2E8F0',
+              }}>
+                <div>{h.label}</div>
+                <div style={{ fontSize: 10, opacity: 0.9, fontWeight: 600, marginTop: 2 }}>
+                  ({h.ratio})
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, ri) => {
+            const rowBg = ri % 2 === 1 ? '#F9FAFB' : '#fff'
+            return (
+              <tr key={ri} style={{ background: rowBg }}>
+                <td style={{
+                  ...stickyLabelStyle,
+                  background: rowBg,
+                  borderBottom: ri < rows.length - 1 ? '1px solid #F1F5F9' : 'none',
+                }}>
+                  {row.label}
+                </td>
+                {row.values.map((v, ci) => (
+                  <td key={ci} style={{
+                    padding: '8px 12px',
+                    fontSize: 13, fontWeight: 600,
+                    color: '#1A202C',
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                    borderBottom: ri < rows.length - 1 ? '1px solid #F1F5F9' : 'none',
+                  }}>
+                    {v}
+                  </td>
+                ))}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 function LockedSection({
   title,
   desc,
@@ -902,6 +1013,9 @@ export default function ResultPage() {
                   topPercentile={topPercentile}
                   isBusiness={isBusiness}
                 />
+                <div style={{ marginTop: 12 }}>
+                  <GradeComparisonTable isBusiness={isBusiness} />
+                </div>
               </div>
 
               {(!isUnlocked && !isCapturing) && (
