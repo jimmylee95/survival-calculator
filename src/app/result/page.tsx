@@ -887,11 +887,12 @@ export default function ResultPage() {
                   {/* 해제 버튼 */}
                   <div style={{
                     display: 'flex', gap: 8, marginTop: 8,
-                    flexWrap: 'wrap', justifyContent: 'center',
+                    width: '100%', justifyContent: 'center',
                   }}>
                     <button
                       onClick={handleShareForUnlock}
                       style={{
+                        flex: 1, minWidth: 0,
                         padding: '10px 18px', borderRadius: 12, minHeight: 56,
                         background: '#FEE500', color: '#3C1E1E',
                         border: 'none', cursor: 'pointer',
@@ -911,6 +912,7 @@ export default function ResultPage() {
                     <button
                       onClick={handlePaidUnlock}
                       style={{
+                        flex: 1, minWidth: 0,
                         padding: '10px 18px', borderRadius: 12, minHeight: 56,
                         background: '#03C75A', color: '#000000',
                         border: 'none', cursor: 'pointer',
