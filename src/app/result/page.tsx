@@ -432,14 +432,14 @@ export default function ResultPage() {
                 filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
               }}>
                 <span style={{
-                  fontSize: 64, fontWeight: 900, color: theme.accent,
+                  fontSize: 64, fontWeight: 900, color: '#FFFFFF',
                   letterSpacing: '-2px',
                 }}>
                   <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
                 </span>
                 {isFinite(realisticDays) && (
                   <span style={{
-                    fontSize: 32, fontWeight: 700, color: theme.accent,
+                    fontSize: 32, fontWeight: 700, color: '#FFFFFF',
                   }}>
                     일
                   </span>
@@ -447,28 +447,48 @@ export default function ResultPage() {
               </p>
             </div>
 
-            {/* 2. 한줄 타이틀 (메인 헤드라인) */}
-            <p style={{
-              fontSize: 34, fontWeight: 900, color: theme.accent,
-              margin: '0 0 12px', letterSpacing: '-0.03em', lineHeight: 1.3,
+            {/* 2. 누렁이 말풍선 — 한줄 타이틀 + 서브 메시지 */}
+            <div style={{
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: 20,
+              padding: '20px 24px',
+              margin: '20px auto 0',
+              position: 'relative',
+              maxWidth: 320,
               textAlign: 'center',
-              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))',
+              border: '1px solid rgba(255,255,255,0.08)',
             }}>
-              🐾 {grade.title}
-            </p>
+              {/* 말풍선 꼬리 (위쪽 중앙) */}
+              <div style={{
+                position: 'absolute',
+                top: -8, left: '50%',
+                transform: 'translateX(-50%) rotate(45deg)',
+                width: 16, height: 16,
+                background: 'rgba(255,255,255,0.1)',
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                borderLeft: '1px solid rgba(255,255,255,0.08)',
+              }} />
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginBottom: 6 }}>
+                누렁이가 한마디
+              </div>
+              <div style={{
+                fontSize: 34, fontWeight: 900, color: '#FFFFFF',
+                marginBottom: 6, letterSpacing: '-0.03em', lineHeight: 1.3,
+              }}>
+                {grade.title}
+              </div>
+              <div style={{
+                fontSize: 18, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
+                letterSpacing: '-0.2px',
+              }}>
+                {grade.message}
+              </div>
+            </div>
 
-            {/* 3. 서브 메시지 */}
-            <p style={{
-              fontSize: 18, fontWeight: 800, color: 'rgba(255,255,255,0.85)',
-              margin: '0 0 20px', letterSpacing: '-0.2px',
-            }}>
-              {grade.message}
-            </p>
-
-            {/* 4. 분석 결과 유도 문구 (블러 영역 바로 위) */}
+            {/* 3. 분석 결과 유도 문구 (블러 영역 바로 위) */}
             {!isUnlocked && !isCapturing && (
               <p style={{
-                fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 600,
+                fontSize: 13, color: 'rgba(255,255,255,0.55)', fontWeight: 600,
                 margin: '24px 0 12px',
                 animation: 'bounce-y 1.6s ease-in-out infinite',
               }}>
@@ -577,7 +597,7 @@ export default function ResultPage() {
                     fontSize: 17, fontWeight: 900, color: '#fff',
                     textAlign: 'center', letterSpacing: '-0.3px', lineHeight: 1.3,
                   }}>
-                    🐾 누렁이가 준비한 분석 결과
+                    누렁이가 준비한 분석 결과
                   </div>
                   <div style={{
                     fontSize: 12, color: 'rgba(255,255,255,0.65)',
