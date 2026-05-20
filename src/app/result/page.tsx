@@ -61,6 +61,123 @@ const GRADE_BG_COLORS: Record<string, GradeTheme> = {
   D: { bg: '#2A1A1A', gradientFrom: '#7A3A3A', text: '#FFA0A0', sub: '#C06060', accent: '#E04444' },
 }
 
+function GradeRankPyramid({
+  myGrade,
+  topPercentile,
+  isBusiness,
+}: {
+  myGrade:       string
+  topPercentile: number
+  isBusiness:    boolean
+}) {
+  const tiers = [
+    { grade: 'S', label: 'S등급', ratio: '상위 5%',  widthPct: 30,  color: '#FF0000' },
+    { grade: 'A', label: 'A등급', ratio: '상위 10%', widthPct: 45,  color: '#FF6B00' },
+    { grade: 'B', label: 'B등급', ratio: '평균 50%', widthPct: 65,  color: '#FFD700' },
+    { grade: 'C', label: 'C등급', ratio: '하위 30%', widthPct: 82,  color: '#4CAF50' },
+    { grade: 'D', label: 'D등급', ratio: '하위 10%', widthPct: 100, color: '#2196F3' },
+  ]
+
+  return (
+    <div style={{
+      background: '#fff', borderRadius: 16,
+      padding: '20px 16px',
+      border: '1px solid #E2E8F0',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.04)',
+    }}>
+      <h3 style={{
+        fontSize: 18, fontWeight: 800, color: '#1A202C',
+        margin: '0 0 4px', letterSpacing: '-0.3px',
+      }}>
+        {isBusiness ? '사장님 생존 계급도' : '직장인 탈출 계급도'}
+      </h3>
+      <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', margin: '0 0 16px' }}>
+        내 위치가 어디쯤인지 한눈에 확인해보세요
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {tiers.map(tier => {
+          const isMine = tier.grade === myGrade
+          return (
+            <div key={tier.grade} style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 60px',
+              alignItems: 'center',
+              gap: 8,
+              height: 44,
+            }}>
+              {/* 피라미드 바 영역 (가로 중앙 정렬) */}
+              <div style={{
+                position: 'relative',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                height: '100%',
+              }}>
+                <div style={{
+                  width: `${tier.widthPct}%`, height: '100%',
+                  background: tier.color,
+                  borderRadius: 8,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  gap: 8,
+                  color: '#fff', fontWeight: 800, fontSize: 13,
+                  letterSpacing: '-0.3px',
+                  border: isMine ? '2.5px solid #1a1a2e' : '2.5px solid transparent',
+                  boxShadow: isMine ? '0 6px 16px rgba(0,0,0,0.25)' : '0 1px 3px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.25)',
+                }}>
+                  <span>{tier.label}</span>
+                  <span style={{ opacity: 0.85, fontWeight: 600, fontSize: 11 }}>
+                    {tier.ratio}
+                  </span>
+                </div>
+                {isMine && (
+                  <div style={{
+                    position: 'absolute',
+                    left: `calc(50% + ${tier.widthPct / 2}% + 2px)`,
+                    right: 0, top: '50%',
+                    borderTop: '2px dashed #1a1a2e',
+                    opacity: 0.45,
+                    animation: 'fade-in-up 0.5s ease',
+                  }} />
+                )}
+              </div>
+              {/* MY 뱃지 슬롯 */}
+              <div style={{ textAlign: 'center' }}>
+                {isMine && (
+                  <span style={{
+                    display: 'inline-block',
+                    background: '#1a1a2e', color: '#fff',
+                    borderRadius: 8, padding: '5px 12px',
+                    fontWeight: 900, fontSize: 12,
+                    letterSpacing: '0.5px',
+                    animation: 'fade-in-up 0.6s ease',
+                    boxShadow: '0 4px 12px rgba(26,26,46,0.3)',
+                  }}>
+                    MY
+                  </span>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <p style={{
+        marginTop: 16, padding: '12px 14px',
+        background: '#F8FAFC', borderRadius: 12,
+        fontSize: 13, fontWeight: 700, color: '#1A202C',
+        textAlign: 'center', lineHeight: 1.5,
+      }}>
+        같은 {isBusiness ? '업종 사장님' : '직군 직장인'} 중{' '}
+        <span style={{ color: '#03C75A', fontWeight: 900, fontSize: 15 }}>
+          상위 {topPercentile}%
+        </span>
+        입니다
+      </p>
+    </div>
+  )
+}
+
 function GradeComparisonTable({ isBusiness }: { isBusiness: boolean }) {
   const headers = isBusiness
     ? ['등급', '월 매출', '고정비', '순이익', '생존 기간']
@@ -697,13 +814,11 @@ export default function ResultPage() {
                   }}>
                     {(isBusiness
                       ? [
-                          { title: '내 순위는 몇 등일까?',           desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
                           { title: 'S등급의 결과가 궁금하지 않으세요?', desc: '동일 업종 S등급 사장님의 핵심 지표를 확인해보세요' },
                           { title: '등급별 기준이 궁금하지 않으세요?', desc: '각 등급별 핵심 지표를 한 눈에 확인해보세요' },
                           { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                         ]
                       : [
-                          { title: '내 순위는 몇 등일까?',           desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
                           { title: 'S등급의 결과가 궁금하지 않으세요?', desc: '동일 직군 S등급 직장인의 핵심 지표를 확인해보세요' },
                           { title: '등급별 기준이 궁금하지 않으세요?', desc: '각 등급별 핵심 지표를 한 눈에 확인해보세요' },
                           { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
@@ -785,6 +900,15 @@ export default function ResultPage() {
           </div>
         </div>
         {/* ── 캡처 영역 끝 ─────────────────────────────── */}
+
+        {/* ── 등급 계급도 (무료) ───────────────────────── */}
+        <div style={{ padding: '20px 16px 0' }}>
+          <GradeRankPyramid
+            myGrade={grade.grade}
+            topPercentile={topPercentile}
+            isBusiness={isBusiness}
+          />
+        </div>
 
         {/* ── 카드 섹션 ───────────────────────────────── */}
         <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
