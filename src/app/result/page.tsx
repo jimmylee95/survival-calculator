@@ -71,10 +71,10 @@ function GradeRankPyramid({
   isBusiness:    boolean
 }) {
   const tiers = [
-    { grade: 'S', label: 'S등급', ratio: '상위 5%',  widthPct: 30,  color: '#FF0000' },
-    { grade: 'A', label: 'A등급', ratio: '상위 10%', widthPct: 45,  color: '#FF6B00' },
-    { grade: 'B', label: 'B등급', ratio: '평균 50%', widthPct: 65,  color: '#FFD700' },
-    { grade: 'C', label: 'C등급', ratio: '하위 30%', widthPct: 82,  color: '#4CAF50' },
+    { grade: 'S', label: 'S등급', ratio: '상위 5%',  widthPct: 45,  color: '#FF0000' },
+    { grade: 'A', label: 'A등급', ratio: '상위 10%', widthPct: 55,  color: '#FF6B00' },
+    { grade: 'B', label: 'B등급', ratio: '평균 50%', widthPct: 70,  color: '#FFD700' },
+    { grade: 'C', label: 'C등급', ratio: '하위 30%', widthPct: 85,  color: '#4CAF50' },
     { grade: 'D', label: 'D등급', ratio: '하위 10%', widthPct: 100, color: '#2196F3' },
   ]
 
@@ -117,16 +117,17 @@ function GradeRankPyramid({
                   background: tier.color,
                   borderRadius: 8,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: 8,
-                  color: '#fff', fontWeight: 800, fontSize: 13,
+                  gap: 6,
+                  color: '#fff', fontWeight: 800, fontSize: 12,
                   letterSpacing: '-0.3px',
+                  whiteSpace: 'nowrap',
                   border: isMine ? '2.5px solid #1a1a2e' : '2.5px solid transparent',
                   boxShadow: isMine ? '0 6px 16px rgba(0,0,0,0.25)' : '0 1px 3px rgba(0,0,0,0.08)',
                   transition: 'all 0.3s ease',
                   textShadow: '0 1px 2px rgba(0,0,0,0.25)',
                 }}>
-                  <span>{tier.label}</span>
-                  <span style={{ opacity: 0.85, fontWeight: 600, fontSize: 11 }}>
+                  <span style={{ whiteSpace: 'nowrap' }}>{tier.label}</span>
+                  <span style={{ opacity: 0.85, fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>
                     {tier.ratio}
                   </span>
                 </div>
