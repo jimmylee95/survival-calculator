@@ -941,7 +941,11 @@ export default function ResultPage() {
                     <span style={{ fontSize: 18, color: '#03C75A', fontWeight: 900 }}>
                       {userCount.toLocaleString()}명
                     </span>
-                    의 {isBusiness ? '사장님' : '직장인'}이 확인했어요
+                    의{' '}
+                    {industryLabel && industryLabel !== '동종업종' && industryLabel !== '직장인' && (
+                      <span>{industryLabel} </span>
+                    )}
+                    {isBusiness ? '사장님' : '직장인'}이 확인했어요
                   </p>
                 </div>
               )}
