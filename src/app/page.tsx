@@ -222,7 +222,7 @@ const CARDS: CardConfig[] = [
     mode:    'freelancer',
     bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
     bgImage: '/images/nureungi_worker_bg.png',
-    title:   '노예 계약서 파기 디데이,\n퇴사 날짜 계산하기',
+    title:   '가슴속 사직서 집어던지는\n퇴사 날짜 계산하기',
     desc:    '사직서를 던질 수 있는\n퇴사 날짜를 확인해보자!',
     sub:     '직장인 · 공무원 · 프리랜서',
     shadow:  'rgba(74,125,255,0.45)',
