@@ -298,7 +298,7 @@ function Q1Industry({
 }) {
   return (
     <div>
-      <QuestionTitle num={1} text={<>‘나도 사장님이다’<br />내 피땀 눈물이<br />들어간 업종은?</>}
+      <QuestionTitle num={1} text={<>내 피땀 눈물이<br />들어간 업종은?</>}
         sub="카페, 치킨집, 식당 등" />
       <div style={{
         display: 'grid',
