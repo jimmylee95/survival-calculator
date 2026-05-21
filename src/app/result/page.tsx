@@ -42,7 +42,7 @@ const JOB_AVG_SAVINGS_RATE: Record<string, number> = {
 
 const MODE_META = {
   business:   { bg: '#FF6B35', label: '사장님 생존 계산기' },
-  freelancer: { bg: '#1A1F5E', label: '직장인 퇴사 계산기' },
+  freelancer: { bg: '#4A7DFF', label: '직장인 퇴사 계산기' },
 }
 
 type GradeTheme = {
@@ -931,11 +931,11 @@ export default function ResultPage() {
                       style={{
                         flex: 1, minWidth: 0,
                         padding: '10px 18px', borderRadius: 12, minHeight: 56,
-                        background: isBusiness ? '#FF6B35' : '#1A1F5E', color: '#fff',
+                        background: isBusiness ? '#FF6B35' : '#4A7DFF', color: '#fff',
                         border: 'none', cursor: 'pointer',
                         boxShadow: isBusiness
                           ? '0 4px 12px rgba(255,107,53,0.4)'
-                          : '0 4px 12px rgba(26,31,94,0.4)',
+                          : '0 4px 12px rgba(74,125,255,0.4)',
                         display: 'flex', flexDirection: 'column',
                         alignItems: 'center', justifyContent: 'center', gap: 2,
                         textAlign: 'center',

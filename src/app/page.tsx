@@ -225,7 +225,7 @@ const CARDS: CardConfig[] = [
     title:   '노예 계약서 파기 디데이,\n퇴사 날짜 계산하기',
     desc:    '사직서를 던질 수 있는\n퇴사 날짜를 확인해보자!',
     sub:     '직장인 · 공무원 · 프리랜서',
-    shadow:  'rgba(26,31,94,0.45)',
+    shadow:  'rgba(74,125,255,0.45)',
   },
 ]
 
@@ -407,13 +407,13 @@ export default function HomePage() {
                   fontSize:      14,
                   fontWeight:    700,
                   color:         '#FFFFFF',
-                  background:    card.mode === 'business' ? '#FF6B35' : '#1A1F5E',
+                  background:    card.mode === 'business' ? '#FF6B35' : '#4A7DFF',
                   borderRadius:  25,
                   padding:       '10px 24px',
                   letterSpacing: '-0.2px',
                   boxShadow:     card.mode === 'business'
                     ? '0 2px 8px rgba(255, 107, 53, 0.4)'
-                    : '0 2px 8px rgba(26, 31, 94, 0.4)',
+                    : '0 2px 8px rgba(74, 125, 255, 0.4)',
                 }}>
                   지금 확인하기 →
                 </span>
@@ -430,7 +430,7 @@ export default function HomePage() {
               이미{' '}
               <span style={{
                 fontWeight: 700,
-                color: card.mode === 'business' ? '#FF6B00' : '#2D2B55',
+                color: card.mode === 'business' ? '#FF6B00' : '#4A7DFF',
               }}>
                 {CARD_COUNTERS[card.mode].toLocaleString()}명
               </span>

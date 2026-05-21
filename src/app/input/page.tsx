@@ -66,8 +66,8 @@ export default function InputPage() {
 
   const mode: DailyInputMode = (latest?.mode as DailyInputMode | undefined) ?? 'business'
   const isBiz = mode === 'business'
-  const accent = isBiz ? '#1A1F5E' : '#FF6B35'
-  const accentTo = isBiz ? '#4F46E5' : '#E8590C'
+  const accent = isBiz ? '#FF6B35' : '#4A7DFF'
+  const accentTo = isBiz ? '#E8590C' : '#1F4FCC'
 
   // 인증 후 latest 계산 기록 조회 (변화량 표시용)
   useEffect(() => {
