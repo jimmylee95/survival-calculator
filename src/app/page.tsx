@@ -217,7 +217,7 @@ const CARDS: CardConfig[] = [
     bgImage: '/images/nureungi_worker_bg.png',
     title:   '노예 계약서 파기 디데이,\n퇴사까지 남은 날 계산하기',
     desc:    '사직서를 던질 수 있는\n진짜 날짜를 확인해보자!',
-    sub:     '직장인 · 프리랜서 준비생',
+    sub:     '직장인 · 공무원 · 프리랜서',
     shadow:  'rgba(255,107,53,0.45)',
   },
 ]
