@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { INDUSTRY_USERS } from '@/utils/calculate'
+import { CountUpNumber } from '@/components/result/CountUpNumber'
 
 // 결과 페이지와 동일한 INDUSTRY_USERS 데이터 소스에서 대표값 사용
 const CARD_COUNTERS: Record<'business' | 'freelancer', number> = {
@@ -420,22 +421,33 @@ export default function HomePage() {
               </div>
             </button>
 
-            {/* 카드 하단 참여 인원 카운터 */}
-            <p style={{
-              marginTop: 12, marginBottom: 0,
-              textAlign: 'center',
-              fontSize: 13, color: '#666',
-              fontWeight: 500,
+            {/* 카드 하단 참여 인원 카운터 (필 형태) */}
+            <div style={{
+              marginTop: 12,
+              display: 'flex', justifyContent: 'center',
             }}>
-              이미{' '}
-              <span style={{
-                fontWeight: 700,
-                color: card.mode === 'business' ? '#FF6B00' : '#4A7DFF',
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                background: 'rgba(255, 255, 255, 0.9)',
+                borderRadius: 20,
+                padding: '8px 20px',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                color: '#333',
+                fontSize: 13, fontWeight: 500,
               }}>
-                {CARD_COUNTERS[card.mode].toLocaleString()}명
-              </span>
-              의 {card.mode === 'business' ? '사장님' : '직장인'}이 참여 했어요
-            </p>
+                <span style={{ fontSize: 14 }}>🔥</span>
+                <span>이미</span>
+                <span style={{
+                  fontSize: 16, fontWeight: 800,
+                  color: card.mode === 'business' ? '#FF6B00' : '#4A7DFF',
+                }}>
+                  <CountUpNumber target={CARD_COUNTERS[card.mode]} duration={1500} />명
+                </span>
+                <span>
+                  의 {card.mode === 'business' ? '사장님' : '직장인'}이 참여 했어요
+                </span>
+              </div>
+            </div>
             </div>
           ))}
         </div>
