@@ -204,7 +204,7 @@ type CardConfig = {
 const CARDS: CardConfig[] = [
   {
     mode:    'business',
-    bg:      'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 35%, transparent 60%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
+    bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
     bgImage: '/images/nureungi_business_bg.png',
     title:   "숨만 쉬어도 텅장\n사장님 '존버력' 계산하기",
     desc:    "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
@@ -213,7 +213,7 @@ const CARDS: CardConfig[] = [
   },
   {
     mode:    'freelancer',
-    bg:      'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 35%, transparent 60%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
+    bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
     bgImage: '/images/nureungi_worker_bg.png',
     title:   '노예 계약서 파기 디데이,\n퇴사까지 남은 날 계산하기',
     desc:    '사직서를 던질 수 있는\n퇴사 날짜를 확인해보자!',
@@ -371,7 +371,7 @@ export default function HomePage() {
                   letterSpacing: '-0.3px',
                   whiteSpace: 'pre-line',
                   lineHeight: 1.35,
-                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                 }}>
                   {card.title}
                 </p>
@@ -383,7 +383,7 @@ export default function HomePage() {
                   margin:    0,
                   lineHeight: 1.75,
                   whiteSpace: 'pre-line',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                 }}>
                   {card.desc}
                 </p>
@@ -397,15 +397,16 @@ export default function HomePage() {
                 marginTop: 20,
               }}>
                 <span style={{
-                  fontSize:        14,
-                  fontWeight:      700,
-                  color:           '#FFFFFF',
-                  background:      'rgba(0,0,0,0.85)',
-                  borderRadius:    8,
-                  padding:         '10px 20px',
-                  letterSpacing:   '-0.2px',
-                  backdropFilter:  'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
+                  fontSize:      14,
+                  fontWeight:    700,
+                  color:         '#FFFFFF',
+                  background:    card.mode === 'business' ? '#FF6B00' : '#4F46E5',
+                  borderRadius:  25,
+                  padding:       '10px 24px',
+                  letterSpacing: '-0.2px',
+                  boxShadow:     card.mode === 'business'
+                    ? '0 2px 8px rgba(255, 107, 0, 0.4)'
+                    : '0 2px 8px rgba(79, 70, 229, 0.4)',
                 }}>
                   지금 확인하기 →
                 </span>
