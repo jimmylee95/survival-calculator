@@ -911,7 +911,7 @@ export default function ResultPage() {
                       style={{
                         flex: 1, minWidth: 0,
                         padding: '10px 18px', borderRadius: 12, minHeight: 56,
-                        background: '#FEE500', color: '#FFFFFF',
+                        background: '#FEE500', color: '#3B1F00',
                         border: 'none', cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                         display: 'flex', flexDirection: 'column',
@@ -919,10 +919,10 @@ export default function ResultPage() {
                         textAlign: 'center',
                       }}
                     >
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.2px' }}>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#3B1F00', letterSpacing: '-0.2px' }}>
                         공유하고 확인하기
                       </span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#FFFFFF', opacity: 0.8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#5C3D1A' }}>
                         카톡 공유 3명하고 확인
                       </span>
                     </button>
