@@ -3,6 +3,13 @@
 import { useEffect, useRef, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
+import { INDUSTRY_USERS } from '@/utils/calculate'
+
+// 결과 페이지와 동일한 INDUSTRY_USERS 데이터 소스에서 대표값 사용
+const CARD_COUNTERS: Record<'business' | 'freelancer', number> = {
+  business:   INDUSTRY_USERS.restaurant ?? 3247,
+  freelancer: INDUSTRY_USERS.marketing  ?? 2103,
+}
 
 type Banner = {
   bg:     string
@@ -313,10 +320,10 @@ export default function HomePage() {
         <BannerCarousel />
 
         {/* 모드 선택 카드 */}
-        <div style={{ padding: '16px 20px 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ padding: '16px 20px 0', display: 'flex', flexDirection: 'column', gap: 20 }}>
           {CARDS.map(card => (
+            <div key={card.mode}>
             <button
-              key={card.mode}
               onClick={() => handleSelect(card.mode)}
               style={{
                 width:              '100%',
@@ -412,6 +419,24 @@ export default function HomePage() {
                 </span>
               </div>
             </button>
+
+            {/* 카드 하단 참여 인원 카운터 */}
+            <p style={{
+              marginTop: 12, marginBottom: 0,
+              textAlign: 'center',
+              fontSize: 13, color: '#666',
+              fontWeight: 500,
+            }}>
+              이미{' '}
+              <span style={{
+                fontWeight: 700,
+                color: card.mode === 'business' ? '#FF6B00' : '#2D2B55',
+              }}>
+                {CARD_COUNTERS[card.mode].toLocaleString()}명
+              </span>
+              의 {card.mode === 'business' ? '사장님' : '직장인'}이 계급 판정을 받았어요
+            </p>
+            </div>
           ))}
         </div>
 
