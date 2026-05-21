@@ -206,7 +206,7 @@ const CARDS: CardConfig[] = [
     mode:    'business',
     bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
     bgImage: '/images/nureungi_business_bg.png',
-    title:   "숨만 쉬어도 나가는 돈,\n사장님 '존버력' 계산하기",
+    title:   "숨만 쉬어도 텅장\n사장님 '존버력' 계산하기",
     desc:    "잔고가 완벽한 '0'이 되기 전에...\n며칠이나 버틸까? '존버' D-day를 확인하자!",
     sub:     '자영업자 · 소상공인',
     shadow:  'rgba(26,31,94,0.45)',
@@ -363,6 +363,7 @@ export default function HomePage() {
                 color:      '#fff',
                 margin:     '0 0 8px',
                 letterSpacing: '-0.3px',
+                whiteSpace: 'pre-line',
               }}>
                 {card.title}
               </p>
