@@ -354,7 +354,7 @@ function Q2Balance({
   return (
     <div>
       <QuestionTitle num={2} text={<>월세랑 세금 내기 전, 지금<br />통장에 당장 가용 가능한<br />‘순수 잔고’는?</>}
-        sub="통장 잔고" />
+        sub="월세 내기 전 통장에 찍힌 숫자" />
       <AmountInput value={input.balance}
         onChange={v => update({ balance: v })}
         presets={BALANCE_PRESETS} autoFocus onEnter={onNext} />
@@ -375,7 +375,7 @@ function Q3Fixed({
   return (
     <div>
       <QuestionTitle num={3} text={<>매달 숨만 쉬어도<br />통장에서 무섭게 빠져나가는<br />‘고정비(월세+이자+인건비)’는?</>}
-        sub="매달 고정 지출" />
+        sub="숨만 쉬어도 통장에서 증발하는 금액" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -408,7 +408,7 @@ function Q4Revenue({
   return (
     <div>
       <QuestionTitle num={4} text={<>카드 수수료 빼고<br />배달앱 떼고 내 손에 쥐어지는<br />‘평균 월 매출’은?</>}
-        sub="최근 3개월 평균 매출" />
+        sub="배달앱 떼고 카드사 떼고 내 손에 쥐어지는 금액" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -442,7 +442,7 @@ function Q4Revenue({
 function Q5LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   return (
     <div>
-      <QuestionTitle num={5} text={<>대출 이자가<br />있으세요?</>}
+      <QuestionTitle num={5} text={<>은행한테 빚진 거<br />있어요?</>}
         sub="없으면 바로 지역 선택으로 넘어가요" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button onClick={onYes}
@@ -487,7 +487,7 @@ function Q5LoanAmount({
   return (
     <div>
       <QuestionTitle num={5} text={<>매달 이자가<br />얼마인가요?</>}
-        sub="원금 제외, 이자 금액만 입력" />
+        sub="은행님께 매달 바치는 이자" />
       <AmountInput value={input.loanInterest}
         onChange={v => update({ loanInterest: v })}
         presets={LOAN_PRESETS} autoFocus onEnter={onNext} />

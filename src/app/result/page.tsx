@@ -89,7 +89,7 @@ function GradeRankPyramid({
         fontSize: 18, fontWeight: 800, color: '#1A202C',
         margin: '0 0 4px', letterSpacing: '-0.3px',
       }}>
-        {isBusiness ? '대한민국 장사 실력 계급도' : '대한민국 직장인 계급도'}
+        {isBusiness ? '대한민국 사장님 존버 계급도' : '대한민국 직장인 노예 해방 계급도'}
       </h3>
       <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', margin: '0 0 16px' }}>
         {isBusiness
@@ -192,19 +192,19 @@ function GradeComparisonTable({ isBusiness }: { isBusiness: boolean }) {
 
   const rows: { label: string; values: string[] }[] = isBusiness
     ? [
-        { label: '월 매출',       values: ['5,000만원 이상',  '3,000~5,000만원', '1,000~3,000만원', '500~1,000만원', '500만원 이하'] },
-        { label: '월 순이익',     values: ['1,500만원 이상',  '800~1,500만원',  '300~800만원',    '100~300만원',  '100만원 이하'] },
-        { label: '고정비 비율',    values: ['30% 이하',        '30~45%',         '45~60%',         '60~75%',       '75% 이상'] },
-        { label: '생존 가능 기간', values: ['12개월 이상',     '6~12개월',       '3~6개월',        '1~3개월',      '1개월 이하'] },
+        { label: '배달앱이 떼가기 전 내 매출',         values: ['5,000만원 이상',  '3,000~5,000만원', '1,000~3,000만원', '500~1,000만원', '500만원 이하'] },
+        { label: '건물주 갖다 바치고 내 손에 남는 돈', values: ['1,500만원 이상',  '800~1,500만원',  '300~800만원',    '100~300만원',  '100만원 이하'] },
+        { label: '숨쉬기 비용 비율',                  values: ['30% 이하',        '30~45%',         '45~60%',         '60~75%',       '75% 이상'] },
+        { label: '내 통장 존버 유효기간',              values: ['12개월 이상',     '6~12개월',       '3~6개월',        '1~3개월',      '1개월 이하'] },
         { label: '부채 수준',     values: ['거의 없음',       '적정 수준',      '보통 수준',      '높음',         '매우 높음'] },
         { label: '미래 전망',     values: ['매우 밝음 ☀️',    '밝음 🌤️',        '보통 😐',         '어두움 🌧️',     '매우 어두움 ⛈️'] },
         { label: '생존 점수',     values: ['★★★★★',          '★★★★☆',          '★★★☆☆',          '★★☆☆☆',        '★☆☆☆☆'] },
       ]
     : [
-        { label: '연봉',          values: ['8,000만원 이상',  '5,000~8,000만원', '3,000~5,000만원', '2,000~3,000만원', '2,000만원 이하'] },
-        { label: '월 저축액',     values: ['300만원 이상',    '150~300만원',    '50~150만원',     '10~50만원',     '거의 없음'] },
-        { label: '생활비 비율',    values: ['40% 이하',        '40~55%',         '55~70%',         '70~85%',       '85% 이상'] },
-        { label: '탈출 가능 기간', values: ['1년 이내',        '1~3년',          '3~5년',          '5~10년',       '10년 이상'] },
+        { label: '세전은 남의 돈, 세후가 내 돈', values: ['8,000만원 이상',  '5,000~8,000만원', '3,000~5,000만원', '2,000~3,000만원', '2,000만원 이하'] },
+        { label: '월급에서 살아남은 돈',         values: ['300만원 이상',    '150~300만원',    '50~150만원',     '10~50만원',     '거의 없음'] },
+        { label: '생활비 비율',                  values: ['40% 이하',        '40~55%',         '55~70%',         '70~85%',       '85% 이상'] },
+        { label: '노예 해방까지 남은 기간',     values: ['1년 이내',        '1~3년',          '3~5년',          '5~10년',       '10년 이상'] },
         { label: '부채 수준',     values: ['거의 없음',       '적정 수준',      '보통 수준',      '높음',         '매우 높음'] },
         { label: '미래 전망',     values: ['매우 밝음 ☀️',    '밝음 🌤️',        '보통 😐',         '어두움 🌧️',     '매우 어두움 ⛈️'] },
         { label: '탈출 점수',     values: ['★★★★★',          '★★★★☆',          '★★★☆☆',          '★★☆☆☆',        '★☆☆☆☆'] },
@@ -753,7 +753,7 @@ export default function ResultPage() {
                 margin: '24px 0 12px',
                 animation: 'bounce-y 1.6s ease-in-out infinite',
               }}>
-                {isBusiness ? '사장님' : '누렁이'}의 계급 판정 결과가 준비됐어요 👇
+                {isBusiness ? '사장님' : '직장인'} 계급, 누렁이가 냉정하게 매겼어요 👇
               </p>
             )}
 
@@ -858,14 +858,14 @@ export default function ResultPage() {
                     fontSize: 17, fontWeight: 900, color: '#fff',
                     textAlign: 'center', letterSpacing: '-0.3px', lineHeight: 1.3,
                   }}>
-                    누렁이가 판정한 계급 결과
+                    {isBusiness ? '누렁이가 냉정하게 매긴 사장님 계급' : '누렁이가 냉정하게 매긴 직장인 계급'}
                   </div>
                   <div style={{
                     fontSize: 12, color: 'rgba(255,255,255,0.65)',
                     textAlign: 'center', fontWeight: 600,
                     marginTop: -4,
                   }}>
-                    카톡 공유 3회로 무료 계급 판정!
+                    카톡 3명 공유하면 무료로 계급 판정!
                   </div>
                   <div style={{
                     display: 'flex', flexDirection: 'column', gap: 8,
@@ -874,15 +874,15 @@ export default function ResultPage() {
                     {(isBusiness
                       ? [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
-                          { title: '최상위 계급의 비밀이 궁금하지 않으세요?', desc: '동일 업종 S계급 사장님의 핵심 지표를 확인해보세요' },
-                          { title: '내 계급은 어떻게 정해졌을까? 🔒', desc: '대한민국 자영업자 계급 판정 기준을 공개합니다' },
-                          { title: '계급 상승을 위해 지금 해야 할 것은?', desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
+                          { title: '건물주가 인사하는 S계급의 비밀', desc: '동일 업종 S계급 사장님의 핵심 지표를 확인해보세요' },
+                          { title: '내 계급은 대체 왜 이 모양일까? 🔒', desc: '대한민국 자영업자 계급 판정 기준을 공개합니다' },
+                          { title: '폐업각 피하려면 지금 당장 해야 할 것', desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                         ]
                       : [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
-                          { title: '최상위 계급의 비밀이 궁금하지 않으세요?', desc: '동일 직군 S계급 직장인의 핵심 지표를 확인해보세요' },
-                          { title: '내 계급은 어떻게 정해졌을까? 🔒', desc: '대한민국 직장인 계급 판정 기준을 공개합니다' },
-                          { title: '계급 상승을 위해 지금 해야 할 것은?', desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
+                          { title: '사표 자유인 S계급의 비밀', desc: '동일 직군 S계급 직장인의 핵심 지표를 확인해보세요' },
+                          { title: '내 계급은 대체 왜 이 모양일까? 🔒', desc: '대한민국 직장인 계급 판정 기준을 공개합니다' },
+                          { title: '노예 탈출하려면 지금 당장 해야 할 것', desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
                         ]
                     ).map((item, i) => (
                       <div key={i} style={{
@@ -1063,7 +1063,7 @@ export default function ResultPage() {
             </div>
           </div>
 
-          <LockedSection title="누렁이의 계급 상승 조언" locked={!isUnlocked && !isCapturing}>
+          <LockedSection title="누렁이의 찐 현실 잔소리" locked={!isUnlocked && !isCapturing}>
             <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
           </LockedSection>
 
