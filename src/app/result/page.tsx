@@ -920,7 +920,7 @@ export default function ResultPage() {
                       }}
                     >
                       <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px' }}>
-                        내 계급도 공유하기
+                        공유하고 확인하기
                       </span>
                       <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>
                         카톡 공유 3명하고 확인
@@ -942,7 +942,7 @@ export default function ResultPage() {
                       }}
                     >
                       <span style={{ fontSize: 15, fontWeight: 800, color: '#fff', letterSpacing: '-0.2px' }}>
-                        990원으로 내 계급 확인하기
+                        바로 확인하기
                       </span>
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', opacity: 0.85 }}>
                         990원 결제하고 확인
