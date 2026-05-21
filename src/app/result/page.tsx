@@ -753,7 +753,7 @@ export default function ResultPage() {
                 margin: '24px 0 12px',
                 animation: 'bounce-y 1.6s ease-in-out infinite',
               }}>
-                {isBusiness ? '사장님' : '직장인'} 계급, 누렁이가 냉정하게 매겼어요 👇
+                {isBusiness ? '사장님' : '직장인'}의 자세한 분석 결과가 준비됐어요 👇
               </p>
             )}
 
@@ -858,14 +858,14 @@ export default function ResultPage() {
                     fontSize: 17, fontWeight: 900, color: '#fff',
                     textAlign: 'center', letterSpacing: '-0.3px', lineHeight: 1.3,
                   }}>
-                    {isBusiness ? '누렁이가 냉정하게 매긴 사장님 계급' : '누렁이가 냉정하게 매긴 직장인 계급'}
+                    누렁이가 준비한 분석 결과
                   </div>
                   <div style={{
                     fontSize: 12, color: 'rgba(255,255,255,0.65)',
                     textAlign: 'center', fontWeight: 600,
                     marginTop: -4,
                   }}>
-                    카톡 3명 공유하면 무료로 계급 판정!
+                    카톡 공유 3회로 무료 확인하세요!
                   </div>
                   <div style={{
                     display: 'flex', flexDirection: 'column', gap: 8,
