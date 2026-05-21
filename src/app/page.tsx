@@ -321,7 +321,7 @@ export default function HomePage() {
               style={{
                 width:              '100%',
                 padding:            '28px 24px',
-                minHeight:          card.bgImage ? 200 : undefined,
+                minHeight:          card.bgImage ? 220 : undefined,
                 borderRadius:       20,
                 background:         card.bg,
                 backgroundSize:     card.bgImage ? 'auto, cover' : undefined,
@@ -333,6 +333,10 @@ export default function HomePage() {
                 boxShadow:          `0 10px 36px ${card.shadow}`,
                 transform:          'translateY(0)',
                 transition:         'transform 0.15s ease, box-shadow 0.15s ease',
+                display:            'flex',
+                flexDirection:      'column',
+                justifyContent:     'space-between',
+                gap:                12,
               }}
               onMouseEnter={e => {
                 const t = e.currentTarget
@@ -345,42 +349,51 @@ export default function HomePage() {
                 t.style.boxShadow  = `0 10px 36px ${card.shadow}`
               }}
             >
-              {/* 서브 레이블 */}
-              <p style={{
-                fontSize: 11, fontWeight: 600,
-                color: 'rgba(255,255,255,0.55)',
-                margin: '0 0 6px',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-              }}>
-                {card.sub}
-              </p>
+              {/* 텍스트 영역 (상단 좌측) */}
+              <div>
+                {/* 서브 레이블 */}
+                <p style={{
+                  fontSize: 11, fontWeight: 600,
+                  color: 'rgba(255,255,255,0.55)',
+                  margin: '0 0 6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                }}>
+                  {card.sub}
+                </p>
 
-              {/* 제목 */}
-              <p style={{
-                fontSize:   21,
-                fontWeight: 900,
-                color:      '#fff',
-                margin:     '0 0 8px',
-                letterSpacing: '-0.3px',
-                whiteSpace: 'pre-line',
-              }}>
-                {card.title}
-              </p>
+                {/* 제목 */}
+                <p style={{
+                  fontSize:   21,
+                  fontWeight: 900,
+                  color:      '#fff',
+                  margin:     '0 0 12px',
+                  letterSpacing: '-0.3px',
+                  whiteSpace: 'pre-line',
+                  lineHeight: 1.35,
+                }}>
+                  {card.title}
+                </p>
 
-              {/* 설명 */}
-              <p style={{
-                fontSize:  13,
-                color:     'rgba(255,255,255,0.8)',
-                margin:    '0 0 18px',
-                lineHeight: 1.6,
-                whiteSpace: 'pre-line',
-              }}>
-                {card.desc}
-              </p>
+                {/* 설명 */}
+                <p style={{
+                  fontSize:  13,
+                  color:     'rgba(255,255,255,0.8)',
+                  margin:    0,
+                  lineHeight: 1.75,
+                  whiteSpace: 'pre-line',
+                }}>
+                  {card.desc}
+                </p>
+              </div>
 
-              {/* CTA */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {/* CTA — 우측 하단 */}
+              <div style={{
+                display: 'flex',
+                alignSelf: 'flex-end',
+                alignItems: 'center', gap: 6,
+                marginTop: 20,
+              }}>
                 <span style={{
                   fontSize:     13,
                   fontWeight:   800,
