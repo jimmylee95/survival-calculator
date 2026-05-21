@@ -434,7 +434,7 @@ export default function HomePage() {
               }}>
                 {CARD_COUNTERS[card.mode].toLocaleString()}명
               </span>
-              의 {card.mode === 'business' ? '사장님' : '직장인'}이 계급 판정을 받았어요
+              의 {card.mode === 'business' ? '사장님' : '직장인'}이 참여 했어요
             </p>
             </div>
           ))}
