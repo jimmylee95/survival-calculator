@@ -169,7 +169,7 @@ function GradeRankPyramid({
         fontSize: 13, fontWeight: 700, color: '#1A202C',
         textAlign: 'center', lineHeight: 1.5,
       }}>
-        같은 {isBusiness ? '업종 사장님' : '직군 직장인'} 중{' '}
+        같은 {isBusiness ? '업종' : '직군'}에서 당신의 계급은{' '}
         <span style={{ color: '#03C75A', fontWeight: 900, fontSize: 15 }}>
           상위 {topPercentile}%
         </span>
@@ -737,7 +737,7 @@ export default function ResultPage() {
                 margin: '24px 0 12px',
                 animation: 'bounce-y 1.6s ease-in-out infinite',
               }}>
-                {isBusiness ? '사장님' : '누렁이'}의 자세한 분석 결과가 준비됐어요 👇
+                {isBusiness ? '사장님' : '누렁이'}의 계급 판정 결과가 준비됐어요 👇
               </p>
             )}
 
@@ -842,14 +842,14 @@ export default function ResultPage() {
                     fontSize: 17, fontWeight: 900, color: '#fff',
                     textAlign: 'center', letterSpacing: '-0.3px', lineHeight: 1.3,
                   }}>
-                    누렁이가 준비한 분석 결과
+                    누렁이가 판정한 계급 결과
                   </div>
                   <div style={{
                     fontSize: 12, color: 'rgba(255,255,255,0.65)',
                     textAlign: 'center', fontWeight: 600,
                     marginTop: -4,
                   }}>
-                    카톡 공유 3회로 무료 확인하세요!
+                    카톡 공유 3회로 무료 계급 판정!
                   </div>
                   <div style={{
                     display: 'flex', flexDirection: 'column', gap: 8,
@@ -858,15 +858,15 @@ export default function ResultPage() {
                     {(isBusiness
                       ? [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
-                          { title: 'S계급의 결과가 궁금하지 않으세요?', desc: '동일 업종 S계급 사장님의 핵심 지표를 확인해보세요' },
-                          { title: '계급별 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
-                          { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
+                          { title: '최상위 계급의 비밀이 궁금하지 않으세요?', desc: '동일 업종 S계급 사장님의 핵심 지표를 확인해보세요' },
+                          { title: '계급 판정 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
+                          { title: '계급 상승을 위해 지금 해야 할 것은?', desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                         ]
                       : [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
-                          { title: 'S계급의 결과가 궁금하지 않으세요?', desc: '동일 직군 S계급 직장인의 핵심 지표를 확인해보세요' },
-                          { title: '계급별 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
-                          { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
+                          { title: '최상위 계급의 비밀이 궁금하지 않으세요?', desc: '동일 직군 S계급 직장인의 핵심 지표를 확인해보세요' },
+                          { title: '계급 판정 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
+                          { title: '계급 상승을 위해 지금 해야 할 것은?', desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
                         ]
                     ).map((item, i) => (
                       <div key={i} style={{
@@ -904,7 +904,7 @@ export default function ResultPage() {
                       }}
                     >
                       <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px' }}>
-                        공유하고 확인
+                        내 계급도 공유하기
                       </span>
                       <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>
                         카톡 공유 3명하고 확인
@@ -924,7 +924,7 @@ export default function ResultPage() {
                       }}
                     >
                       <span style={{ fontSize: 15, fontWeight: 800, color: '#000000', letterSpacing: '-0.2px' }}>
-                        바로 확인
+                        990원으로 내 계급 확인하기
                       </span>
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#000000', opacity: 0.7 }}>
                         990원 결제하고 확인
@@ -946,7 +946,7 @@ export default function ResultPage() {
                     {industryLabel && industryLabel !== '동종업종' && industryLabel !== '직장인' && (
                       <span>{industryLabel} </span>
                     )}
-                    {isBusiness ? '사장님' : '직장인'}이 확인했어요
+                    {isBusiness ? '사장님' : '직장인'}이 계급 판정을 받았어요
                   </p>
                 </div>
               )}
@@ -1062,7 +1062,7 @@ export default function ResultPage() {
             </div>
           </div>
 
-          <LockedSection title="누렁이의 현실 조언" locked={!isUnlocked && !isCapturing}>
+          <LockedSection title="누렁이의 계급 상승 조언" locked={!isUnlocked && !isCapturing}>
             <PrescriptionCard level={dangerLevel} mode={mode} isLoggedIn={gateOpen} />
           </LockedSection>
 

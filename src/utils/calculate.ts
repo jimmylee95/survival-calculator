@@ -336,20 +336,20 @@ export type Grade = {
 // 자영업자: 상위 백분위(낮을수록 상위)
 //   S 0~5 / A 5~10 / B 10~60 / C 60~90 / D 90~100
 export function calculateGrade(topPercentile: number): Grade {
-  if (topPercentile <= 5)  return { grade: 'S', title: '장사의 신',                       label: '해방 완료',   emoji: '🏖️', message: '😎 해방이 보여요!',           color: '#FF0000' }
-  if (topPercentile <= 10) return { grade: 'A', title: '좀 치는데?',                      label: '해방 직전',   emoji: '😎', message: '😎 해방이 보여요!',           color: '#FF6B00' }
-  if (topPercentile <= 60) return { grade: 'B', title: '아직 치킨은 시켜 먹을 수 있다',   label: '평균',        emoji: '😊', message: '😊 이대로 꾸준히!',           color: '#FFD700' }
-  if (topPercentile <= 90) return { grade: 'C', title: '라면에 계란은 넣어도 되나...',    label: '평균 사장님', emoji: '🤓', message: '🤓 전략이 필요해요',          color: '#4CAF50' }
-  return                          { grade: 'D', title: '누렁아, 정신 차려!',              label: '긴급 상황',   emoji: '😰', message: '😰 지금 당장 움직여야 해요',  color: '#2196F3' }
+  if (topPercentile <= 5)  return { grade: 'S', title: '장사의 신',                       label: '자본주의 최상위 사장 계급',   emoji: '🏖️', message: '😎 해방이 보여요!',           color: '#FF0000' }
+  if (topPercentile <= 10) return { grade: 'A', title: '좀 치는데?',                      label: '안정적 생존 사장 계급',       emoji: '😎', message: '😎 해방이 보여요!',           color: '#FF6B00' }
+  if (topPercentile <= 60) return { grade: 'B', title: '아직 치킨은 시켜 먹을 수 있다',   label: '평범한 버티기 사장 계급',     emoji: '😊', message: '😊 이대로 꾸준히!',           color: '#FFD700' }
+  if (topPercentile <= 90) return { grade: 'C', title: '라면에 계란은 넣어도 되나...',    label: '위기의 존버 사장 계급',       emoji: '🤓', message: '🤓 전략이 필요해요',          color: '#4CAF50' }
+  return                          { grade: 'D', title: '누렁아, 정신 차려!',              label: '긴급 탈출 필요 사장 계급',    emoji: '😰', message: '😰 지금 당장 움직여야 해요',  color: '#2196F3' }
 }
 
 // 직장인: 상위 백분위(낮을수록 상위)
 export function calculateWorkerGrade(topPercentile: number): Grade {
-  if (topPercentile <= 5)  return { grade: 'S', title: '인사팀이 몇층이더라~',         label: '퇴사 준비 완료', emoji: '🏖️', message: '🏖️ 시간은 누렁이의 것!',  color: '#FF0000' }
-  if (topPercentile <= 10) return { grade: 'A', title: '사직서 양식을 찾아볼까?',      label: '거의 다 왔다',   emoji: '😎', message: '😎 해방이 보여요!',         color: '#FF6B00' }
-  if (topPercentile <= 60) return { grade: 'B', title: '그래도 우리 회사 괜찮아ㅎㅎ', label: '평균',           emoji: '😊', message: '😊 이대로 꾸준히!',         color: '#FFD700' }
-  if (topPercentile <= 90) return { grade: 'C', title: '야근을 좀 해볼까?',            label: '평균 직장인',    emoji: '🤓', message: '🤓 부수입을 만들어봐요',    color: '#4CAF50' }
-  return                          { grade: 'D', title: '충성! 충성! 뭐든지 시켜주세요', label: '월급 노예',    emoji: '😰', message: '😰 일어나, 누렁아!',         color: '#2196F3' }
+  if (topPercentile <= 5)  return { grade: 'S', title: '인사팀이 몇층이더라~',         label: '자본주의 최상위 계급',  emoji: '🏖️', message: '🏖️ 시간은 누렁이의 것!',  color: '#FF0000' }
+  if (topPercentile <= 10) return { grade: 'A', title: '사직서 양식을 찾아볼까?',      label: '해방 직전 프리맨 계급', emoji: '😎', message: '😎 해방이 보여요!',         color: '#FF6B00' }
+  if (topPercentile <= 60) return { grade: 'B', title: '그래도 우리 회사 괜찮아ㅎㅎ', label: '평범한 생존자 계급',    emoji: '😊', message: '😊 이대로 꾸준히!',         color: '#FFD700' }
+  if (topPercentile <= 90) return { grade: 'C', title: '야근을 좀 해볼까?',            label: '위기의 버티기 계급',    emoji: '🤓', message: '🤓 부수입을 만들어봐요',    color: '#4CAF50' }
+  return                          { grade: 'D', title: '충성! 충성! 뭐든지 시켜주세요', label: '탈출이 시급한 계급',   emoji: '😰', message: '😰 일어나, 누렁아!',         color: '#2196F3' }
 }
 
 export const GRADE_ORDER: ReadonlyArray<string> = ['S', 'A', 'B', 'C', 'D']
