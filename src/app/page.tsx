@@ -204,7 +204,7 @@ type CardConfig = {
 const CARDS: CardConfig[] = [
   {
     mode:    'business',
-    bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
+    bg:      'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 35%, transparent 60%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
     bgImage: '/images/nureungi_business_bg.png',
     title:   "숨만 쉬어도 텅장\n사장님 '존버력' 계산하기",
     desc:    "며칠이나 버틸까?\n'존버' D-day를 확인해보자!",
@@ -213,7 +213,7 @@ const CARDS: CardConfig[] = [
   },
   {
     mode:    'freelancer',
-    bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
+    bg:      'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 35%, transparent 60%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
     bgImage: '/images/nureungi_worker_bg.png',
     title:   '노예 계약서 파기 디데이,\n퇴사까지 남은 날 계산하기',
     desc:    '사직서를 던질 수 있는\n진짜 날짜를 확인해보자!',
@@ -324,9 +324,9 @@ export default function HomePage() {
                 minHeight:          card.bgImage ? 220 : undefined,
                 borderRadius:       20,
                 background:         card.bg,
-                backgroundSize:     card.bgImage ? 'auto, cover' : undefined,
-                backgroundPosition: card.bgImage ? 'center, right center' : undefined,
-                backgroundRepeat:   card.bgImage ? 'no-repeat, no-repeat' : undefined,
+                backgroundSize:     card.bgImage ? 'auto, auto, cover' : undefined,
+                backgroundPosition: card.bgImage ? 'center, center, right center' : undefined,
+                backgroundRepeat:   card.bgImage ? 'no-repeat, no-repeat, no-repeat' : undefined,
                 border:             'none',
                 cursor:             'pointer',
                 textAlign:          'left',
@@ -366,11 +366,12 @@ export default function HomePage() {
                 <p style={{
                   fontSize:   21,
                   fontWeight: 900,
-                  color:      '#fff',
+                  color:      '#FFFFFF',
                   margin:     '0 0 12px',
                   letterSpacing: '-0.3px',
                   whiteSpace: 'pre-line',
                   lineHeight: 1.35,
+                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                 }}>
                   {card.title}
                 </p>
@@ -378,10 +379,11 @@ export default function HomePage() {
                 {/* 설명 */}
                 <p style={{
                   fontSize:  13,
-                  color:     'rgba(255,255,255,0.8)',
+                  color:     '#FFFFFF',
                   margin:    0,
                   lineHeight: 1.75,
                   whiteSpace: 'pre-line',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                 }}>
                   {card.desc}
                 </p>
@@ -395,13 +397,15 @@ export default function HomePage() {
                 marginTop: 20,
               }}>
                 <span style={{
-                  fontSize:     13,
-                  fontWeight:   800,
-                  color:        '#fff',
-                  background:   'rgba(255,255,255,0.2)',
-                  borderRadius: 24,
-                  padding:      '8px 18px',
-                  letterSpacing: '-0.2px',
+                  fontSize:        14,
+                  fontWeight:      700,
+                  color:           '#FFFFFF',
+                  background:      'rgba(0,0,0,0.85)',
+                  borderRadius:    8,
+                  padding:         '10px 20px',
+                  letterSpacing:   '-0.2px',
+                  backdropFilter:  'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
                 }}>
                   지금 확인하기 →
                 </span>
