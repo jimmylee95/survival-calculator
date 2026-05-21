@@ -962,7 +962,7 @@ export default function ResultPage() {
                     {industryLabel && industryLabel !== '동종업종' && industryLabel !== '직장인' && (
                       <span>{industryLabel} </span>
                     )}
-                    {isBusiness ? '사장님' : '직장인'}이 계급 판정을 받았어요
+                    {isBusiness ? '사장님' : '직장인'}이 확인 했어요
                   </p>
                 </div>
               )}
