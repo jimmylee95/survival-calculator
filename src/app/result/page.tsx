@@ -41,8 +41,8 @@ const JOB_AVG_SAVINGS_RATE: Record<string, number> = {
 }
 
 const MODE_META = {
-  business:   { bg: '#1A1F5E', label: '사장님 생존 계산기' },
-  freelancer: { bg: '#FF6B35', label: '직장인 퇴사 계산기' },
+  business:   { bg: '#FF6B35', label: '사장님 생존 계산기' },
+  freelancer: { bg: '#1A1F5E', label: '직장인 퇴사 계산기' },
 }
 
 type GradeTheme = {
@@ -931,18 +931,20 @@ export default function ResultPage() {
                       style={{
                         flex: 1, minWidth: 0,
                         padding: '10px 18px', borderRadius: 12, minHeight: 56,
-                        background: '#03C75A', color: '#000000',
+                        background: isBusiness ? '#FF6B35' : '#1A1F5E', color: '#fff',
                         border: 'none', cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                        boxShadow: isBusiness
+                          ? '0 4px 12px rgba(255,107,53,0.4)'
+                          : '0 4px 12px rgba(26,31,94,0.4)',
                         display: 'flex', flexDirection: 'column',
                         alignItems: 'center', justifyContent: 'center', gap: 2,
                         textAlign: 'center',
                       }}
                     >
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#000000', letterSpacing: '-0.2px' }}>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#fff', letterSpacing: '-0.2px' }}>
                         990원으로 내 계급 확인하기
                       </span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#000000', opacity: 0.7 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', opacity: 0.85 }}>
                         990원 결제하고 확인
                       </span>
                     </button>

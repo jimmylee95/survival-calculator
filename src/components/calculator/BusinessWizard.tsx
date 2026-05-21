@@ -6,7 +6,7 @@ import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { INDUSTRY_BENCHMARKS, formatWon } from '@/utils/calculate'
 import { RegionSelect } from './RegionSelect'
 
-const ACCENT = '#1A1F5E'
+const ACCENT = '#FF6B35'
 const TOTAL = 6
 
 const BALANCE_PRESETS = [

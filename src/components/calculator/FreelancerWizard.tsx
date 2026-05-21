@@ -6,7 +6,7 @@ import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { formatWon } from '@/utils/calculate'
 import { RegionSelect } from './RegionSelect'
 
-const ACCENT = '#FF6B35'
+const ACCENT = '#1A1F5E'
 const TOTAL = 7
 
 const JOB_BENCHMARKS: Record<string, { label: string; emoji: string; salary: number; expense: number }> = {

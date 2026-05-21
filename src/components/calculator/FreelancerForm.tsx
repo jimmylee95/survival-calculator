@@ -5,7 +5,7 @@ import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { SectionCard } from './SectionCard'
 import { NumberInput } from './NumberInput'
 
-const ACCENT = '#FF6B35'
+const ACCENT = '#1A1F5E'
 
 // 직군별 월 평균 생활비 (원)
 const JOB_PRESETS: Record<string, { label: string; expense: number }> = {

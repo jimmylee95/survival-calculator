@@ -6,7 +6,7 @@ import { VARIABLE_RATE } from '@/utils/calculate'
 import { SectionCard }  from './SectionCard'
 import { NumberInput }  from './NumberInput'
 
-const ACCENT = '#1A1F5E'
+const ACCENT = '#FF6B35'
 
 // 업종별 평균값 (원)
 const INDUSTRY_PRESETS: Partial<Record<keyof typeof VARIABLE_RATE, {

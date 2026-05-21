@@ -206,19 +206,19 @@ const CARDS: CardConfig[] = [
     mode:    'business',
     bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
     bgImage: '/images/nureungi_business_bg.png',
-    title:   "숨만 쉬어도 텅장\n사장님 '존버력' 계산하기",
+    title:   "숨만 쉬어도 텅장\n존버력 계산하기",
     desc:    "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
     sub:     '자영업자 · 소상공인',
-    shadow:  'rgba(26,31,94,0.45)',
+    shadow:  'rgba(255,107,53,0.45)',
   },
   {
     mode:    'freelancer',
     bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
     bgImage: '/images/nureungi_worker_bg.png',
-    title:   '노예 계약서 파기 디데이,\n퇴사까지 남은 날 계산하기',
+    title:   '노예 계약서 파기 디데이,\n퇴사 날짜 계산하기',
     desc:    '사직서를 던질 수 있는\n퇴사 날짜를 확인해보자!',
     sub:     '직장인 · 공무원 · 프리랜서',
-    shadow:  'rgba(255,107,53,0.45)',
+    shadow:  'rgba(26,31,94,0.45)',
   },
 ]
 
@@ -400,13 +400,13 @@ export default function HomePage() {
                   fontSize:      14,
                   fontWeight:    700,
                   color:         '#FFFFFF',
-                  background:    card.mode === 'business' ? '#FF6B00' : '#4F46E5',
+                  background:    card.mode === 'business' ? '#FF6B35' : '#1A1F5E',
                   borderRadius:  25,
                   padding:       '10px 24px',
                   letterSpacing: '-0.2px',
                   boxShadow:     card.mode === 'business'
-                    ? '0 2px 8px rgba(255, 107, 0, 0.4)'
-                    : '0 2px 8px rgba(79, 70, 229, 0.4)',
+                    ? '0 2px 8px rgba(255, 107, 53, 0.4)'
+                    : '0 2px 8px rgba(26, 31, 94, 0.4)',
                 }}>
                   지금 확인하기 →
                 </span>
