@@ -214,7 +214,7 @@ const CARDS: CardConfig[] = [
     mode:    'business',
     bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
     bgImage: '/images/nureungi_business_bg.png',
-    title:   "숨만 쉬어도 텅장\n존버력 계산하기",
+    title:   '언젠가 돈복사 시켜줄\n매장 수명 계산하기',
     desc:    "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
     sub:     '자영업자 · 소상공인',
     shadow:  'rgba(255,107,53,0.45)',
