@@ -911,7 +911,7 @@ export default function ResultPage() {
                       style={{
                         flex: 1, minWidth: 0,
                         padding: '10px 18px', borderRadius: 12, minHeight: 56,
-                        background: '#FEE500', color: '#3C1E1E',
+                        background: '#FEE500', color: '#FFFFFF',
                         border: 'none', cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                         display: 'flex', flexDirection: 'column',
@@ -919,10 +919,10 @@ export default function ResultPage() {
                         textAlign: 'center',
                       }}
                     >
-                      <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px' }}>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.2px' }}>
                         공유하고 확인하기
                       </span>
-                      <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#FFFFFF', opacity: 0.8 }}>
                         카톡 공유 3명하고 확인
                       </span>
                     </button>
@@ -931,20 +931,18 @@ export default function ResultPage() {
                       style={{
                         flex: 1, minWidth: 0,
                         padding: '10px 18px', borderRadius: 12, minHeight: 56,
-                        background: isBusiness ? '#FF6B35' : '#4A7DFF', color: '#fff',
+                        background: '#22C55E', color: '#FFFFFF',
                         border: 'none', cursor: 'pointer',
-                        boxShadow: isBusiness
-                          ? '0 4px 12px rgba(255,107,53,0.4)'
-                          : '0 4px 12px rgba(74,125,255,0.4)',
+                        boxShadow: '0 4px 12px rgba(34,197,94,0.4)',
                         display: 'flex', flexDirection: 'column',
                         alignItems: 'center', justifyContent: 'center', gap: 2,
                         textAlign: 'center',
                       }}
                     >
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#fff', letterSpacing: '-0.2px' }}>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.2px' }}>
                         바로 확인하기
                       </span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', opacity: 0.85 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#FFFFFF', opacity: 0.8 }}>
                         990원 결제하고 확인
                       </span>
                     </button>
