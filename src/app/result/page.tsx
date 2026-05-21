@@ -89,10 +89,12 @@ function GradeRankPyramid({
         fontSize: 18, fontWeight: 800, color: '#1A202C',
         margin: '0 0 4px', letterSpacing: '-0.3px',
       }}>
-        {isBusiness ? '사장님 생존 계급도' : '직장인 탈출 계급도'}
+        {isBusiness ? '대한민국 장사 실력 계급도' : '대한민국 직장인 계급도'}
       </h3>
       <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', margin: '0 0 16px' }}>
-        내 위치가 어디쯤인지 한눈에 확인해보세요
+        {isBusiness
+          ? '당신이 속한 계급의 평균 매출과 고정비 지출 내역'
+          : '당신이 속한 계급의 평균 자산과 지출 내역'}
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -222,9 +224,22 @@ function GradeComparisonTable({ isBusiness }: { isBusiness: boolean }) {
       background: '#fff', borderRadius: 16,
       border: '1px solid #E2E8F0',
       boxShadow: '0 2px 16px rgba(0,0,0,0.04)',
-      overflowX: 'auto',
-      WebkitOverflowScrolling: 'touch',
     }}>
+      <div style={{ padding: '16px 16px 8px' }}>
+        <h3 style={{
+          fontSize: 18, fontWeight: 800, color: '#1A202C',
+          margin: '0 0 4px', letterSpacing: '-0.3px',
+        }}>
+          {isBusiness ? '계급별 사장님 매출·지출 비밀 🔒' : '계급별 직장인 자산·지출 비밀 🔒'}
+        </h3>
+        <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', margin: 0 }}>
+          나보다 높은 계급은 얼마 벌고 얼마 쓸까?
+        </p>
+      </div>
+      <div style={{
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+      }}>
       <table style={{
         borderCollapse: 'collapse',
         width: '100%', minWidth: 640,
@@ -286,6 +301,7 @@ function GradeComparisonTable({ isBusiness }: { isBusiness: boolean }) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
@@ -859,13 +875,13 @@ export default function ResultPage() {
                       ? [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
                           { title: '최상위 계급의 비밀이 궁금하지 않으세요?', desc: '동일 업종 S계급 사장님의 핵심 지표를 확인해보세요' },
-                          { title: '계급 판정 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
+                          { title: '내 계급은 어떻게 정해졌을까? 🔒', desc: '대한민국 자영업자 계급 판정 기준을 공개합니다' },
                           { title: '계급 상승을 위해 지금 해야 할 것은?', desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                         ]
                       : [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
                           { title: '최상위 계급의 비밀이 궁금하지 않으세요?', desc: '동일 직군 S계급 직장인의 핵심 지표를 확인해보세요' },
-                          { title: '계급 판정 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
+                          { title: '내 계급은 어떻게 정해졌을까? 🔒', desc: '대한민국 직장인 계급 판정 기준을 공개합니다' },
                           { title: '계급 상승을 위해 지금 해야 할 것은?', desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
                         ]
                     ).map((item, i) => (
@@ -989,38 +1005,17 @@ export default function ResultPage() {
           )}
 
           <LockedSection
-            title="S계급 결과 확인하기"
+            title="최상위 계급은 얼마나 벌까?"
             desc={isBusiness
-              ? '상위 5% 사장님의 핵심 지표를 확인해보세요'
-              : '상위 5% 직장인의 핵심 지표를 확인해보세요'}
+              ? 'S계급 사장님의 매출, 순이익, 자산 구조를 확인해보세요'
+              : 'S계급 직장인의 연봉, 저축액, 자산 구조를 확인해보세요'}
             locked={!isUnlocked && !isCapturing}
           >
             <ScenarioCard items={scenarios} />
           </LockedSection>
 
-          {/* 등급별 결과 확인하기 — 피라미드 계급도 (블러 + 결제 오버레이) */}
+          {/* 계급도 + 비교 테이블 (블러 + 결제 오버레이) */}
           <div>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '0 4px 4px',
-              fontSize: 18, fontWeight: 800, color: '#1A202C',
-              letterSpacing: '-0.3px',
-            }}>
-              <span>계급별 결과 확인하기</span>
-              {(!isUnlocked && !isCapturing) && (
-                <span aria-label="잠금" style={{ fontSize: 14 }}>🔒</span>
-              )}
-            </div>
-            <div style={{
-              padding: '0 4px 10px',
-              fontSize: 12, fontWeight: 600, color: '#64748B',
-              letterSpacing: '-0.2px',
-            }}>
-              {isBusiness
-                ? 'S/A/B/C/D 계급별 사장님들의 핵심 지표를 비교해보세요'
-                : 'S/A/B/C/D 계급별 직장인들의 핵심 지표를 비교해보세요'}
-            </div>
-
             <div style={{ position: 'relative' }}>
               <div style={{
                 filter:        (isUnlocked || isCapturing) ? 'none' : 'blur(6px)',
@@ -1048,15 +1043,21 @@ export default function ResultPage() {
                     transform: 'translate(-50%, -50%)',
                     background: '#fff', color: '#000',
                     borderRadius: 14, padding: '14px 22px',
-                    fontSize: 14, fontWeight: 800,
                     border: 'none', cursor: 'pointer',
                     boxShadow: '0 12px 32px rgba(0,0,0,0.28)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center', gap: 4,
                     letterSpacing: '-0.2px',
                     whiteSpace: 'nowrap',
+                    maxWidth: 'calc(100% - 32px)',
                   }}
                 >
-                  🔒 990원으로 내 계급 확인하기
+                  <span style={{ fontSize: 14, fontWeight: 800, color: '#000' }}>
+                    🔒 상위 계급의 비밀, 궁금하지 않으세요?
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#000', opacity: 0.7 }}>
+                    990원으로 모든 계급 데이터 열람하기
+                  </span>
                 </button>
               )}
             </div>
