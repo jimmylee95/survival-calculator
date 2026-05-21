@@ -199,7 +199,6 @@ type CardConfig = {
   desc:     string
   sub:      string
   shadow:   string
-  tagline:  string
 }
 
 const CARDS: CardConfig[] = [
@@ -211,7 +210,6 @@ const CARDS: CardConfig[] = [
     desc:    "잔고가 완벽한 '0'이 되기 전에...\n며칠이나 버틸까? '존버' D-day를 확인하자!",
     sub:     '자영업자 · 소상공인',
     shadow:  'rgba(26,31,94,0.45)',
-    tagline: '현실을 직시하는 30초',
   },
   {
     mode:    'freelancer',
@@ -221,7 +219,6 @@ const CARDS: CardConfig[] = [
     desc:    '월급만으로 진짜 퇴사할 수 있을까?\n사직서를 던질 수 있는 진짜 날짜를 계산하자',
     sub:     '직장인 · 프리랜서 준비생',
     shadow:  'rgba(255,107,53,0.45)',
-    tagline: '사직서까지 남은 시간',
   },
 ]
 
@@ -348,21 +345,6 @@ export default function HomePage() {
                 t.style.boxShadow  = `0 10px 36px ${card.shadow}`
               }}
             >
-              {/* 태그라인 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 14 }}>
-                <span style={{
-                  fontSize:     11,
-                  fontWeight:   700,
-                  color:        'rgba(255,255,255,0.75)',
-                  background:   'rgba(255,255,255,0.15)',
-                  borderRadius: 20,
-                  padding:      '5px 14px',
-                  letterSpacing: '0.3px',
-                }}>
-                  {card.tagline}
-                </span>
-              </div>
-
               {/* 서브 레이블 */}
               <p style={{
                 fontSize: 11, fontWeight: 600,
