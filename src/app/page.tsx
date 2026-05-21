@@ -215,7 +215,7 @@ const CARDS: CardConfig[] = [
     mode:    'freelancer',
     bg:      'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
     bgImage: '/images/nureungi_worker_bg.png',
-    title:   '노예계약서 파기 D-day,\n퇴사까지 남은 날 계산하기',
+    title:   '노예 계약서 파기 디데이,\n퇴사까지 남은 날 계산하기',
     desc:    '월급만으로 진짜 퇴사할 수 있을까?\n사직서를 던질 수 있는 진짜 날짜를 계산하자',
     sub:     '직장인 · 프리랜서 준비생',
     shadow:  'rgba(255,107,53,0.45)',
