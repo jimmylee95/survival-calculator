@@ -71,11 +71,11 @@ function GradeRankPyramid({
   isBusiness:    boolean
 }) {
   const tiers = [
-    { grade: 'S', label: 'S등급', ratio: '상위 5%',  widthPct: 45,  color: '#FF0000' },
-    { grade: 'A', label: 'A등급', ratio: '상위 10%', widthPct: 55,  color: '#FF6B00' },
-    { grade: 'B', label: 'B등급', ratio: '평균 50%', widthPct: 70,  color: '#FFD700' },
-    { grade: 'C', label: 'C등급', ratio: '하위 30%', widthPct: 85,  color: '#4CAF50' },
-    { grade: 'D', label: 'D등급', ratio: '하위 10%', widthPct: 100, color: '#2196F3' },
+    { grade: 'S', label: 'S계급', ratio: '상위 5%',  widthPct: 45,  color: '#FF0000' },
+    { grade: 'A', label: 'A계급', ratio: '상위 10%', widthPct: 55,  color: '#FF6B00' },
+    { grade: 'B', label: 'B계급', ratio: '평균 50%', widthPct: 70,  color: '#FFD700' },
+    { grade: 'C', label: 'C계급', ratio: '하위 30%', widthPct: 85,  color: '#4CAF50' },
+    { grade: 'D', label: 'D계급', ratio: '하위 10%', widthPct: 100, color: '#2196F3' },
   ]
 
   return (
@@ -181,11 +181,11 @@ function GradeRankPyramid({
 
 function GradeComparisonTable({ isBusiness }: { isBusiness: boolean }) {
   const gradeHeaders: { label: string; ratio: string; color: string }[] = [
-    { label: 'S등급', ratio: '상위 5%',  color: '#FF0000' },
-    { label: 'A등급', ratio: '상위 10%', color: '#FF6B00' },
-    { label: 'B등급', ratio: '평균 50%', color: '#FFD700' },
-    { label: 'C등급', ratio: '하위 30%', color: '#4CAF50' },
-    { label: 'D등급', ratio: '하위 10%', color: '#2196F3' },
+    { label: 'S계급', ratio: '상위 5%',  color: '#FF0000' },
+    { label: 'A계급', ratio: '상위 10%', color: '#FF6B00' },
+    { label: 'B계급', ratio: '평균 50%', color: '#FFD700' },
+    { label: 'C계급', ratio: '하위 30%', color: '#4CAF50' },
+    { label: 'D계급', ratio: '하위 10%', color: '#2196F3' },
   ]
 
   const rows: { label: string; values: string[] }[] = isBusiness
@@ -592,7 +592,7 @@ export default function ResultPage() {
             {gradeImage ? (
               <img
                 src={gradeImage}
-                alt={`${grade.grade} 등급 — ${grade.label}`}
+                alt={`${grade.grade} 계급 — ${grade.label}`}
                 style={{
                   display: 'block', width: '100%', height: '100%', objectFit: 'cover',
                 }}
@@ -858,14 +858,14 @@ export default function ResultPage() {
                     {(isBusiness
                       ? [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 업종 사장님들 중 정확한 등수를 확인해보세요' },
-                          { title: 'S등급의 결과가 궁금하지 않으세요?', desc: '동일 업종 S등급 사장님의 핵심 지표를 확인해보세요' },
-                          { title: '등급별 기준이 궁금하지 않으세요?', desc: '각 등급별 핵심 지표를 한 눈에 확인해보세요' },
+                          { title: 'S계급의 결과가 궁금하지 않으세요?', desc: '동일 업종 S계급 사장님의 핵심 지표를 확인해보세요' },
+                          { title: '계급별 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
                           { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 사장님 상황에 딱 맞는 조언을 해드려요' },
                         ]
                       : [
                           { title: '내 순위는 몇 등일까?',             desc: '같은 직종 직장인들 중 정확한 등수를 확인해보세요' },
-                          { title: 'S등급의 결과가 궁금하지 않으세요?', desc: '동일 직군 S등급 직장인의 핵심 지표를 확인해보세요' },
-                          { title: '등급별 기준이 궁금하지 않으세요?', desc: '각 등급별 핵심 지표를 한 눈에 확인해보세요' },
+                          { title: 'S계급의 결과가 궁금하지 않으세요?', desc: '동일 직군 S계급 직장인의 핵심 지표를 확인해보세요' },
+                          { title: '계급별 기준이 궁금하지 않으세요?', desc: '각 계급별 핵심 지표를 한 눈에 확인해보세요' },
                           { title: '지금 가장 먼저 해야 할 것은?',    desc: '누렁이가 직장인 상황에 딱 맞는 조언을 해드려요' },
                         ]
                     ).map((item, i) => (
@@ -989,7 +989,7 @@ export default function ResultPage() {
           )}
 
           <LockedSection
-            title="S등급 결과 확인하기"
+            title="S계급 결과 확인하기"
             desc={isBusiness
               ? '상위 5% 사장님의 핵심 지표를 확인해보세요'
               : '상위 5% 직장인의 핵심 지표를 확인해보세요'}
@@ -1006,7 +1006,7 @@ export default function ResultPage() {
               fontSize: 18, fontWeight: 800, color: '#1A202C',
               letterSpacing: '-0.3px',
             }}>
-              <span>등급별 결과 확인하기</span>
+              <span>계급별 결과 확인하기</span>
               {(!isUnlocked && !isCapturing) && (
                 <span aria-label="잠금" style={{ fontSize: 14 }}>🔒</span>
               )}
@@ -1017,8 +1017,8 @@ export default function ResultPage() {
               letterSpacing: '-0.2px',
             }}>
               {isBusiness
-                ? 'S/A/B/C/D 등급별 사장님들의 핵심 지표를 비교해보세요'
-                : 'S/A/B/C/D 등급별 직장인들의 핵심 지표를 비교해보세요'}
+                ? 'S/A/B/C/D 계급별 사장님들의 핵심 지표를 비교해보세요'
+                : 'S/A/B/C/D 계급별 직장인들의 핵심 지표를 비교해보세요'}
             </div>
 
             <div style={{ position: 'relative' }}>
