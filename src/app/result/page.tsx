@@ -737,14 +737,14 @@ export default function ResultPage() {
                     width: '100%',
                     filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
                   }}>
-                    무.제.한
+                    {isBusiness ? '무.제.한' : '언.제.든.지'}
                   </p>
                   <p style={{
                     fontSize: 22, fontWeight: 700, color: '#FFFFFF',
                     margin: '16px 0 0', lineHeight: 1.4,
                     letterSpacing: '-0.3px',
                   }}>
-                    영원히 버틸 수 있어요!
+                    {isBusiness ? '영원히 버틸 수 있어요!' : '퇴사 가능해요!'}
                   </p>
                 </>
               )}
