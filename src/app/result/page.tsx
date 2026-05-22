@@ -602,8 +602,8 @@ export default function ResultPage() {
   const GRADE_IMAGE_MAP: Record<string, string | null> = {
     S: '/images/result_hero_S.png',
     A: '/images/result_hero_A.png',
-    B: '/images/result_hero_B.png',
-    C: '/images/result_hero_C.png',
+    B: '/images/nureungi_grade_B.png',
+    C: '/images/nureungi_grade_C.png',
     D: null,
   }
   const gradeImage = GRADE_IMAGE_MAP[grade.grade] ?? null
