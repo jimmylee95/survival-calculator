@@ -353,7 +353,7 @@ function Q2Balance({
 }) {
   return (
     <div>
-      <QuestionTitle num={2} text={<>월세랑 세금 내기 전, 지금<br />통장에 당장 가용 가능한<br />‘순수 잔고’는?</>}
+      <QuestionTitle num={2} text={<>지금 통장에<br />당장 가용 가능한<br />‘순수 잔고’는?</>}
         sub="월세 내기 전 통장에 찍힌 숫자" />
       <AmountInput value={input.balance}
         onChange={v => update({ balance: v })}
