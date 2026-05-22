@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { INDUSTRY_USERS } from '@/utils/calculate'
 import { CountUpNumber } from '@/components/result/CountUpNumber'
+import { createClient } from '@/lib/supabase/client'
 
 // 결과 페이지와 동일한 INDUSTRY_USERS 데이터 소스에서 대표값 사용
 const CARD_COUNTERS: Record<'business' | 'freelancer', number> = {
@@ -280,6 +281,7 @@ export default function HomePage() {
     useCalculatorStore()
 
   const [hasSaved, setHasSaved] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
 
   useEffect(() => {
     if (!_hydrated) return
@@ -290,6 +292,15 @@ export default function HomePage() {
       freelancerInput.monthlyExpense > 0
     setHasSaved(hasData)
   }, [_hydrated, businessInput, freelancerInput])
+
+  useEffect(() => {
+    const sb = createClient()
+    sb.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user))
+    const { data: { subscription } } = sb.auth.onAuthStateChange(
+      (_, session) => setIsLoggedIn(!!session?.user),
+    )
+    return () => subscription.unsubscribe()
+  }, [])
 
   function handleSelect(mode: 'business' | 'freelancer') {
     setMode(mode)
@@ -452,8 +463,8 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* 이어서 계산하기 */}
-        {hasSaved && (
+        {/* 이어서 계산하기 (로그인 + 계산 이력 있는 경우에만) */}
+        {isLoggedIn && hasSaved && (
           <div style={{ padding: '16px 20px 0' }}>
             <button
               onClick={handleResume}
