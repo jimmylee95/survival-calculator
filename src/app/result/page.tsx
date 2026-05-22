@@ -403,6 +403,11 @@ export default function ResultPage() {
   const worstDays     = result.worstRunwayDays
 
   const isBusiness    = mode === 'business'
+  // 모드별 테마 컬러 (상단 핵심 수치 영역)
+  const modeMain      = isBusiness ? '#FF6B00' : '#4A7DFF'
+  const modeAccent    = isBusiness ? '#FFD700' : '#93C5FD'
+  const modeBubbleBg     = isBusiness ? 'rgba(255, 107, 0, 0.15)' : 'rgba(74, 125, 255, 0.15)'
+  const modeBubbleBorder = isBusiness ? 'rgba(255, 107, 0, 0.3)'  : 'rgba(74, 125, 255, 0.3)'
   const bizResult     = isBusiness ? (result as BusinessResult) : null
   const freeResult    = !isBusiness ? (result as FreelancerResult) : null
 
@@ -706,7 +711,7 @@ export default function ResultPage() {
                 filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
               }}>
                 <span style={{
-                  fontSize: 64, fontWeight: 900, color: '#FFFFFF',
+                  fontSize: 64, fontWeight: 900, color: modeMain,
                   letterSpacing: '-2px',
                 }}>
                   <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
@@ -720,9 +725,10 @@ export default function ResultPage() {
                 )}
               </p>
               <p style={{
-                fontSize: 26, fontWeight: 600, color: '#FFFFFF',
+                fontSize: 26, fontWeight: 600, color: modeMain,
                 margin: 0, lineHeight: 1.3,
                 letterSpacing: '-0.3px',
+                opacity: 0.9,
               }}>
                 남았습니다
               </p>
@@ -730,14 +736,14 @@ export default function ResultPage() {
 
             {/* 2. 누렁이 말풍선 — 한줄 타이틀 + 서브 메시지 */}
             <div style={{
-              background: 'rgba(255,255,255,0.1)',
-              borderRadius: 20,
-              padding: '24px 24px',
+              background: modeBubbleBg,
+              borderRadius: 16,
+              padding: '20px',
               margin: '24px auto 0',
               position: 'relative',
               maxWidth: 320,
               textAlign: 'center',
-              border: '1px solid rgba(255,255,255,0.08)',
+              border: `1px solid ${modeBubbleBorder}`,
             }}>
               {/* 말풍선 꼬리 (위쪽 중앙) */}
               <div style={{
@@ -745,13 +751,13 @@ export default function ResultPage() {
                 top: -8, left: '50%',
                 transform: 'translateX(-50%) rotate(45deg)',
                 width: 16, height: 16,
-                background: 'rgba(255,255,255,0.1)',
-                borderTop: '1px solid rgba(255,255,255,0.08)',
-                borderLeft: '1px solid rgba(255,255,255,0.08)',
+                background: modeBubbleBg,
+                borderTop: `1px solid ${modeBubbleBorder}`,
+                borderLeft: `1px solid ${modeBubbleBorder}`,
               }} />
               <div style={{
-                fontSize: 11, fontWeight: 600,
-                color: 'rgba(255,255,255,0.4)',
+                fontSize: 12, fontWeight: 600,
+                color: modeAccent,
                 letterSpacing: '0.05em',
                 marginBottom: 12,
                 lineHeight: 1.5,
@@ -759,7 +765,7 @@ export default function ResultPage() {
                 누렁이의 한마디
               </div>
               <div style={{
-                fontSize: 34, fontWeight: 800, fontStyle: 'normal',
+                fontSize: 34, fontWeight: 700, fontStyle: 'normal',
                 color: '#FFFFFF',
                 marginBottom: 12,
                 letterSpacing: '-0.02em', lineHeight: 1.5,
@@ -768,7 +774,7 @@ export default function ResultPage() {
               </div>
               <div style={{
                 fontSize: 16, fontWeight: 500,
-                color: 'rgba(255,255,255,0.7)',
+                color: modeAccent,
                 letterSpacing: '-0.01em',
                 lineHeight: 1.6,
               }}>
@@ -801,14 +807,14 @@ export default function ResultPage() {
               }}>
                 <p style={{
                   fontSize: 28, fontWeight: 900,
-                  color: theme.accent,
+                  color: modeMain,
                   margin: '12px 0 4px', letterSpacing: '-0.5px',
                   filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
                   lineHeight: 1.3,
                 }}>
                   상위 {topPercentile}%
                 </p>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 600, margin: '0 0 12px', lineHeight: 1.6 }}>
                   같은 {industryLabel} 기준
                 </p>
 
