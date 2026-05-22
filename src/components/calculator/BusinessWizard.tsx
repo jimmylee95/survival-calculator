@@ -517,7 +517,7 @@ function Q6Region({
       <ContinueButton
         onClick={onFinish}
         disabled={!input.region || !input.district}
-        label="결과 확인하기 🧮"
+        label="매장 수명 확인하기 🧮"
       />
     </div>
   )
