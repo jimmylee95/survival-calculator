@@ -705,33 +705,54 @@ export default function ResultPage() {
               <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.85)', fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 }}>
                 {isBusiness ? '내 매장의 수명은' : '화끈하게 퇴사하는 날까지'}
               </p>
-              <p style={{
-                margin: '16px 0 8px', lineHeight: 1.1,
-                display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 2,
-                filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
-              }}>
-                <span style={{
-                  fontSize: 64, fontWeight: 900, color: modeMain,
-                  letterSpacing: '-2px',
-                }}>
-                  <CountUpNumber target={isFinite(realisticDays) ? Math.floor(realisticDays) : Infinity} />
-                </span>
-                {isFinite(realisticDays) && (
-                  <span style={{
-                    fontSize: 32, fontWeight: 700, color: '#FFFFFF',
+              {isFinite(realisticDays) ? (
+                <>
+                  <p style={{
+                    margin: '16px 0 8px', lineHeight: 1.1,
+                    display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 2,
+                    filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
                   }}>
-                    일
-                  </span>
-                )}
-              </p>
-              <p style={{
-                fontSize: 26, fontWeight: 600, color: modeMain,
-                margin: 0, lineHeight: 1.3,
-                letterSpacing: '-0.3px',
-                opacity: 0.9,
-              }}>
-                남았습니다
-              </p>
+                    <span style={{
+                      fontSize: 64, fontWeight: 900, color: modeMain,
+                      letterSpacing: '-2px',
+                    }}>
+                      <CountUpNumber target={Math.floor(realisticDays)} />
+                    </span>
+                    <span style={{
+                      fontSize: 32, fontWeight: 700, color: '#FFFFFF',
+                    }}>
+                      일
+                    </span>
+                  </p>
+                  <p style={{
+                    fontSize: 26, fontWeight: 600, color: modeMain,
+                    margin: 0, lineHeight: 1.3,
+                    letterSpacing: '-0.3px',
+                    opacity: 0.9,
+                  }}>
+                    남았습니다
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p style={{
+                    margin: '16px 0 8px', lineHeight: 1.2,
+                    fontSize: 64, fontWeight: 900, color: modeMain,
+                    letterSpacing: '8px',
+                    textAlign: 'center',
+                    filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
+                  }}>
+                    무.제<br />.한
+                  </p>
+                  <p style={{
+                    fontSize: 22, fontWeight: 700, color: '#FFFFFF',
+                    margin: '16px 0 0', lineHeight: 1.4,
+                    letterSpacing: '-0.3px',
+                  }}>
+                    영원히 버틸 수 있어요!
+                  </p>
+                </>
+              )}
             </div>
 
             {/* 2. 누렁이 말풍선 — 한줄 타이틀 + 서브 메시지 */}
