@@ -737,12 +737,14 @@ export default function ResultPage() {
                 <>
                   <p style={{
                     margin: '16px 0 8px', lineHeight: 1.2,
-                    fontSize: 64, fontWeight: 900, color: modeMain,
-                    letterSpacing: '8px',
+                    fontSize: 56, fontWeight: 900, color: modeMain,
+                    letterSpacing: '6px',
                     textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                    width: '100%',
                     filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
                   }}>
-                    무.제<br />.한
+                    무.제.한
                   </p>
                   <p style={{
                     fontSize: 22, fontWeight: 700, color: '#FFFFFF',
@@ -788,18 +790,10 @@ export default function ResultPage() {
               <div style={{
                 fontSize: 34, fontWeight: 700, fontStyle: 'normal',
                 color: '#FFFFFF',
-                marginBottom: 12,
+                marginBottom: 0,
                 letterSpacing: '-0.02em', lineHeight: 1.5,
               }}>
                 &ldquo;{grade.title}&rdquo;
-              </div>
-              <div style={{
-                fontSize: 16, fontWeight: 500,
-                color: modeAccent,
-                letterSpacing: '-0.01em',
-                lineHeight: 1.6,
-              }}>
-                {grade.message}
               </div>
             </div>
 
