@@ -400,8 +400,8 @@ function Q3Salary({
 }) {
   return (
     <div>
-      <QuestionTitle num={3} text={<>통장을 스치듯 지나가는 내<br />‘사이버 머니<br />(세후 월급)’는?</>}
-        sub="실수령액 기준" />
+      <QuestionTitle num={3} text={<>통장을 스치듯 지나가는 내<br />‘사이버 머니<br />(월급)’는?</>}
+        sub="실수령액(세후 월급) 기준" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
