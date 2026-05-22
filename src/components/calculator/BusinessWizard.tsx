@@ -374,8 +374,8 @@ function Q3Fixed({
 }) {
   return (
     <div>
-      <QuestionTitle num={3} text={<>매달 숨만 쉬어도<br />통장에서 무섭게 빠져나가는<br />‘고정비(월세+이자+인건비)’는?</>}
-        sub="숨만 쉬어도 통장에서 증발하는 금액" />
+      <QuestionTitle num={3} text={<>숨만 쉬어도 통장에서<br />무섭게 빠져나가는<br />‘고정비’는?</>}
+        sub="월세, 이자, 인건비 등등" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
