@@ -698,7 +698,7 @@ export default function ResultPage() {
               <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.85)', fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 }}>
                 {isBusiness ? '내 매장의 수명은' : '화끈하게 퇴사하는 날까지'}
               </p>
-              {isFinite(realisticDays) ? (
+              {(isBusiness ? isFinite(realisticDays) : (isFinite(realisticDays) && realisticDays > 0)) ? (
                 <>
                   <p style={{
                     margin: '16px 0 8px', lineHeight: 1.1,
