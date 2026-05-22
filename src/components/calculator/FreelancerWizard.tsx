@@ -433,7 +433,7 @@ function Q4Expense({
 }) {
   return (
     <div>
-      <QuestionTitle num={4} text={<>숨만 쉬어도 나가는 고정비 +<br />스트레스 풀려고 지른<br />‘시발비용’ 합계는?</>}
+      <QuestionTitle num={4} text={<>숨만 쉬어도 나가는<br />내 피 같은 머니<br />합계는?</>}
         sub="월세, 식비, 핫김 비용 포함 한 달 지출" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
