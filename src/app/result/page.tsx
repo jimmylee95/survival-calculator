@@ -366,6 +366,8 @@ export default function ResultPage() {
   // 등급/순위 잠금 상태
   const [isUnlocked, setIsUnlocked] = useState(false)
   const [shareCount, setShareCount] = useState(0)
+  // 로그인 유도 모달
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -541,23 +543,42 @@ export default function ResultPage() {
     alert('결제 기능 준비 중입니다')
   }
 
+  function requireLogin(action: () => void) {
+    if (isLoggedIn === false) {
+      setLoginPromptOpen(true)
+      return
+    }
+    action()
+  }
+
   // ── 이미지 저장 ───────────────────────────────────────────
   async function saveResultImage() {
     if (!cardRef.current || savingImg) return
+
+    // 비로그인 시 로그인 유도 모달
+    if (isLoggedIn === false) {
+      setLoginPromptOpen(true)
+      return
+    }
+
     setSavingImg(true)
     setIsCapturing(true)
     await new Promise(r => setTimeout(r, 120))  // DOM 업데이트 대기
     try {
       const html2canvas = (await import('html2canvas')).default
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
+      const target = cardRef.current
+      const canvas = await html2canvas(target, {
+        scale: 3,
         backgroundColor: '#ffffff',
         useCORS: true,
+        allowTaint: true,
         logging: false,
+        width: target.offsetWidth,
+        height: target.offsetHeight,
       })
       const link = document.createElement('a')
       link.download = '나의_해방계산기_결과.png'
-      link.href = canvas.toDataURL('image/png')
+      link.href = canvas.toDataURL('image/png', 1.0)
       link.click()
       showToast('✓ 이미지가 저장됐어요!')
     } catch {
@@ -676,11 +697,11 @@ export default function ResultPage() {
           }}>
             {/* 1. 누렁이 해방까지 + 일수 */}
             <div>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 16px' }}>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 16px', lineHeight: 1.6 }}>
                 누렁이 해방까지
               </p>
               <p style={{
-                margin: '0 0 24px', lineHeight: 1,
+                margin: '16px 0', lineHeight: 1.1,
                 display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 2,
                 filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
               }}>
@@ -704,8 +725,8 @@ export default function ResultPage() {
             <div style={{
               background: 'rgba(255,255,255,0.1)',
               borderRadius: 20,
-              padding: '20px 24px',
-              margin: '20px auto 0',
+              padding: '24px 24px',
+              margin: '24px auto 0',
               position: 'relative',
               maxWidth: 320,
               textAlign: 'center',
@@ -725,15 +746,16 @@ export default function ResultPage() {
                 fontSize: 11, fontWeight: 600,
                 color: 'rgba(255,255,255,0.4)',
                 letterSpacing: '0.05em',
-                marginBottom: 8,
+                marginBottom: 12,
+                lineHeight: 1.5,
               }}>
                 누렁이의 한마디
               </div>
               <div style={{
                 fontSize: 34, fontWeight: 800, fontStyle: 'normal',
                 color: '#FFFFFF',
-                marginBottom: 10,
-                letterSpacing: '-0.02em', lineHeight: 1.4,
+                marginBottom: 12,
+                letterSpacing: '-0.02em', lineHeight: 1.5,
               }}>
                 &ldquo;{grade.title}&rdquo;
               </div>
@@ -741,6 +763,7 @@ export default function ResultPage() {
                 fontSize: 16, fontWeight: 500,
                 color: 'rgba(255,255,255,0.7)',
                 letterSpacing: '-0.01em',
+                lineHeight: 1.6,
               }}>
                 {grade.message}
               </div>
@@ -772,12 +795,13 @@ export default function ResultPage() {
                 <p style={{
                   fontSize: 28, fontWeight: 900,
                   color: theme.accent,
-                  margin: '0 0 4px', letterSpacing: '-0.5px',
+                  margin: '12px 0 4px', letterSpacing: '-0.5px',
                   filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
+                  lineHeight: 1.3,
                 }}>
                   상위 {topPercentile}%
                 </p>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px' }}>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600, margin: '0 0 12px', lineHeight: 1.6 }}>
                   같은 {industryLabel} 기준
                 </p>
 
@@ -833,7 +857,8 @@ export default function ResultPage() {
                 <p style={{
                   fontSize: 13, fontWeight: 700,
                   color: 'rgba(255,255,255,0.85)',
-                  margin: '20px 0 0',
+                  margin: '12px 0',
+                  lineHeight: 1.6,
                 }}>
                   같은 {industryLabel} {isBusiness ? '사장님' : '직장인'}{' '}
                   <span style={{ color: theme.accent, fontWeight: 900 }}>
@@ -1078,7 +1103,7 @@ export default function ResultPage() {
           {/* ── 하단 버튼 ───────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
             <button
-              onClick={() => router.push('/calculator')}
+              onClick={() => requireLogin(() => router.push('/calculator'))}
               style={{
                 width: '100%', height: 52, borderRadius: 14,
                 border: '1.5px solid #E2E8F0', background: '#fff',
@@ -1107,7 +1132,7 @@ export default function ResultPage() {
               </button>
 
               <button
-                onClick={handleShare}
+                onClick={() => requireLogin(handleShare)}
                 style={{
                   flex: 1, height: 52, borderRadius: 14,
                   border: 'none', background: meta.bg,
@@ -1134,6 +1159,73 @@ export default function ResultPage() {
       }}>
         {toastMsg}
       </div>
+
+      {/* 로그인 유도 모달 */}
+      {loginPromptOpen && (
+        <div
+          onClick={() => setLoginPromptOpen(false)}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 20, zIndex: 100,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: '100%', maxWidth: 360,
+              background: '#fff', borderRadius: 16,
+              padding: 24, textAlign: 'center',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+            }}
+          >
+            <button
+              onClick={() => setLoginPromptOpen(false)}
+              aria-label="닫기"
+              style={{
+                position: 'absolute', top: 12, right: 12,
+                width: 32, height: 32, borderRadius: '50%',
+                background: 'transparent', border: 'none',
+                fontSize: 20, color: '#94A3B8', cursor: 'pointer',
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+            <p style={{
+              fontSize: 16, fontWeight: 600, color: '#1A1F5E',
+              margin: '8px 0 20px', lineHeight: 1.5,
+            }}>
+              이 기능을 사용하려면<br />카카오 로그인이 필요해요!
+            </p>
+            <button
+              onClick={() => { setLoginPromptOpen(false); router.push('/login') }}
+              style={{
+                width: '100%', height: 52, borderRadius: 12,
+                border: 'none', background: '#FEE500',
+                color: '#191919', fontSize: 14, fontWeight: 800,
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                boxShadow: '0 4px 14px rgba(254,229,0,0.35)',
+              }}
+            >
+              💬 카카오로 3초만에 시작하기
+            </button>
+            <button
+              onClick={() => setLoginPromptOpen(false)}
+              style={{
+                marginTop: 10, width: '100%', padding: '10px',
+                background: 'transparent', border: 'none',
+                fontSize: 13, color: '#64748B', cursor: 'pointer', fontWeight: 600,
+              }}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
