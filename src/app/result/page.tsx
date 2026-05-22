@@ -695,13 +695,13 @@ export default function ResultPage() {
             color: '#fff', textAlign: 'center',
             overflow: 'hidden',
           }}>
-            {/* 1. 누렁이 해방까지 + 일수 */}
+            {/* 1. 타이틀 + 일수 + 남았습니다 */}
             <div>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 700, margin: '0 0 16px', lineHeight: 1.6 }}>
-                누렁이 해방까지
+              <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.85)', fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 }}>
+                {isBusiness ? '내 매장의 수명은' : '누렁이 해방까지'}
               </p>
               <p style={{
-                margin: '16px 0', lineHeight: 1.1,
+                margin: '16px 0 8px', lineHeight: 1.1,
                 display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 2,
                 filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
               }}>
@@ -718,6 +718,13 @@ export default function ResultPage() {
                     일
                   </span>
                 )}
+              </p>
+              <p style={{
+                fontSize: 26, fontWeight: 600, color: '#FFFFFF',
+                margin: 0, lineHeight: 1.3,
+                letterSpacing: '-0.3px',
+              }}>
+                남았습니다
               </p>
             </div>
 
