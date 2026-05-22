@@ -379,7 +379,7 @@ function Q2Assets({
 }) {
   return (
     <div>
-      <QuestionTitle num={2} text={<>퇴사 후 숨만 쉬어도<br />버틸 수 있는 내<br />‘비상금’ 총액은?</>}
+      <QuestionTitle num={2} text={<>퇴사 후 백수로<br />버틸 수 있는 내<br />‘비상금’ 총액은?</>}
         sub="예적금, 주식, 영끌 자산 합산" />
       <AmountInput value={input.assets}
         onChange={v => update({ assets: v })}
