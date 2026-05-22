@@ -31,15 +31,6 @@ const JOB_LABELS: Record<string, string> = {
   civil_servant: '공무원', other: '기타',
 }
 
-// 직군별 평균 저축률 벤치마크 (%)
-const JOB_AVG_SAVINGS_RATE: Record<string, number> = {
-  office: 22, it: 28, sales: 20, creator: 15,
-  finance: 30, marketing: 22, construction: 25,
-  education: 22, medical: 28, logistics: 20,
-  manufacturing: 23, legal: 32, hr: 22,
-  civil_servant: 20, other: 20,
-}
-
 const MODE_META = {
   business:   { bg: '#FF6B35', label: '사장님 생존 계산기' },
   freelancer: { bg: '#4A7DFF', label: '직장인 퇴사 계산기' },
@@ -426,12 +417,14 @@ export default function ResultPage() {
     diffDays        = Math.round((isFinite(realisticDays) ? realisticDays : 0) - avgValue)
   } else if (freeResult) {
     const jobKey    = freelancerInput.jobType ?? 'other'
-    const avgRate   = JOB_AVG_SAVINGS_RATE[jobKey] ?? 20
     industryLabel   = JOB_LABELS[jobKey] ?? '직장인'
-    const myRate    = isFinite(freeResult.savingsRate) ? freeResult.savingsRate : 0
-    percentile      = calculatePercentile(myRate, avgRate)
-    avgValue        = avgRate
-    diffDays        = myRate - avgRate  // 저축률 차이 (%)
+    // 직장인: 탈출일수가 적을수록 상위 계급 → percentile 반전
+    const avgEscapeDays = 1825  // 5년 = 직장인 평균 탈출 기준
+    avgValue        = avgEscapeDays
+    const myDays    = isFinite(freeResult.escapeDays) ? freeResult.escapeDays : avgEscapeDays * 5
+    const rawPct    = calculatePercentile(myDays, avgEscapeDays)
+    percentile      = Math.round((100 - rawPct) * 10) / 10  // 반전: 일수 적을수록 상위
+    diffDays        = Math.round(myDays - avgEscapeDays)  // 음수 = 평균보다 빠름(좋음)
   }
 
   // percentile = CDF (높을수록 상위권)
@@ -851,7 +844,7 @@ export default function ResultPage() {
                   }}>
                     {isBusiness
                       ? `평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}일`
-                      : `저축률 평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}%p`}
+                      : `평균 대비 ${diffDays >= 0 ? '+' : ''}${diffDays}일`}
                   </span>
                 </div>
 
