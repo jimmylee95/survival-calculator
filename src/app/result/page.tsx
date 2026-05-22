@@ -1068,18 +1068,11 @@ export default function ResultPage() {
           </LockedSection>
 
           {!gateOpen && (
-            <>
-              <LoginPromptCard
-                icon="💾"
-                title="이 결과를 저장하려면?"
-                sub="다시 계산하기 귀찮잖아요 😉"
-              />
-              <LoginPromptCard
-                icon="📈"
-                title="다음 달에 변화를 비교해드려요"
-                sub="카카오 로그인하면 자동 저장!"
-              />
-            </>
+            <LoginPromptCard
+              icon="💾"
+              title="이 결과를 저장하려면?"
+              sub="다시 계산하기 귀찮잖아요 😉"
+            />
           )}
 
           {/* ── 하단 버튼 ───────────────────────────── */}
