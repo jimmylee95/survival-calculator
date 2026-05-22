@@ -407,7 +407,7 @@ function Q4Revenue({
 }) {
   return (
     <div>
-      <QuestionTitle num={4} text={<>카드 수수료 빼고<br />배달앱 떼고 내 손에 쥐어지는<br />‘평균 월 매출’은?</>}
+      <QuestionTitle num={4} text={<>카드 수수료 빼고<br />내 손에 쥐어지는<br />‘평균 월 매출’은?</>}
         sub="배달앱 떼고 카드사 떼고 내 손에 쥐어지는 금액" />
       <div style={{ marginBottom: 24 }}>
         <div style={{
