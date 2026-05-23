@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { INDUSTRY_BENCHMARKS, formatWon } from '@/utils/calculate'
-import { RegionSelect } from './RegionSelect'
+// TODO: 지역 선택 단계 - 추후 재활성화
+// import { RegionSelect } from './RegionSelect'
 
 const ACCENT = '#FF6B35'
-const TOTAL = 6
+const TOTAL = 5
 
 const BALANCE_PRESETS = [
   { label: '500만', value: 5_000_000 },
@@ -166,16 +167,18 @@ function ContinueButton({
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Typeform-style Business Wizard (6 questions)
+   Typeform-style Business Wizard (5 questions)
 
    internal step:
      0 = industry        (Q1)
      1 = balance         (Q2)
      2 = fixed cost      (Q3)
      3 = revenue         (Q4)
-     4 = loan ask        (Q5-A)
-     5 = loan amount     (Q5-B, sub-step of Q5)
-     6 = region          (Q6, last → finish)
+     4 = loan ask        (Q5-A, no → finish)
+     5 = loan amount     (Q5-B, last → finish)
+
+   TODO: 지역 선택 단계 - 추후 재활성화
+     (step 6 = region 으로 사용되던 단계 — Q6Region 함수 본문 주석 보관)
    ═══════════════════════════════════════════════════════════ */
 export function BusinessWizard() {
   const router = useRouter()
@@ -266,15 +269,17 @@ export function BusinessWizard() {
           {step === 4 && (
             <Q5LoanAsk
               onYes={goNext}
-              onNo={() => { updateBusinessInput({ loanInterest: 0 }); jumpTo(6) }}
+              onNo={() => { updateBusinessInput({ loanInterest: 0 }); finish() }}
             />
           )}
           {step === 5 && (
-            <Q5LoanAmount input={businessInput} update={updateBusinessInput} onNext={goNext} />
+            <Q5LoanAmount input={businessInput} update={updateBusinessInput} onFinish={finish} />
           )}
+          {/* TODO: 지역 선택 단계 - 추후 재활성화
           {step === 6 && (
             <Q6Region input={businessInput} update={updateBusinessInput} onFinish={finish} />
           )}
+          */}
         </div>
       </div>
 
@@ -443,7 +448,7 @@ function Q5LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   return (
     <div>
       <QuestionTitle num={5} text={<>은행한테 빚진 거<br />있어요?</>}
-        sub="없으면 바로 지역 선택으로 넘어가요" />
+        sub="없으면 바로 결과를 보여드릴게요" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button onClick={onYes}
           style={{
@@ -468,7 +473,7 @@ function Q5LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
           <span style={{ fontSize: 32 }}>😎</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 19, fontWeight: 900, color: '#1A1F5E' }}>없어요</div>
-            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>지역 선택으로 이동</div>
+            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>바로 결과 보기</div>
           </div>
         </button>
       </div>
@@ -476,13 +481,13 @@ function Q5LoanAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   )
 }
 
-/* ───── Q5-B: 대출 이자 금액 입력 ────────────────────── */
+/* ───── Q5-B: 대출 이자 금액 입력 (마지막) ─────────── */
 function Q5LoanAmount({
-  input, update, onNext,
+  input, update, onFinish,
 }: {
   input: { loanInterest: number }
   update: (p: Record<string, unknown>) => void
-  onNext: () => void
+  onFinish: () => void
 }) {
   return (
     <div>
@@ -490,13 +495,16 @@ function Q5LoanAmount({
         sub="은행님께 매달 바치는 이자" />
       <AmountInput value={input.loanInterest}
         onChange={v => update({ loanInterest: v })}
-        presets={LOAN_PRESETS} autoFocus onEnter={onNext} />
-      <ContinueButton onClick={onNext} disabled={input.loanInterest === 0} />
+        presets={LOAN_PRESETS} autoFocus onEnter={onFinish} />
+      <ContinueButton onClick={onFinish} disabled={input.loanInterest === 0}
+        label="내 매장 수명 확인하기" />
     </div>
   )
 }
 
 /* ───── Q6: 지역 선택 (마지막) ────────────────────────── */
+// TODO: 지역 선택 단계 - 추후 재활성화
+/*
 function Q6Region({
   input, update, onFinish,
 }: {
@@ -522,3 +530,4 @@ function Q6Region({
     </div>
   )
 }
+*/

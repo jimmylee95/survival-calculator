@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { formatWon } from '@/utils/calculate'
-import { RegionSelect } from './RegionSelect'
+// TODO: 지역 선택 단계 - 추후 재활성화
+// import { RegionSelect } from './RegionSelect'
 
 const ACCENT = '#4A7DFF'
-const TOTAL = 7
+const TOTAL = 6
 
 const JOB_BENCHMARKS: Record<string, { label: string; emoji: string; salary: number; expense: number }> = {
   office:        { label: '사무직',         emoji: '💼', salary: 3_800_000, expense: 2_500_000 },
@@ -190,7 +191,7 @@ function ContinueButton({
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Typeform-style Freelancer Wizard (7 questions)
+   Typeform-style Freelancer Wizard (6 questions)
 
    internal step:
      0 = job select        (Q1)
@@ -198,9 +199,11 @@ function ContinueButton({
      2 = salary            (Q3)
      3 = monthly expense   (Q4)
      4 = target amount     (Q5)
-     5 = side income ask   (Q6-A)
-     6 = side income amount(Q6-B, sub-step of Q6)
-     7 = region            (Q7, last → finish)
+     5 = side income ask   (Q6-A, no → finish)
+     6 = side income amount(Q6-B, last → finish)
+
+   TODO: 지역 선택 단계 - 추후 재활성화
+     (step 7 = region 으로 사용되던 단계 — Q7Region 함수 본문 주석 보관)
    ═══════════════════════════════════════════════════════════ */
 export function FreelancerWizard() {
   const router = useRouter()
@@ -297,15 +300,17 @@ export function FreelancerWizard() {
           {step === 5 && (
             <Q6SideAsk
               onYes={goNext}
-              onNo={() => { updateFreelancerInput({ sideIncome: 0 }); jumpTo(7) }}
+              onNo={() => { updateFreelancerInput({ sideIncome: 0 }); finish() }}
             />
           )}
           {step === 6 && (
-            <Q6SideAmount input={freelancerInput} update={updateFreelancerInput} onNext={goNext} />
+            <Q6SideAmount input={freelancerInput} update={updateFreelancerInput} onFinish={finish} />
           )}
+          {/* TODO: 지역 선택 단계 - 추후 재활성화
           {step === 7 && (
             <Q7Region input={freelancerInput} update={updateFreelancerInput} onFinish={finish} />
           )}
+          */}
         </div>
       </div>
 
@@ -533,7 +538,7 @@ function Q6SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   return (
     <div>
       <QuestionTitle num={6} text={<>요즘 유행하는 N잡러,<br />나도 몰래 꿀 빠는<br />‘부업 파이프라인’이 있나요?</>}
-        sub="있음(부업 중) / 없음(월급 올인)" />
+        sub="없으면 바로 결과를 보여드릴게요" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button onClick={onYes}
           style={{
@@ -558,7 +563,7 @@ function Q6SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
           <span style={{ fontSize: 32 }}>🙅</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 19, fontWeight: 900, color: '#1A1F5E' }}>없어요</div>
-            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>지역 선택으로 이동</div>
+            <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>월급만으로 계산</div>
           </div>
         </button>
       </div>
@@ -566,13 +571,13 @@ function Q6SideAsk({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
   )
 }
 
-/* ───── Q6-B: 부업 수입 금액 입력 ─────────────────────── */
+/* ───── Q6-B: 부업 수입 금액 입력 (마지막) ────────── */
 function Q6SideAmount({
-  input, update, onNext,
+  input, update, onFinish,
 }: {
   input: { sideIncome: number }
   update: (p: Record<string, unknown>) => void
-  onNext: () => void
+  onFinish: () => void
 }) {
   return (
     <div>
@@ -580,13 +585,16 @@ function Q6SideAmount({
         sub="평균 금액으로 입력해주세요" />
       <AmountInput value={input.sideIncome}
         onChange={v => update({ sideIncome: v })}
-        presets={SIDE_PRESETS} autoFocus onEnter={onNext} />
-      <ContinueButton onClick={onNext} disabled={input.sideIncome === 0} />
+        presets={SIDE_PRESETS} autoFocus onEnter={onFinish} />
+      <ContinueButton onClick={onFinish} disabled={input.sideIncome === 0}
+        label="퇴사 D-day 확인하기 🚀" />
     </div>
   )
 }
 
 /* ───── Q7: 지역 선택 (마지막) ────────────────────────── */
+// TODO: 지역 선택 단계 - 추후 재활성화
+/*
 function Q7Region({
   input, update, onFinish,
 }: {
@@ -612,3 +620,4 @@ function Q7Region({
     </div>
   )
 }
+*/
