@@ -224,10 +224,11 @@ export function FreelancerWizard() {
     setAnimKey(k => k + 1)
     setStep(s => s - 1)
   }
-  function jumpTo(n: number) {
-    setAnimKey(k => k + 1)
-    setStep(n)
-  }
+  // TODO: 지역 선택 단계 재활성화 시 사용
+  // function jumpTo(n: number) {
+  //   setAnimKey(k => k + 1)
+  //   setStep(n)
+  // }
   function finish() {
     calculate()
     router.push('/result')
