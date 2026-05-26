@@ -12,6 +12,9 @@ export default function BottomNav() {
   // 숨김 조건
   if (pathname?.startsWith('/admin')) return null
   if (pathname === '/calculator')      return null
+  if (pathname === '/employee')        return null
+  if (pathname === '/self-employed')   return null
+  if (pathname === '/parttime')        return null
   if (pathname === '/input')           return null
 
   const isHomeActive    = pathname === '/' || pathname === '/dashboard'

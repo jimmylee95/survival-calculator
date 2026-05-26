@@ -306,7 +306,7 @@ export default function HomePage() {
 
   function handleSelect(mode: 'business' | 'freelancer') {
     setMode(mode)
-    router.push('/calculator')
+    router.push(mode === 'business' ? '/self-employed' : '/employee')
   }
 
   function handleResume() {

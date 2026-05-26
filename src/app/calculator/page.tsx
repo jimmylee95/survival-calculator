@@ -1,23 +1,26 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
-import { BusinessWizard }  from '@/components/calculator/BusinessWizard'
-import { FreelancerWizard } from '@/components/calculator/FreelancerWizard'
 
-export default function CalculatorPage() {
+export default function CalculatorRedirectPage() {
+  const router = useRouter()
   const { mode, _hydrated } = useCalculatorStore()
 
-  if (!_hydrated) {
-    return (
-      <div style={{
-        minHeight: '100dvh', background: '#F8F9FB',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ fontSize: 28 }}>⚡</div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (!_hydrated) return
+    if (mode === 'business')        router.replace('/self-employed')
+    else if (mode === 'freelancer') router.replace('/employee')
+    else                            router.replace('/')
+  }, [_hydrated, mode, router])
 
-  if (mode === 'business') return <BusinessWizard />
-  return <FreelancerWizard />
+  return (
+    <div style={{
+      minHeight: '100dvh', background: '#F8F9FB',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{ fontSize: 28 }}>⚡</div>
+    </div>
+  )
 }
