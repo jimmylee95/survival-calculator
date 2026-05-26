@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, Suspense } from 'react'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { INDUSTRY_USERS } from '@/utils/calculate'
@@ -498,6 +499,25 @@ export default function HomePage() {
                 t.style.boxShadow = '0 10px 36px rgba(34, 197, 94, 0.45)'
               }}
             >
+              {/* 누렁이 배경 이미지 (자영업자/직장인 카드와 동일한 우측 정렬 cover) */}
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                <Image
+                  src="/images/nureungi-alba.png"
+                  alt="프로 알바생 누렁이"
+                  fill
+                  sizes="(max-width: 430px) 100vw, 430px"
+                  style={{ objectFit: 'cover', objectPosition: 'right center' }}
+                  priority={false}
+                />
+              </div>
+              {/* 좌우 그라데이션 오버레이 (텍스트 가독성) */}
+              <div style={{
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                background:
+                  'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), '
+                  + 'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
+              }} />
+
               {/* NEW 뱃지 */}
               <span style={{
                 position:     'absolute',
@@ -511,12 +531,13 @@ export default function HomePage() {
                 fontWeight:   900,
                 letterSpacing: '1px',
                 animation:    'pulse-new 1.8s ease-in-out infinite',
+                zIndex:       2,
               }}>
                 NEW
               </span>
 
               {/* 텍스트 영역 */}
-              <div>
+              <div style={{ position: 'relative', zIndex: 1 }}>
                 <p style={{
                   fontSize:       11, fontWeight: 600,
                   color:          'rgba(255,255,255,0.65)',
@@ -554,6 +575,8 @@ export default function HomePage() {
                 alignSelf:  'flex-end',
                 alignItems: 'center', gap: 6,
                 marginTop:  20,
+                position:   'relative',
+                zIndex:     1,
               }}>
                 <span style={{
                   fontSize:      14,
