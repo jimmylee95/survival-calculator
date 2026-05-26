@@ -5,7 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { INDUSTRY_USERS } from '@/utils/calculate'
 import { CountUpNumber } from '@/components/result/CountUpNumber'
+import { PartTimeConverter } from '@/components/parttime/PartTimeConverter'
 import { createClient } from '@/lib/supabase/client'
+
+const PARTTIME_USERS = 1_847
 
 // 결과 페이지와 동일한 INDUSTRY_USERS 데이터 소스에서 대표값 사용
 const CARD_COUNTERS: Record<'business' | 'freelancer', number> = {
@@ -282,6 +285,8 @@ export default function HomePage() {
 
   const [hasSaved, setHasSaved] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+  const [parttimeOpen, setParttimeOpen] = useState(false)
+  const parttimeRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!_hydrated) return
@@ -309,6 +314,18 @@ export default function HomePage() {
 
   function handleResume() {
     router.push('/calculator')
+  }
+
+  function handleParttimeToggle() {
+    setParttimeOpen(prev => {
+      const next = !prev
+      if (next) {
+        requestAnimationFrame(() => {
+          parttimeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      }
+      return next
+    })
   }
 
   return (
@@ -461,6 +478,177 @@ export default function HomePage() {
             </div>
             </div>
           ))}
+
+          {/* 알바생 시급 환산기 카드 */}
+          <div>
+            <button
+              onClick={handleParttimeToggle}
+              style={{
+                width:           '100%',
+                padding:         '28px 24px',
+                minHeight:       220,
+                borderRadius:    20,
+                background:      'linear-gradient(135deg, #22C55E 0%, #16A34A 60%, #15803D 100%)',
+                border:          'none',
+                cursor:          'pointer',
+                textAlign:       'left',
+                boxShadow:       '0 10px 36px rgba(34, 197, 94, 0.45)',
+                transform:       'translateY(0)',
+                transition:      'transform 0.15s ease, box-shadow 0.15s ease',
+                display:         'flex',
+                flexDirection:   'column',
+                justifyContent:  'space-between',
+                gap:             12,
+                position:        'relative',
+                overflow:        'hidden',
+              }}
+              onMouseEnter={e => {
+                const t = e.currentTarget
+                t.style.transform = 'translateY(-3px)'
+                t.style.boxShadow = '0 16px 44px rgba(34, 197, 94, 0.55)'
+              }}
+              onMouseLeave={e => {
+                const t = e.currentTarget
+                t.style.transform = 'translateY(0)'
+                t.style.boxShadow = '0 10px 36px rgba(34, 197, 94, 0.45)'
+              }}
+            >
+              {/* NEW 뱃지 */}
+              <span style={{
+                position:     'absolute',
+                top:          14,
+                right:        14,
+                padding:      '4px 10px',
+                borderRadius: 999,
+                background:   '#FEF08A',
+                color:        '#854D0E',
+                fontSize:     10,
+                fontWeight:   900,
+                letterSpacing: '1px',
+                animation:    'pulse-new 1.8s ease-in-out infinite',
+              }}>
+                NEW
+              </span>
+
+              {/* 텍스트 영역 */}
+              <div>
+                <p style={{
+                  fontSize:       11, fontWeight: 600,
+                  color:          'rgba(255,255,255,0.65)',
+                  margin:         '0 0 6px',
+                  textTransform:  'uppercase',
+                  letterSpacing:  '1px',
+                }}>
+                  알바생 · 대학생 · 투잡러
+                </p>
+                <p style={{
+                  fontSize:       21, fontWeight: 900,
+                  color:          '#FFFFFF',
+                  margin:         '0 0 12px',
+                  letterSpacing:  '-0.3px',
+                  whiteSpace:     'pre-line',
+                  lineHeight:     1.35,
+                  textShadow:     '0 1px 2px rgba(0,0,0,0.35)',
+                }}>
+                  {'이거 사려면\n몇 시간 일해야 되는지 계산하기'}
+                </p>
+                <p style={{
+                  fontSize:    13,
+                  color:       '#FFFFFF',
+                  margin:      0,
+                  lineHeight:  1.75,
+                  whiteSpace:  'pre-line',
+                  textShadow:  '0 1px 2px rgba(0,0,0,0.35)',
+                }}>
+                  {'시급으로 환산하면 얼마짜리?\n진짜 가성비를 따져보자!'}
+                </p>
+              </div>
+
+              <div style={{
+                display:    'flex',
+                alignSelf:  'flex-end',
+                alignItems: 'center', gap: 6,
+                marginTop:  20,
+              }}>
+                <span style={{
+                  fontSize:      14,
+                  fontWeight:    700,
+                  color:         '#16A34A',
+                  background:    '#fff',
+                  borderRadius:  25,
+                  padding:       '10px 24px',
+                  letterSpacing: '-0.2px',
+                  boxShadow:     '0 2px 8px rgba(0,0,0,0.18)',
+                }}>
+                  {parttimeOpen ? '닫기 ▲' : '지금 확인하기 →'}
+                </span>
+              </div>
+            </button>
+
+            {/* 소셜프루프 */}
+            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'center' }}>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                background: 'rgba(255, 255, 255, 0.9)',
+                borderRadius: 20,
+                padding: '8px 20px',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                color: '#333',
+                fontSize: 13, fontWeight: 500,
+              }}>
+                <span style={{ fontSize: 14 }}>🔥</span>
+                <span>이미</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: '#16A34A' }}>
+                  <CountUpNumber target={PARTTIME_USERS} duration={1500} />명
+                </span>
+                <span>의 알바생이 참여 했어요</span>
+              </div>
+            </div>
+
+            {/* 펼침: 시급 환산기 */}
+            {parttimeOpen && (
+              <div ref={parttimeRef} style={{
+                marginTop: 16,
+                animation: 'fade-in-up 0.35s ease both',
+              }}>
+                <PartTimeConverter />
+              </div>
+            )}
+
+            {/* COMING SOON 티저 */}
+            {parttimeOpen && (
+              <div style={{
+                marginTop: 16,
+                padding:        '18px 20px',
+                borderRadius:   16,
+                border:         '1.5px dashed #CBD5E1',
+                background:     '#F8FAFC',
+                display:        'flex',
+                alignItems:     'center',
+                gap:            12,
+              }}>
+                <span style={{ fontSize: 26 }}>🎓</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{
+                    fontSize: 13, fontWeight: 800, color: '#1A1F5E',
+                    margin: '0 0 2px', letterSpacing: '-0.2px',
+                  }}>
+                    알바 졸업 D-day 계산기
+                  </p>
+                  <p style={{ fontSize: 11, color: '#64748B', margin: 0, fontWeight: 600 }}>
+                    내가 알바 인생에서 벗어나는 그 날까지…
+                  </p>
+                </div>
+                <span style={{
+                  fontSize: 10, fontWeight: 900, letterSpacing: '1px',
+                  padding: '4px 10px', borderRadius: 999,
+                  background: '#E2E8F0', color: '#475569',
+                }}>
+                  COMING SOON
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 이어서 계산하기 (로그인 + 계산 이력 있는 경우에만) */}
