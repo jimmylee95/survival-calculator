@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const ACCENT      = '#22C55E'
 const ACCENT_DARK = '#16A34A'
@@ -129,12 +130,13 @@ function ContinueButton({
 }
 
 /* ═══════════════════════════════════════════════════════════
-   알바생 시급 환산기 (3-step typeform wizard)
+   알바생 시급 환산기 풀페이지 위저드 (BusinessWizard 패턴)
      step 0 = 시급 입력
      step 1 = 금액 선택 (직접 입력 or 아이템)
      step 2 = 결과
    ═══════════════════════════════════════════════════════════ */
-export function PartTimeConverter() {
+export function PartTimeWizard() {
+  const router = useRouter()
   const [step, setStep]         = useState(0)
   const [animKey, setAnimKey]   = useState(0)
   const [wage, setWage]         = useState(10_030)
@@ -149,7 +151,7 @@ export function PartTimeConverter() {
     setStep(s => s + 1)
   }
   function goBack() {
-    if (step === 0) return
+    if (step === 0) { router.back(); return }
     setAnimKey(k => k + 1)
     setStep(s => s - 1)
   }
@@ -162,66 +164,62 @@ export function PartTimeConverter() {
 
   return (
     <div style={{
-      background:   'linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 60%)',
-      borderRadius: 20,
-      border:       '1px solid rgba(34, 197, 94, 0.2)',
-      boxShadow:    '0 10px 36px rgba(34, 197, 94, 0.18)',
-      overflow:     'hidden',
-      display:      'flex',
-      flexDirection:'column',
-      minHeight:    580,
+      minHeight: '100dvh',
+      background: 'linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 60%)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      width: '100%', overflowX: 'hidden',
     }}>
-      {/* 상단: 프로그레스 바 + 뒤로가기 (BusinessWizard와 동일 패턴) */}
       <div style={{
-        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(34, 197, 94, 0.08)',
+        width: '100%', maxWidth: 430,
+        display: 'flex', flexDirection: 'column', minHeight: '100dvh',
       }}>
-        <div style={{ height: 3, background: '#F1F5F9' }}>
-          <div style={{
-            height:     '100%',
-            width:      `${(progressIdx / TOTAL) * 100}%`,
-            background: ACCENT,
-            transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-          }} />
+        {/* 상단: 프로그레스 바 + 뒤로가기 */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 20,
+          background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
+        }}>
+          <div style={{ height: 3, background: '#F1F5F9' }}>
+            <div style={{
+              height: '100%',
+              width: `${(progressIdx / TOTAL) * 100}%`,
+              background: ACCENT,
+              transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            }} />
+          </div>
+          <button onClick={goBack} aria-label="뒤로 가기"
+            style={{
+              background: 'none', border: 'none',
+              fontSize: 24, color: '#64748B',
+              cursor: 'pointer', padding: '14px 18px',
+              display: 'block',
+            }}>
+            ←
+          </button>
         </div>
-        <button
-          onClick={goBack}
-          aria-label="이전"
-          disabled={step === 0}
-          style={{
-            background: 'none', border: 'none',
-            fontSize: 22, color: step === 0 ? '#CBD5E1' : '#64748B',
-            cursor: step === 0 ? 'default' : 'pointer',
-            padding: '12px 18px',
-            display: 'block',
-          }}
-        >
-          ←
-        </button>
-      </div>
 
-      {/* 질문 영역 (애니메이션) */}
-      <div key={animKey} style={{
-        flex: 1, padding: '8px 22px 28px',
-        display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
-        animation: 'pt-slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
-        minHeight: 0,
-      }}>
-        {step === 0 && (
-          <Q1Wage wage={wage} setWage={setWage} onNext={goNext} />
-        )}
-        {step === 1 && (
-          <Q2Item
-            wage={wage}
-            amount={amount} setAmount={setAmount}
-            picked={picked} setPicked={setPicked}
-            category={category} setCategory={setCategory}
-            onNext={goNext}
-          />
-        )}
-        {step === 2 && (
-          <Q3Result wage={wage} amount={amount} picked={picked} onRestart={restart} />
-        )}
+        {/* 질문 영역 (세로 중앙 정렬) */}
+        <div key={animKey} style={{
+          flex: 1, padding: '8px 24px 60px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          animation: 'pt-slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
+          minHeight: 0,
+        }}>
+          {step === 0 && (
+            <Q1Wage wage={wage} setWage={setWage} onNext={goNext} />
+          )}
+          {step === 1 && (
+            <Q2Item
+              wage={wage}
+              amount={amount} setAmount={setAmount}
+              picked={picked} setPicked={setPicked}
+              category={category} setCategory={setCategory}
+              onNext={goNext}
+            />
+          )}
+          {step === 2 && (
+            <Q3Result wage={wage} amount={amount} picked={picked} onRestart={restart} />
+          )}
+        </div>
       </div>
 
       <style>{`

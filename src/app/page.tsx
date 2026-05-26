@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
 import { INDUSTRY_USERS } from '@/utils/calculate'
 import { CountUpNumber } from '@/components/result/CountUpNumber'
-import { PartTimeConverter } from '@/components/parttime/PartTimeConverter'
 import { createClient } from '@/lib/supabase/client'
 
 const PARTTIME_USERS = 1_847
@@ -285,8 +284,6 @@ export default function HomePage() {
 
   const [hasSaved, setHasSaved] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
-  const [parttimeOpen, setParttimeOpen] = useState(false)
-  const parttimeRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!_hydrated) return
@@ -314,18 +311,6 @@ export default function HomePage() {
 
   function handleResume() {
     router.push('/calculator')
-  }
-
-  function handleParttimeToggle() {
-    setParttimeOpen(prev => {
-      const next = !prev
-      if (next) {
-        requestAnimationFrame(() => {
-          parttimeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        })
-      }
-      return next
-    })
   }
 
   return (
@@ -482,7 +467,7 @@ export default function HomePage() {
           {/* 알바생 시급 환산기 카드 */}
           <div>
             <button
-              onClick={handleParttimeToggle}
+              onClick={() => router.push('/parttime')}
               style={{
                 width:           '100%',
                 padding:         '28px 24px',
@@ -580,7 +565,7 @@ export default function HomePage() {
                   letterSpacing: '-0.2px',
                   boxShadow:     '0 2px 8px rgba(0,0,0,0.18)',
                 }}>
-                  {parttimeOpen ? '닫기 ▲' : '지금 확인하기 →'}
+                  지금 확인하기 →
                 </span>
               </div>
             </button>
@@ -605,49 +590,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 펼침: 시급 환산기 */}
-            {parttimeOpen && (
-              <div ref={parttimeRef} style={{
-                marginTop: 16,
-                animation: 'fade-in-up 0.35s ease both',
-              }}>
-                <PartTimeConverter />
-              </div>
-            )}
-
-            {/* COMING SOON 티저 */}
-            {parttimeOpen && (
-              <div style={{
-                marginTop: 16,
-                padding:        '18px 20px',
-                borderRadius:   16,
-                border:         '1.5px dashed #CBD5E1',
-                background:     '#F8FAFC',
-                display:        'flex',
-                alignItems:     'center',
-                gap:            12,
-              }}>
-                <span style={{ fontSize: 26 }}>🎓</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{
-                    fontSize: 13, fontWeight: 800, color: '#1A1F5E',
-                    margin: '0 0 2px', letterSpacing: '-0.2px',
-                  }}>
-                    알바 졸업 D-day 계산기
-                  </p>
-                  <p style={{ fontSize: 11, color: '#64748B', margin: 0, fontWeight: 600 }}>
-                    내가 알바 인생에서 벗어나는 그 날까지…
-                  </p>
-                </div>
-                <span style={{
-                  fontSize: 10, fontWeight: 900, letterSpacing: '1px',
-                  padding: '4px 10px', borderRadius: 999,
-                  background: '#E2E8F0', color: '#475569',
-                }}>
-                  COMING SOON
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
