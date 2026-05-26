@@ -563,12 +563,12 @@ export default function HomePage() {
                 <span style={{
                   fontSize:      14,
                   fontWeight:    700,
-                  color:         '#16A34A',
-                  background:    '#fff',
+                  color:         '#FFFFFF',
+                  background:    '#22C55E',
                   borderRadius:  25,
                   padding:       '10px 24px',
                   letterSpacing: '-0.2px',
-                  boxShadow:     '0 2px 8px rgba(0,0,0,0.18)',
+                  boxShadow:     '0 2px 8px rgba(34, 197, 94, 0.4)',
                 }}>
                   지금 확인하기 →
                 </span>
