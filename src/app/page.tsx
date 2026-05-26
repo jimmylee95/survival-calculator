@@ -204,13 +204,15 @@ function BannerCarousel() {
 }
 
 type CardConfig = {
-  mode:     'business' | 'freelancer'
-  bg:       string
-  bgImage?: string
-  title:    string
-  desc:     string
-  sub:      string
-  shadow:   string
+  mode:      'business' | 'freelancer'
+  bg:        string
+  bgImage?:  string
+  imageSrc?: string   // <Image> 컴포넌트 사용 시 src (있으면 CSS bg 대신 Image 렌더)
+  imageAlt?: string
+  title:     string
+  desc:      string
+  sub:       string
+  shadow:    string
 }
 
 const CARDS: CardConfig[] = [
@@ -224,13 +226,14 @@ const CARDS: CardConfig[] = [
     shadow:  'rgba(74,125,255,0.45)',
   },
   {
-    mode:    'business',
-    bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
-    bgImage: '/images/nureungi_business_bg.png',
-    title:   '언젠가 돈복사 시켜줄\n내 매장 수명 계산하기',
-    desc:    "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
-    sub:     '자영업자 · 소상공인',
-    shadow:  'rgba(255,107,53,0.45)',
+    mode:     'business',
+    bg:       'linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%)',
+    imageSrc: '/images/nureungi-self-employed.png',
+    imageAlt: '누렁이 치킨 사장님',
+    title:    '언젠가 돈복사 시켜줄\n내 매장 수명 계산하기',
+    desc:     "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
+    sub:      '자영업자 · 소상공인',
+    shadow:   'rgba(255,107,53,0.45)',
   },
 ]
 
@@ -343,7 +346,7 @@ export default function HomePage() {
               style={{
                 width:              '100%',
                 padding:            '28px 24px',
-                minHeight:          card.bgImage ? 220 : undefined,
+                minHeight:          (card.bgImage || card.imageSrc) ? 220 : undefined,
                 borderRadius:       20,
                 background:         card.bg,
                 backgroundSize:     card.bgImage ? 'auto, auto, cover' : undefined,
@@ -359,6 +362,8 @@ export default function HomePage() {
                 flexDirection:      'column',
                 justifyContent:     'space-between',
                 gap:                12,
+                position:           card.imageSrc ? 'relative' : undefined,
+                overflow:           card.imageSrc ? 'hidden' : undefined,
               }}
               onMouseEnter={e => {
                 const t = e.currentTarget
@@ -371,8 +376,30 @@ export default function HomePage() {
                 t.style.boxShadow  = `0 10px 36px ${card.shadow}`
               }}
             >
+              {/* Next.js Image + 그라데이션 오버레이 (imageSrc 카드 한정) */}
+              {card.imageSrc && card.imageAlt && (
+                <>
+                  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                    <Image
+                      src={card.imageSrc}
+                      alt={card.imageAlt}
+                      fill
+                      sizes="(max-width: 430px) 100vw, 430px"
+                      style={{ objectFit: 'cover', objectPosition: 'right center' }}
+                      priority={false}
+                    />
+                  </div>
+                  <div style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    background:
+                      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), '
+                      + 'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
+                  }} />
+                </>
+              )}
+
               {/* 텍스트 영역 (상단 좌측) */}
-              <div>
+              <div style={card.imageSrc ? { position: 'relative', zIndex: 1 } : undefined}>
                 {/* 서브 레이블 */}
                 <p style={{
                   fontSize: 11, fontWeight: 600,
@@ -417,6 +444,8 @@ export default function HomePage() {
                 alignSelf: 'flex-end',
                 alignItems: 'center', gap: 6,
                 marginTop: 20,
+                position: card.imageSrc ? 'relative' : undefined,
+                zIndex:   card.imageSrc ? 1 : undefined,
               }}>
                 <span style={{
                   fontSize:      14,
