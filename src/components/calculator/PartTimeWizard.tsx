@@ -2,11 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { formatWon } from '@/utils/calculate'
 
 const ACCENT      = '#22C55E'
 const ACCENT_DARK = '#16A34A'
 const ACCENT_BG   = '#ECFDF5'
 const TOTAL       = 3
+
+const AMOUNT_PRESETS = [
+  { label: '50만',   value:    500_000 },
+  { label: '100만',  value:  1_000_000 },
+  { label: '500만',  value:  5_000_000 },
+  { label: '1000만', value: 10_000_000 },
+  { label: '3000만', value: 30_000_000 },
+]
 
 type Category = '전체' | '일상' | '먹방' | '테크' | '놀기' | '패션' | '여행' | '큰거'
 
@@ -402,7 +411,7 @@ function Q1Wage({
   )
 }
 
-/* ───── Q2: 아이템 카드 그리드 + 직접 입력 카드 ─────────── */
+/* ───── Q2: 목표 금액 입력 + 인기 아이템 그리드 ─────────── */
 function Q2Item({
   wage, amount, setAmount, picked, setPicked,
   category, setCategory, onNext,
@@ -413,8 +422,6 @@ function Q2Item({
   category: Category; setCategory: (c: Category) => void
   onNext: () => void
 }) {
-  // 아이템 선택이 아닌데 amount > 0이면 '직접 입력' 카드 선택 상태
-  const [customMode, setCustomMode] = useState<boolean>(!picked && amount > 0)
   const inputRef = useRef<HTMLInputElement>(null)
   const display = amount > 0 ? amount.toLocaleString('ko-KR') : ''
 
@@ -424,39 +431,105 @@ function Q2Item({
   )
 
   useEffect(() => {
-    if (customMode) {
-      const t = setTimeout(() => inputRef.current?.focus(), 200)
-      return () => clearTimeout(t)
-    }
-  }, [customMode])
+    const t = setTimeout(() => inputRef.current?.focus(), 350)
+    return () => clearTimeout(t)
+  }, [])
 
   function pickItem(item: Item) {
-    setCustomMode(false)
     setPicked(item)
     setAmount(item.price)
     setTimeout(onNext, 220)
   }
-  function pickCustom() {
-    setCustomMode(true)
-    setPicked(null)
-  }
   function handleAmountInput(v: string) {
     const raw = v.replace(/[^0-9]/g, '')
     setAmount(raw ? parseInt(raw, 10) : 0)
+    setPicked(null)
+  }
+  function pickPreset(v: number) {
+    setAmount(v)
+    setPicked(null)
   }
 
   const hoursForItem = (price: number) => wage > 0 ? price / wage : 0
 
   return (
     <div>
-      <QuestionTitle num={2} text={<>뭘 사고 싶어?</>}
-        sub="아이템을 고르거나 직접 입력해봐" />
+      <QuestionTitle num={2} text={<>알바비 모아서<br />뭐할래?</>}
+        sub="목표 금액을 입력하거나 아이템을 골라봐" />
+
+      {/* 상단: 금액 직접 입력 (직장인 AmountInput 패턴) */}
+      <div style={{
+        display: 'flex', alignItems: 'baseline',
+        gap: 8, paddingBottom: 12,
+        borderBottom: `2px solid ${amount > 0 ? ACCENT : '#E2E8F0'}`,
+        transition: 'border-color 0.2s',
+      }}>
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="numeric"
+          value={display}
+          onChange={e => handleAmountInput(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && amount > 0) onNext() }}
+          placeholder="0"
+          style={{
+            flex: 1, minWidth: 0, textAlign: 'right',
+            fontSize: 40, fontWeight: 900, color: ACCENT,
+            background: 'transparent', border: 'none', outline: 'none',
+            letterSpacing: '-1px', padding: 0,
+          }}
+        />
+        <span style={{ fontSize: 20, fontWeight: 700, color: '#94A3B8' }}>원</span>
+      </div>
+      <p style={{
+        fontSize: 14, color: amount > 0 ? ACCENT_DARK : '#CBD5E1',
+        fontWeight: 700, textAlign: 'right', margin: '12px 0 0', minHeight: 18,
+      }}>
+        {amount > 0 ? `= ${formatWon(amount)}` : ' '}
+      </p>
+
+      {/* 프리셋 */}
+      <div style={{
+        display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap',
+      }}>
+        {AMOUNT_PRESETS.map(p => {
+          const sel = !picked && amount === p.value
+          return (
+            <button key={p.value} onClick={() => pickPreset(p.value)}
+              style={{
+                padding: '12px 18px', borderRadius: 24,
+                fontSize: 14, fontWeight: 700,
+                border: `1.5px solid ${sel ? ACCENT : '#E2E8F0'}`,
+                background: sel ? ACCENT : '#fff',
+                color: sel ? '#fff' : '#475569',
+                cursor: 'pointer', transition: 'all 0.15s',
+              }}>
+              {p.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* 다음 버튼 (직접 입력/프리셋 흐름) */}
+      <ContinueButton onClick={onNext} disabled={amount <= 0} label="결과 보기 →" />
+
+      {/* 하단: 인기 아이템 그리드 (보조 영역) */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        margin: '32px 0 16px',
+      }}>
+        <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
+        <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 700 }}>
+          또는 인기 아이템 골라보기
+        </span>
+        <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
+      </div>
 
       {/* 카테고리 필터 */}
       <div style={{
         display: 'flex', gap: 6,
         overflowX: 'auto', padding: '0 0 8px',
-        marginBottom: 12,
+        marginBottom: 10,
         scrollbarWidth: 'none',
       }}>
         {CATEGORIES.map(cat => {
@@ -478,43 +551,13 @@ function Q2Item({
         })}
       </div>
 
-      {/* 카드 그리드 — 직접 입력 카드가 첫 번째 */}
+      {/* 아이템 그리드 */}
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 8,
       }}>
-        {/* 직접 입력 카드 */}
-        <button onClick={pickCustom}
-          style={{
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: 6,
-            padding: '14px 6px',
-            minHeight: 118,
-            borderRadius: 14,
-            border: `2px solid ${customMode ? ACCENT : '#E2E8F0'}`,
-            background: customMode ? `${ACCENT}0F` : '#fff',
-            cursor: 'pointer', transition: 'all 0.15s',
-            boxShadow: customMode ? `0 4px 14px ${ACCENT}20` : 'none',
-          }}>
-          <span style={{ fontSize: 26, lineHeight: 1 }}>✏️</span>
-          <span style={{
-            fontSize: 12, fontWeight: 800,
-            color: customMode ? ACCENT_DARK : '#1A1F5E',
-            lineHeight: 1.25, textAlign: 'center', wordBreak: 'keep-all',
-          }}>
-            직접 입력
-          </span>
-          <span style={{
-            fontSize: 10, fontWeight: 700,
-            color: customMode ? ACCENT_DARK : '#94A3B8',
-          }}>
-            금액 입력
-          </span>
-        </button>
-
         {filtered.map(item => {
-          const sel = !customMode && picked?.id === item.id
+          const sel = picked?.id === item.id
           const t   = formatWorkTime(hoursForItem(item.price)).primary
           return (
             <button key={item.id} type="button" onClick={() => pickItem(item)}
@@ -560,55 +603,6 @@ function Q2Item({
           )
         })}
       </div>
-
-      {/* 직접 입력 모드일 때 인풋 필드 */}
-      {customMode && (
-        <div style={{
-          marginTop: 20,
-          padding: '16px 18px',
-          borderRadius: 14,
-          background: '#F8FAFC',
-          border: '1.5px solid #E2E8F0',
-          animation: 'pt-slide-up 0.3s ease both',
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'baseline', gap: 8,
-            paddingBottom: 10,
-            borderBottom: `2px solid ${amount > 0 ? ACCENT : '#E2E8F0'}`,
-            transition: 'border-color 0.2s',
-          }}>
-            <input
-              ref={inputRef}
-              type="text"
-              inputMode="numeric"
-              value={display}
-              onChange={e => handleAmountInput(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && amount > 0) onNext() }}
-              placeholder="0"
-              style={{
-                flex: 1, minWidth: 0, textAlign: 'right',
-                fontSize: 28, fontWeight: 900, color: ACCENT,
-                background: 'transparent', border: 'none', outline: 'none',
-                letterSpacing: '-0.5px', padding: 0,
-              }}
-            />
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#94A3B8' }}>원</span>
-          </div>
-          {amount > 0 && wage > 0 && (
-            <p style={{
-              fontSize: 12, color: ACCENT_DARK, fontWeight: 700,
-              margin: '10px 0 0', textAlign: 'right',
-            }}>
-              ⏱ 내 노동 {formatWorkTime(hoursForItem(amount)).primary}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* 직접 입력 모드일 때만 다음 버튼 (아이템 선택은 자동 다음) */}
-      {customMode && (
-        <ContinueButton onClick={onNext} disabled={amount <= 0} label="결과 보기 →" />
-      )}
     </div>
   )
 }
