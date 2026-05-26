@@ -43,7 +43,7 @@ const WAGE_QUICKS: WageQuick[] = [
 type WageGrade = { grade: 'D' | 'C' | 'B' | 'A' | 'S'; label: string; color: string; bg: string }
 
 function gradeForWage(rate: number): WageGrade {
-  if (rate < 10_500) return { grade: 'D', label: '최저시급 전사', color: '#EF4444', bg: 'rgba(239, 68, 68, 0.12)' }
+  if (rate < 10_500) return { grade: 'D', label: '최저시급 알바생', color: '#EF4444', bg: 'rgba(239, 68, 68, 0.12)' }
   if (rate < 13_000) return { grade: 'C', label: '알바생 평균',    color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.12)' }
   if (rate < 17_000) return { grade: 'B', label: '시급 좀 받네',   color: '#22C55E', bg: 'rgba(34, 197, 94, 0.14)' }
   if (rate < 25_000) return { grade: 'A', label: '능력자 알바',    color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.14)' }
@@ -267,6 +267,30 @@ function Q1Wage({
         gridTemplateColumns: 'repeat(2, 1fr)',
         gap: 8,
       }}>
+        {/* 직접 입력 카드 (왼쪽) */}
+        <button onClick={pickCustom}
+          style={{
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            gap: 6,
+            padding: '14px 6px',
+            minHeight: 88,
+            borderRadius: 14,
+            border: `2px solid ${customMode ? ACCENT : '#E2E8F0'}`,
+            background: customMode ? `${ACCENT}0F` : '#fff',
+            cursor: 'pointer', transition: 'all 0.15s',
+            boxShadow: customMode ? `0 4px 14px ${ACCENT}20` : 'none',
+          }}>
+          <span style={{ fontSize: 24, lineHeight: 1 }}>✏️</span>
+          <span style={{
+            fontSize: 12, fontWeight: 800,
+            color: customMode ? ACCENT_DARK : '#1A1F5E',
+            lineHeight: 1.25, textAlign: 'center', wordBreak: 'keep-all',
+          }}>
+            직접 입력
+          </span>
+        </button>
+
         {WAGE_QUICKS.map(q => {
           const sel = !customMode && wage === q.rate
           return (
@@ -303,30 +327,6 @@ function Q1Wage({
             </button>
           )
         })}
-
-        {/* 직접 입력 카드 */}
-        <button onClick={pickCustom}
-          style={{
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: 6,
-            padding: '14px 6px',
-            minHeight: 88,
-            borderRadius: 14,
-            border: `2px solid ${customMode ? ACCENT : '#E2E8F0'}`,
-            background: customMode ? `${ACCENT}0F` : '#fff',
-            cursor: 'pointer', transition: 'all 0.15s',
-            boxShadow: customMode ? `0 4px 14px ${ACCENT}20` : 'none',
-          }}>
-          <span style={{ fontSize: 24, lineHeight: 1 }}>✏️</span>
-          <span style={{
-            fontSize: 12, fontWeight: 800,
-            color: customMode ? ACCENT_DARK : '#1A1F5E',
-            lineHeight: 1.25, textAlign: 'center', wordBreak: 'keep-all',
-          }}>
-            직접 입력
-          </span>
-        </button>
       </div>
 
       {/* 직접 입력 모드일 때 인풋 필드 */}
