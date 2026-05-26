@@ -37,11 +37,7 @@ const ITEMS: Item[] = [
 
 type WageQuick = { label: string; rate: number; hint?: string }
 const WAGE_QUICKS: WageQuick[] = [
-  { label: '9,860원',  rate:  9_860, hint: '2024 최저' },
   { label: '10,030원', rate: 10_030, hint: '2025 최저' },
-  { label: '11,000원', rate: 11_000 },
-  { label: '12,000원', rate: 12_000 },
-  { label: '15,000원', rate: 15_000 },
 ]
 
 type WageGrade = { grade: 'D' | 'C' | 'B' | 'A' | 'S'; label: string; color: string; bg: string }
@@ -264,11 +260,11 @@ function Q1Wage({
   return (
     <div>
       <QuestionTitle num={1} text={<>내 시급은<br />얼마야?</>}
-        sub="2024 최저 9,860원 / 2025 최저 10,030원" />
+        sub="2025 최저 시급 10,030원 또는 직접 입력" />
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateColumns: 'repeat(2, 1fr)',
         gap: 8,
       }}>
         {WAGE_QUICKS.map(q => {
