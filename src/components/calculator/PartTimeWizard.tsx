@@ -46,13 +46,13 @@ const ITEMS: Item[] = [
 
 type WageQuick = { label: string; rate: number; hint?: string }
 const WAGE_QUICKS: WageQuick[] = [
-  { label: '10,030원', rate: 10_030, hint: '2025 최저' },
+  { label: '10,320원', rate: 10_320, hint: '2026 최저' },
 ]
 
 type WageGrade = { grade: 'D' | 'C' | 'B' | 'A' | 'S'; label: string; color: string; bg: string }
 
 function gradeForWage(rate: number): WageGrade {
-  if (rate < 10_500) return { grade: 'D', label: '최저시급 알바생', color: '#EF4444', bg: 'rgba(239, 68, 68, 0.12)' }
+  if (rate <= 10_320) return { grade: 'D', label: '최저시급 알바생', color: '#EF4444', bg: 'rgba(239, 68, 68, 0.12)' }
   if (rate < 13_000) return { grade: 'C', label: '알바생 평균',    color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.12)' }
   if (rate < 17_000) return { grade: 'B', label: '시급 좀 받네',   color: '#22C55E', bg: 'rgba(34, 197, 94, 0.14)' }
   if (rate < 25_000) return { grade: 'A', label: '능력자 알바',    color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.14)' }
@@ -144,7 +144,7 @@ export function PartTimeWizard() {
   const router = useRouter()
   const [step, setStep]         = useState(0)
   const [animKey, setAnimKey]   = useState(0)
-  const [wage, setWage]         = useState(10_030)
+  const [wage, setWage]         = useState(10_320)
   const [amount, setAmount]     = useState(0)
   const [picked, setPicked]     = useState<Item | null>(null)
   const [category, setCategory] = useState<Category>('전체')
@@ -269,7 +269,7 @@ function Q1Wage({
   return (
     <div>
       <QuestionTitle num={1} text={<>내 시급은<br />얼마야?</>}
-        sub="2025 최저 시급 10,030원 또는 직접 입력" />
+        sub="2026 최저 시급 10,320원 또는 직접 입력" />
 
       <div style={{
         display: 'grid',
