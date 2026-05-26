@@ -234,18 +234,34 @@ export function PartTimeConverter() {
   )
 }
 
-/* ───── Q1: 시급 입력 ─────────────────────────────────── */
+/* ───── Q1: 시급 입력 (3열 카드 그리드 + 직접 입력 카드) ─── */
 function Q1Wage({
   wage, setWage, onNext,
 }: { wage: number; setWage: (v: number) => void; onNext: () => void }) {
-  const ref = useRef<HTMLInputElement>(null)
-  const grade = useMemo(() => gradeForWage(wage), [wage])
-  const display = wage > 0 ? wage.toLocaleString('ko-KR') : ''
+  // wage가 프리셋 중 하나에 일치하면 그 프리셋이 선택된 상태,
+  // 일치하지 않는 양수면 '직접 입력' 카드가 선택된 상태로 간주
+  const isPreset    = WAGE_QUICKS.some(q => q.rate === wage)
+  const [customMode, setCustomMode] = useState<boolean>(wage > 0 && !isPreset)
+  const grade       = useMemo(() => gradeForWage(wage), [wage])
+  const inputRef    = useRef<HTMLInputElement>(null)
+  const display     = wage > 0 ? wage.toLocaleString('ko-KR') : ''
 
   useEffect(() => {
-    const t = setTimeout(() => ref.current?.focus(), 350)
-    return () => clearTimeout(t)
-  }, [])
+    if (customMode) {
+      const t = setTimeout(() => inputRef.current?.focus(), 200)
+      return () => clearTimeout(t)
+    }
+  }, [customMode])
+
+  function pickPreset(rate: number) {
+    setCustomMode(false)
+    setWage(rate)
+    setTimeout(onNext, 500)
+  }
+  function pickCustom() {
+    setCustomMode(true)
+    if (isPreset) setWage(0)
+  }
 
   return (
     <div>
@@ -253,82 +269,39 @@ function Q1Wage({
         sub="2024 최저 9,860원 / 2025 최저 10,030원" />
 
       <div style={{
-        display: 'flex', alignItems: 'baseline',
-        gap: 8, paddingBottom: 12,
-        borderBottom: `2px solid ${wage > 0 ? ACCENT : '#E2E8F0'}`,
-        transition: 'border-color 0.2s',
-      }}>
-        <input
-          ref={ref}
-          type="text"
-          inputMode="numeric"
-          value={display}
-          onChange={e => {
-            const raw = e.target.value.replace(/[^0-9]/g, '')
-            setWage(raw ? parseInt(raw, 10) : 0)
-          }}
-          onKeyDown={e => { if (e.key === 'Enter' && wage > 0) onNext() }}
-          placeholder="0"
-          style={{
-            flex: 1, minWidth: 0, textAlign: 'right',
-            fontSize: 40, fontWeight: 900, color: ACCENT,
-            background: 'transparent', border: 'none', outline: 'none',
-            letterSpacing: '-1px', padding: 0,
-          }}
-        />
-        <span style={{ fontSize: 18, fontWeight: 700, color: '#94A3B8' }}>원/시</span>
-      </div>
-
-      {/* 등급 뱃지 */}
-      <div style={{
-        display: 'flex', justifyContent: 'flex-end',
-        marginTop: 12, minHeight: 32,
-      }}>
-        {wage > 0 && (
-          <div style={{
-            padding: '6px 12px',
-            borderRadius: 999,
-            background: grade.bg,
-            color: grade.color,
-            fontSize: 12, fontWeight: 800,
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            border: `1.5px solid ${grade.color}33`,
-          }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 20, height: 20, borderRadius: 5,
-              background: grade.color, color: '#fff', fontSize: 11, fontWeight: 900,
-            }}>{grade.grade}</span>
-            <span style={{ whiteSpace: 'nowrap' }}>{grade.label}</span>
-          </div>
-        )}
-      </div>
-
-      {/* 빠른선택 프리셋 */}
-      <div style={{
-        display: 'flex', gap: 8, marginTop: 20,
-        flexWrap: 'wrap',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 8,
       }}>
         {WAGE_QUICKS.map(q => {
-          const sel = wage === q.rate
+          const sel = !customMode && wage === q.rate
           return (
-            <button key={q.rate} onClick={() => setWage(q.rate)}
+            <button key={q.rate} onClick={() => pickPreset(q.rate)}
               style={{
-                padding: '10px 14px', borderRadius: 24,
-                fontSize: 13, fontWeight: 700,
-                border: `1.5px solid ${sel ? ACCENT : '#E2E8F0'}`,
-                background: sel ? ACCENT : '#fff',
-                color: sel ? '#fff' : '#475569',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 6,
+                padding: '14px 6px',
+                minHeight: 88,
+                borderRadius: 14,
+                border: `2px solid ${sel ? ACCENT : '#E2E8F0'}`,
+                background: sel ? `${ACCENT}0F` : '#fff',
                 cursor: 'pointer', transition: 'all 0.15s',
-                display: 'flex', alignItems: 'center', gap: 6,
+                boxShadow: sel ? `0 4px 14px ${ACCENT}20` : 'none',
               }}>
-              <span>{q.label}</span>
+              <span style={{ fontSize: 24, lineHeight: 1 }}>💰</span>
+              <span style={{
+                fontSize: 12, fontWeight: 800,
+                color: sel ? ACCENT_DARK : '#1A1F5E',
+                lineHeight: 1.25, textAlign: 'center', wordBreak: 'keep-all',
+              }}>
+                {q.label}
+              </span>
               {q.hint && (
                 <span style={{
                   fontSize: 10, fontWeight: 700,
-                  padding: '2px 6px', borderRadius: 4,
-                  background: sel ? 'rgba(255,255,255,0.25)' : '#F1F5F9',
-                  color: sel ? '#fff' : '#64748B',
+                  color: sel ? ACCENT_DARK : '#94A3B8',
+                  lineHeight: 1.2,
                 }}>
                   {q.hint}
                 </span>
@@ -336,14 +309,106 @@ function Q1Wage({
             </button>
           )
         })}
+
+        {/* 직접 입력 카드 */}
+        <button onClick={pickCustom}
+          style={{
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            gap: 6,
+            padding: '14px 6px',
+            minHeight: 88,
+            borderRadius: 14,
+            border: `2px solid ${customMode ? ACCENT : '#E2E8F0'}`,
+            background: customMode ? `${ACCENT}0F` : '#fff',
+            cursor: 'pointer', transition: 'all 0.15s',
+            boxShadow: customMode ? `0 4px 14px ${ACCENT}20` : 'none',
+          }}>
+          <span style={{ fontSize: 24, lineHeight: 1 }}>✏️</span>
+          <span style={{
+            fontSize: 12, fontWeight: 800,
+            color: customMode ? ACCENT_DARK : '#1A1F5E',
+            lineHeight: 1.25, textAlign: 'center', wordBreak: 'keep-all',
+          }}>
+            직접 입력
+          </span>
+        </button>
       </div>
 
-      <ContinueButton onClick={onNext} disabled={wage <= 0} label="다음 →" />
+      {/* 직접 입력 모드일 때 인풋 필드 */}
+      {customMode && (
+        <div style={{
+          marginTop: 20,
+          padding: '16px 18px',
+          borderRadius: 14,
+          background: '#F8FAFC',
+          border: '1.5px solid #E2E8F0',
+          animation: 'pt-slide-up 0.3s ease both',
+        }}>
+          <div style={{
+            display: 'flex', alignItems: 'baseline', gap: 8,
+            paddingBottom: 10,
+            borderBottom: `2px solid ${wage > 0 ? ACCENT : '#E2E8F0'}`,
+            transition: 'border-color 0.2s',
+          }}>
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="numeric"
+              value={display}
+              onChange={e => {
+                const raw = e.target.value.replace(/[^0-9]/g, '')
+                setWage(raw ? parseInt(raw, 10) : 0)
+              }}
+              onKeyDown={e => { if (e.key === 'Enter' && wage > 0) onNext() }}
+              placeholder="0"
+              style={{
+                flex: 1, minWidth: 0, textAlign: 'right',
+                fontSize: 32, fontWeight: 900, color: ACCENT,
+                background: 'transparent', border: 'none', outline: 'none',
+                letterSpacing: '-0.5px', padding: 0,
+              }}
+            />
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#94A3B8' }}>원/시</span>
+          </div>
+        </div>
+      )}
+
+      {/* 등급 뱃지 (시급 결정된 경우) */}
+      {wage > 0 && (
+        <div style={{
+          display: 'flex', justifyContent: 'center',
+          marginTop: 20,
+          animation: 'pt-slide-up 0.3s ease both',
+        }}>
+          <div style={{
+            padding: '8px 14px',
+            borderRadius: 999,
+            background: grade.bg,
+            color: grade.color,
+            fontSize: 13, fontWeight: 800,
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            border: `1.5px solid ${grade.color}33`,
+          }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 22, height: 22, borderRadius: 6,
+              background: grade.color, color: '#fff', fontSize: 12, fontWeight: 900,
+            }}>{grade.grade}</span>
+            <span style={{ whiteSpace: 'nowrap' }}>{grade.label}</span>
+          </div>
+        </div>
+      )}
+
+      {/* 직접 입력 모드일 때만 다음 버튼 노출 (프리셋은 자동 다음) */}
+      {customMode && (
+        <ContinueButton onClick={onNext} disabled={wage <= 0} label="다음 →" />
+      )}
     </div>
   )
 }
 
-/* ───── Q2: 금액/아이템 선택 ─────────────────────────── */
+/* ───── Q2: 아이템 카드 그리드 + 직접 입력 카드 ─────────── */
 function Q2Item({
   wage, amount, setAmount, picked, setPicked,
   category, setCategory, onNext,
@@ -354,22 +419,36 @@ function Q2Item({
   category: Category; setCategory: (c: Category) => void
   onNext: () => void
 }) {
+  // 아이템 선택이 아닌데 amount > 0이면 '직접 입력' 카드 선택 상태
+  const [customMode, setCustomMode] = useState<boolean>(!picked && amount > 0)
+  const inputRef = useRef<HTMLInputElement>(null)
   const display = amount > 0 ? amount.toLocaleString('ko-KR') : ''
+
   const filtered = useMemo(
     () => category === '전체' ? ITEMS : ITEMS.filter(i => i.cat === category),
     [category],
   )
 
+  useEffect(() => {
+    if (customMode) {
+      const t = setTimeout(() => inputRef.current?.focus(), 200)
+      return () => clearTimeout(t)
+    }
+  }, [customMode])
+
   function pickItem(item: Item) {
+    setCustomMode(false)
     setPicked(item)
     setAmount(item.price)
     setTimeout(onNext, 220)
   }
-
+  function pickCustom() {
+    setCustomMode(true)
+    setPicked(null)
+  }
   function handleAmountInput(v: string) {
     const raw = v.replace(/[^0-9]/g, '')
     setAmount(raw ? parseInt(raw, 10) : 0)
-    setPicked(null)
   }
 
   const hoursForItem = (price: number) => wage > 0 ? price / wage : 0
@@ -377,55 +456,13 @@ function Q2Item({
   return (
     <div>
       <QuestionTitle num={2} text={<>뭘 사고 싶어?</>}
-        sub="금액 직접 입력 또는 인기 아이템에서 골라봐" />
-
-      {/* 직접 입력 */}
-      <div style={{
-        display: 'flex', alignItems: 'baseline',
-        gap: 8, paddingBottom: 12,
-        borderBottom: `2px solid ${amount > 0 && !picked ? ACCENT : '#E2E8F0'}`,
-        transition: 'border-color 0.2s',
-      }}>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={display}
-          onChange={e => handleAmountInput(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && amount > 0) onNext() }}
-          placeholder="0"
-          style={{
-            flex: 1, minWidth: 0, textAlign: 'right',
-            fontSize: 32, fontWeight: 900, color: ACCENT,
-            background: 'transparent', border: 'none', outline: 'none',
-            letterSpacing: '-0.5px', padding: 0,
-          }}
-        />
-        <span style={{ fontSize: 16, fontWeight: 700, color: '#94A3B8' }}>원</span>
-      </div>
-      <p style={{
-        fontSize: 13, color: amount > 0 && !picked ? ACCENT_DARK : '#CBD5E1',
-        fontWeight: 700, textAlign: 'right', margin: '10px 0 0', minHeight: 18,
-      }}>
-        {amount > 0 && !picked
-          ? `⏱ 내 노동 ${formatWorkTime(hoursForItem(amount)).primary}`
-          : ' '}
-      </p>
-
-      {/* 구분선 + "또는" */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        margin: '20px 0 16px',
-      }}>
-        <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
-        <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 700 }}>또는</span>
-        <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
-      </div>
+        sub="아이템을 고르거나 직접 입력해봐" />
 
       {/* 카테고리 필터 */}
       <div style={{
         display: 'flex', gap: 6,
         overflowX: 'auto', padding: '0 0 8px',
-        marginBottom: 10,
+        marginBottom: 12,
         scrollbarWidth: 'none',
       }}>
         {CATEGORIES.map(cat => {
@@ -447,13 +484,43 @@ function Q2Item({
         })}
       </div>
 
-      {/* 아이템 그리드 */}
+      {/* 카드 그리드 — 직접 입력 카드가 첫 번째 */}
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 8,
       }}>
+        {/* 직접 입력 카드 */}
+        <button onClick={pickCustom}
+          style={{
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            gap: 6,
+            padding: '14px 6px',
+            minHeight: 118,
+            borderRadius: 14,
+            border: `2px solid ${customMode ? ACCENT : '#E2E8F0'}`,
+            background: customMode ? `${ACCENT}0F` : '#fff',
+            cursor: 'pointer', transition: 'all 0.15s',
+            boxShadow: customMode ? `0 4px 14px ${ACCENT}20` : 'none',
+          }}>
+          <span style={{ fontSize: 26, lineHeight: 1 }}>✏️</span>
+          <span style={{
+            fontSize: 12, fontWeight: 800,
+            color: customMode ? ACCENT_DARK : '#1A1F5E',
+            lineHeight: 1.25, textAlign: 'center', wordBreak: 'keep-all',
+          }}>
+            직접 입력
+          </span>
+          <span style={{
+            fontSize: 10, fontWeight: 700,
+            color: customMode ? ACCENT_DARK : '#94A3B8',
+          }}>
+            금액 입력
+          </span>
+        </button>
+
         {filtered.map(item => {
-          const sel = picked?.id === item.id
+          const sel = !customMode && picked?.id === item.id
           const t   = formatWorkTime(hoursForItem(item.price)).primary
           return (
             <button key={item.id} type="button" onClick={() => pickItem(item)}
@@ -461,7 +528,7 @@ function Q2Item({
                 padding: '12px 6px',
                 borderRadius: 14,
                 border: `2px solid ${sel ? ACCENT : '#E2E8F0'}`,
-                background: sel ? ACCENT_BG : '#fff',
+                background: sel ? `${ACCENT}0F` : '#fff',
                 cursor: 'pointer',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 transition: 'all 0.15s',
@@ -500,7 +567,54 @@ function Q2Item({
         })}
       </div>
 
-      <ContinueButton onClick={onNext} disabled={amount <= 0} label="결과 보기 →" />
+      {/* 직접 입력 모드일 때 인풋 필드 */}
+      {customMode && (
+        <div style={{
+          marginTop: 20,
+          padding: '16px 18px',
+          borderRadius: 14,
+          background: '#F8FAFC',
+          border: '1.5px solid #E2E8F0',
+          animation: 'pt-slide-up 0.3s ease both',
+        }}>
+          <div style={{
+            display: 'flex', alignItems: 'baseline', gap: 8,
+            paddingBottom: 10,
+            borderBottom: `2px solid ${amount > 0 ? ACCENT : '#E2E8F0'}`,
+            transition: 'border-color 0.2s',
+          }}>
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="numeric"
+              value={display}
+              onChange={e => handleAmountInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && amount > 0) onNext() }}
+              placeholder="0"
+              style={{
+                flex: 1, minWidth: 0, textAlign: 'right',
+                fontSize: 28, fontWeight: 900, color: ACCENT,
+                background: 'transparent', border: 'none', outline: 'none',
+                letterSpacing: '-0.5px', padding: 0,
+              }}
+            />
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#94A3B8' }}>원</span>
+          </div>
+          {amount > 0 && wage > 0 && (
+            <p style={{
+              fontSize: 12, color: ACCENT_DARK, fontWeight: 700,
+              margin: '10px 0 0', textAlign: 'right',
+            }}>
+              ⏱ 내 노동 {formatWorkTime(hoursForItem(amount)).primary}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* 직접 입력 모드일 때만 다음 버튼 (아이템 선택은 자동 다음) */}
+      {customMode && (
+        <ContinueButton onClick={onNext} disabled={amount <= 0} label="결과 보기 →" />
+      )}
     </div>
   )
 }
