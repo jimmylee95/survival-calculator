@@ -518,24 +518,6 @@ export default function HomePage() {
                   + 'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
               }} />
 
-              {/* NEW 뱃지 */}
-              <span style={{
-                position:     'absolute',
-                top:          14,
-                right:        14,
-                padding:      '4px 10px',
-                borderRadius: 999,
-                background:   '#FEF08A',
-                color:        '#854D0E',
-                fontSize:     10,
-                fontWeight:   900,
-                letterSpacing: '1px',
-                animation:    'pulse-new 1.8s ease-in-out infinite',
-                zIndex:       2,
-              }}>
-                NEW
-              </span>
-
               {/* 텍스트 영역 */}
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <p style={{
