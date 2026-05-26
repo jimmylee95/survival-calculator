@@ -214,15 +214,6 @@ type CardConfig = {
 
 const CARDS: CardConfig[] = [
   {
-    mode:    'business',
-    bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
-    bgImage: '/images/nureungi_business_bg.png',
-    title:   '언젠가 돈복사 시켜줄\n내 매장 수명 계산하기',
-    desc:    "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
-    sub:     '자영업자 · 소상공인',
-    shadow:  'rgba(255,107,53,0.45)',
-  },
-  {
     mode:    'freelancer',
     bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
     bgImage: '/images/nureungi_worker_bg.png',
@@ -230,6 +221,15 @@ const CARDS: CardConfig[] = [
     desc:    '사직서를 던질 수 있는\n퇴사 날짜를 확인해보자!',
     sub:     '직장인 · 공무원 · 프리랜서',
     shadow:  'rgba(74,125,255,0.45)',
+  },
+  {
+    mode:    'business',
+    bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_business_bg.png\')',
+    bgImage: '/images/nureungi_business_bg.png',
+    title:   '언젠가 돈복사 시켜줄\n내 매장 수명 계산하기',
+    desc:    "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
+    sub:     '자영업자 · 소상공인',
+    shadow:  'rgba(255,107,53,0.45)',
   },
 ]
 
