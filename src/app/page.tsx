@@ -232,7 +232,7 @@ const CARDS: CardConfig[] = [
     bg:          'linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%)',
     imageSrc:    '/images/nureungi-self-employed.png',
     imageAlt:    '누렁이 치킨 사장님',
-    title:       '언젠가 돈복사 시켜줄',
+    title:       '곧 나도 장사의 신',
     titleAccent: '매장 수명 계산기',
     desc:        "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
     sub:         '자영업자 · 소상공인',
