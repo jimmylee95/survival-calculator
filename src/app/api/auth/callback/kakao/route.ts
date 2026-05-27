@@ -3,7 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
+  const code  = searchParams.get('code')
+  const state = searchParams.get('state')
+  // state 가 안전한 내부 경로(/로 시작, //나 프로토콜 포함 금지)일 때만 사용
+  const redirectTo = state && /^\/(?!\/)[^\s]*$/.test(state) ? state : '/'
 
   if (!code) {
     return NextResponse.redirect(`${origin}/login?error=no_code`)
@@ -92,7 +95,7 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/login?error=signin_failed`)
     }
 
-    return NextResponse.redirect(`${origin}/`)
+    return NextResponse.redirect(`${origin}${redirectTo}`)
 
   } catch (err) {
     console.error('Kakao callback error:', err)

@@ -1,10 +1,13 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import KakaoLoginButton from '@/components/auth/KakaoLoginButton'
 import {
   createFeedback,
   fetchFeedbacks,
   incrementFeedbackPaw,
+  NotLoggedInError,
   type Feedback,
   type FeedbackCategory,
 } from '@/lib/supabase/feedbacks'
@@ -24,7 +27,7 @@ const CAT_MAP: Record<FeedbackCategory, CatMeta> = CATEGORIES.reduce(
   {} as Record<FeedbackCategory, CatMeta>,
 )
 
-const PAW_LS_KEY  = 'feedback_pawed_ids_v1'
+const PAW_LS_KEY = 'feedback_pawed_ids_v1'
 const LAST_SUBMIT_LS_KEY = 'feedback_last_submit_v1'
 const SUBMIT_COOLDOWN_MS = 60_000
 
@@ -43,8 +46,19 @@ function timeAgo(iso: string): string {
 }
 
 export default function CommunityPage() {
+  // ── 로그인 상태 ────────────────────────────────────────
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const sb = createClient()
+    sb.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user))
+    const { data: { subscription } } = sb.auth.onAuthStateChange(
+      (_, session) => setIsLoggedIn(!!session?.user),
+    )
+    return () => subscription.unsubscribe()
+  }, [])
+
   // ── 입력 폼 상태 ──────────────────────────────────────
-  const [nickname, setNickname] = useState('')
   const [category, setCategory] = useState<FeedbackCategory>('comment')
   const [content, setContent]   = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -129,12 +143,17 @@ export default function CommunityPage() {
 
     setSubmitting(true)
     try {
-      const created = await createFeedback({ nickname, category, content: trimmed })
+      const created = await createFeedback({ category, content: trimmed })
       setItems(prev => [created, ...prev])
       setContent('')
       localStorage.setItem(LAST_SUBMIT_LS_KEY, String(Date.now()))
     } catch (e) {
-      setSubmitError((e as Error).message ?? '전송 실패')
+      if (e instanceof NotLoggedInError) {
+        setSubmitError('로그인 후 이용해주세요')
+        setIsLoggedIn(false)
+      } else {
+        setSubmitError((e as Error).message ?? '전송 실패')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -142,16 +161,25 @@ export default function CommunityPage() {
 
   async function handlePaw(id: string) {
     if (pawed.has(id)) return
+    if (!isLoggedIn) {
+      // 로그인 안내
+      alert('공감은 로그인 후 이용할 수 있어요')
+      return
+    }
     // optimistic
     setItems(prev => prev.map(f => f.id === id ? { ...f, paw_count: f.paw_count + 1 } : f))
     const next = new Set(pawed); next.add(id); setPawed(next)
     try {
       localStorage.setItem(PAW_LS_KEY, JSON.stringify(Array.from(next)))
       await incrementFeedbackPaw(id)
-    } catch {
+    } catch (e) {
       // 롤백
       setItems(prev => prev.map(f => f.id === id ? { ...f, paw_count: Math.max(0, f.paw_count - 1) } : f))
       const back = new Set(pawed); back.delete(id); setPawed(back)
+      if (e instanceof NotLoggedInError) {
+        setIsLoggedIn(false)
+        alert('공감은 로그인 후 이용할 수 있어요')
+      }
     }
   }
 
@@ -178,101 +206,103 @@ export default function CommunityPage() {
           </p>
         </div>
 
-        {/* 입력 폼 */}
-        <div style={{
-          background: '#fff',
-          borderRadius: 18,
-          padding: '18px 16px',
-          boxShadow: '0 6px 22px rgba(34, 197, 94, 0.12)',
-          border: '1px solid rgba(34, 197, 94, 0.15)',
-          marginBottom: 24,
-        }}>
-          <input
-            type="text"
-            value={nickname}
-            onChange={e => setNickname(e.target.value.slice(0, 20))}
-            placeholder="닉네임 (선택, 미입력 시 익명)"
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: 10,
-              border: '1.5px solid #E2E8F0',
-              fontSize: 13, fontWeight: 600,
-              color: '#1A1F5E', outline: 'none',
-              marginBottom: 10,
-              boxSizing: 'border-box',
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = ACCENT }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0' }}
-          />
-
-          {/* 카테고리 선택 */}
-          <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
-            {CATEGORIES.map(c => {
-              const sel = category === c.key
-              return (
-                <button key={c.key} onClick={() => setCategory(c.key)}
-                  style={{
-                    padding: '8px 12px', borderRadius: 999,
-                    fontSize: 12, fontWeight: 800,
-                    border: `1.5px solid ${sel ? c.color : '#E2E8F0'}`,
-                    background: sel ? c.bg : '#fff',
-                    color: sel ? c.color : '#64748B',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    display: 'flex', alignItems: 'center', gap: 4,
-                  }}>
-                  <span>{c.emoji}</span>
-                  <span>{c.label}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* 내용 */}
-          <textarea
-            value={content}
-            onChange={e => setContent(e.target.value.slice(0, 100))}
-            placeholder="내용을 입력해주세요"
-            rows={3}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: 10,
-              border: '1.5px solid #E2E8F0',
-              fontSize: 14, fontWeight: 500,
-              color: '#0F172A', outline: 'none',
-              resize: 'none',
-              marginBottom: 6,
-              boxSizing: 'border-box',
-              lineHeight: 1.5,
-              fontFamily: 'inherit',
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = ACCENT }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0' }}
-          />
+        {/* 입력 폼 — 로그인 유저만, 비로그인 시 로그인 CTA */}
+        {isLoggedIn === false ? (
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            fontSize: 11, color: '#94A3B8', marginBottom: 12,
+            background: '#fff',
+            borderRadius: 18,
+            padding: '24px 18px',
+            boxShadow: '0 6px 22px rgba(34, 197, 94, 0.12)',
+            border: '1px solid rgba(34, 197, 94, 0.15)',
+            marginBottom: 24,
+            textAlign: 'center',
           }}>
-            <span style={{ color: submitError ? '#EF4444' : '#94A3B8' }}>
-              {submitError ?? '3자 이상 100자 이내'}
-            </span>
-            <span>{content.length}/100</span>
+            <p style={{ fontSize: 28, margin: '0 0 10px' }}>🔐</p>
+            <p style={{ fontSize: 14, color: '#0F172A', margin: '0 0 18px', fontWeight: 700, lineHeight: 1.5 }}>
+              로그인 후 글을 작성할 수 있습니다
+            </p>
+            <KakaoLoginButton redirectTo="/community" />
           </div>
-          <button onClick={handleSubmit} disabled={submitting || content.trim().length < 3}
-            style={{
-              width: '100%', height: 46, borderRadius: 12,
-              border: 'none',
-              background: submitting || content.trim().length < 3 ? '#E2E8F0' : ACCENT,
-              color: '#fff',
-              fontSize: 14, fontWeight: 800,
-              cursor: submitting || content.trim().length < 3 ? 'not-allowed' : 'pointer',
-              letterSpacing: '-0.2px',
-              boxShadow: submitting || content.trim().length < 3 ? 'none' : `0 4px 14px ${ACCENT}30`,
+        ) : isLoggedIn === true ? (
+          <div style={{
+            background: '#fff',
+            borderRadius: 18,
+            padding: '18px 16px',
+            boxShadow: '0 6px 22px rgba(34, 197, 94, 0.12)',
+            border: '1px solid rgba(34, 197, 94, 0.15)',
+            marginBottom: 24,
+          }}>
+            {/* 카테고리 선택 */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+              {CATEGORIES.map(c => {
+                const sel = category === c.key
+                return (
+                  <button key={c.key} onClick={() => setCategory(c.key)}
+                    style={{
+                      padding: '8px 12px', borderRadius: 999,
+                      fontSize: 12, fontWeight: 800,
+                      border: `1.5px solid ${sel ? c.color : '#E2E8F0'}`,
+                      background: sel ? c.bg : '#fff',
+                      color: sel ? c.color : '#64748B',
+                      cursor: 'pointer', transition: 'all 0.15s',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                    <span>{c.emoji}</span>
+                    <span>{c.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* 내용 */}
+            <textarea
+              value={content}
+              onChange={e => setContent(e.target.value.slice(0, 100))}
+              placeholder="내용을 입력해주세요"
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                borderRadius: 10,
+                border: '1.5px solid #E2E8F0',
+                fontSize: 14, fontWeight: 500,
+                color: '#0F172A', outline: 'none',
+                resize: 'none',
+                marginBottom: 6,
+                boxSizing: 'border-box',
+                lineHeight: 1.5,
+                fontFamily: 'inherit',
+              }}
+              onFocus={e => { e.currentTarget.style.borderColor = ACCENT }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0' }}
+            />
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              fontSize: 11, color: '#94A3B8', marginBottom: 12,
             }}>
-            {submitting ? '등록 중…' : '등록'}
-          </button>
-        </div>
+              <span style={{ color: submitError ? '#EF4444' : '#94A3B8' }}>
+                {submitError ?? '3자 이상 100자 이내'}
+              </span>
+              <span>{content.length}/100</span>
+            </div>
+            <button onClick={handleSubmit} disabled={submitting || content.trim().length < 3}
+              style={{
+                width: '100%', height: 46, borderRadius: 12,
+                border: 'none',
+                background: submitting || content.trim().length < 3 ? '#E2E8F0' : ACCENT,
+                color: '#fff',
+                fontSize: 14, fontWeight: 800,
+                cursor: submitting || content.trim().length < 3 ? 'not-allowed' : 'pointer',
+                letterSpacing: '-0.2px',
+                boxShadow: submitting || content.trim().length < 3 ? 'none' : `0 4px 14px ${ACCENT}30`,
+              }}>
+              {submitting ? '등록 중…' : '등록'}
+            </button>
+          </div>
+        ) : (
+          // 초기 로딩 (auth 체크 중) — 스켈레톤 자리 차지용
+          <div style={{ height: 240, marginBottom: 24 }} />
+        )}
 
         {/* 리스트 필터 */}
         <div style={{
@@ -347,6 +377,12 @@ export default function CommunityPage() {
                   }}>
                     <span>{meta.emoji}</span><span>{meta.label}</span>
                   </span>
+                  {f.avatar_url && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={f.avatar_url} alt="" width={20} height={20}
+                      style={{ borderRadius: '50%', objectFit: 'cover' }}
+                      referrerPolicy="no-referrer" />
+                  )}
                   <span style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>
                     {f.nickname}
                   </span>
