@@ -4,17 +4,39 @@ import { useEffect, useRef, useState, Suspense } from 'react'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCalculatorStore } from '@/store/useCalculatorStore'
-import { INDUSTRY_USERS } from '@/utils/calculate'
 import { CountUpNumber } from '@/components/result/CountUpNumber'
 import { createClient } from '@/lib/supabase/client'
 
-const PARTTIME_USERS = 1_847
+/**
+ * 기준 날짜/숫자로부터 매일 자연스럽게 증가하는 참여자 수 산출.
+ * 시드 기반 의사 난수라 같은 날엔 항상 같은 값. 새로고침에도 동일.
+ * 추후 실제 Supabase count로 교체할 때 이 함수만 비동기로 바꾸면 됨.
+ */
+function getParticipantCount(
+  baseCount: number,
+  baseDate:  string,        // 'YYYY-MM-DD'
+  dailyMin:  number,
+  dailyMax:  number,
+): number {
+  const today    = new Date()
+  const base     = new Date(baseDate)
+  const daysDiff = Math.max(0, Math.floor((today.getTime() - base.getTime()) / 86_400_000))
 
-// 결과 페이지와 동일한 INDUSTRY_USERS 데이터 소스에서 대표값 사용
-const CARD_COUNTERS: Record<'business' | 'freelancer', number> = {
-  business:   INDUSTRY_USERS.restaurant ?? 3247,
-  freelancer: INDUSTRY_USERS.marketing  ?? 2103,
+  let total = baseCount
+  for (let i = 0; i < daysDiff; i++) {
+    const seed = Math.sin(i * 9301 + 49297) * 233280
+    const rand = seed - Math.floor(seed)
+    const inc  = Math.floor(dailyMin + rand * (dailyMax - dailyMin))
+    total += inc
+  }
+  return total
 }
+
+const COUNTER_CONFIG = {
+  freelancer: { baseCount: 2_103, baseDate: '2026-05-01', dailyMin: 12, dailyMax: 38 },
+  business:   { baseCount: 3_247, baseDate: '2026-05-01', dailyMin: 15, dailyMax: 45 },
+  parttime:   { baseCount: 1_847, baseDate: '2026-05-01', dailyMin:  8, dailyMax: 28 },
+} as const
 
 type Banner = {
   bg:     string
@@ -291,6 +313,20 @@ export default function HomePage() {
 
   const [hasSaved, setHasSaved] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+  // SSR hydration mismatch 회피: 초기엔 baseCount, 마운트 후 실제 값 계산
+  const [counts, setCounts] = useState<{ business: number; freelancer: number; parttime: number }>({
+    business:   COUNTER_CONFIG.business.baseCount,
+    freelancer: COUNTER_CONFIG.freelancer.baseCount,
+    parttime:   COUNTER_CONFIG.parttime.baseCount,
+  })
+
+  useEffect(() => {
+    setCounts({
+      business:   getParticipantCount(COUNTER_CONFIG.business.baseCount,   COUNTER_CONFIG.business.baseDate,   COUNTER_CONFIG.business.dailyMin,   COUNTER_CONFIG.business.dailyMax),
+      freelancer: getParticipantCount(COUNTER_CONFIG.freelancer.baseCount, COUNTER_CONFIG.freelancer.baseDate, COUNTER_CONFIG.freelancer.dailyMin, COUNTER_CONFIG.freelancer.dailyMax),
+      parttime:   getParticipantCount(COUNTER_CONFIG.parttime.baseCount,   COUNTER_CONFIG.parttime.baseDate,   COUNTER_CONFIG.parttime.dailyMin,   COUNTER_CONFIG.parttime.dailyMax),
+    })
+  }, [])
 
   useEffect(() => {
     if (!_hydrated) return
@@ -502,7 +538,7 @@ export default function HomePage() {
                   fontSize: 16, fontWeight: 800,
                   color: card.mode === 'business' ? '#FF6B00' : '#4A7DFF',
                 }}>
-                  <CountUpNumber target={CARD_COUNTERS[card.mode]} duration={1500} />명
+                  <CountUpNumber target={counts[card.mode]} duration={1500} />명
                 </span>
                 <span>
                   의 {card.mode === 'business' ? '사장님' : '직장인'}이 참여 했어요
@@ -644,7 +680,7 @@ export default function HomePage() {
                 <span style={{ fontSize: 14 }}>🔥</span>
                 <span>이미</span>
                 <span style={{ fontSize: 16, fontWeight: 800, color: '#16A34A' }}>
-                  <CountUpNumber target={PARTTIME_USERS} duration={1500} />명
+                  <CountUpNumber target={counts.parttime} duration={1500} />명
                 </span>
                 <span>의 알바생이 참여 했어요</span>
               </div>
