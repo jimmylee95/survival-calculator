@@ -580,7 +580,7 @@ export default function HomePage() {
                   lineHeight:     1.35,
                   textShadow:     '0 1px 2px rgba(0,0,0,0.35)',
                 }}>
-                  알바비로 득템을 위한{'\n'}
+                  시급 모아 득템한다{'\n'}
                   <span style={{ color: '#22C55E' }}>알바 시간 계산기</span>
                 </p>
                 <p style={{
