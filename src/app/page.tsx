@@ -204,26 +204,28 @@ function BannerCarousel() {
 }
 
 type CardConfig = {
-  mode:      'business' | 'freelancer'
-  bg:        string
-  bgImage?:  string
-  imageSrc?: string   // <Image> 컴포넌트 사용 시 src (있으면 CSS bg 대신 Image 렌더)
-  imageAlt?: string
-  title:     string
-  desc:      string
-  sub:       string
-  shadow:    string
+  mode:         'business' | 'freelancer'
+  bg:           string
+  bgImage?:     string
+  imageSrc?:    string   // <Image> 컴포넌트 사용 시 src (있으면 CSS bg 대신 Image 렌더)
+  imageAlt?:    string
+  title:        string
+  titleAccent?: string   // 강조 색상으로 별도 라인 렌더 (mode 컬러 사용)
+  desc:         string
+  sub:          string
+  shadow:       string
 }
 
 const CARDS: CardConfig[] = [
   {
-    mode:    'freelancer',
-    bg:      'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
-    bgImage: '/images/nureungi_worker_bg.png',
-    title:   '가슴속 사직서 집어던지는\n퇴사 날짜 계산하기',
-    desc:    '사직서를 던질 수 있는\n퇴사 날짜를 확인해보자!',
-    sub:     '직장인 · 공무원 · 프리랜서',
-    shadow:  'rgba(74,125,255,0.45)',
+    mode:        'freelancer',
+    bg:          'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%), url(\'/images/nureungi_worker_bg.png\')',
+    bgImage:     '/images/nureungi_worker_bg.png',
+    title:       '가슴속 사직서 집어던지는',
+    titleAccent: '퇴사 날짜 계산기',
+    desc:        '사직서를 던질 수 있는\n퇴사 날짜를 확인해보자!',
+    sub:         '직장인 · 공무원 · 프리랜서',
+    shadow:      'rgba(74,125,255,0.45)',
   },
   {
     mode:     'business',
@@ -423,6 +425,16 @@ export default function HomePage() {
                   textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                 }}>
                   {card.title}
+                  {card.titleAccent && (
+                    <>
+                      {'\n'}
+                      <span style={{
+                        color: card.mode === 'business' ? '#FF6B35' : '#4A7DFF',
+                      }}>
+                        {card.titleAccent}
+                      </span>
+                    </>
+                  )}
                 </p>
 
                 {/* 설명 */}
