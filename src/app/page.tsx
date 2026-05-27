@@ -228,14 +228,15 @@ const CARDS: CardConfig[] = [
     shadow:      'rgba(74,125,255,0.45)',
   },
   {
-    mode:     'business',
-    bg:       'linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%)',
-    imageSrc: '/images/nureungi-self-employed.png',
-    imageAlt: '누렁이 치킨 사장님',
-    title:    '언젠가 돈복사 시켜줄\n내 매장 수명 계산하기',
-    desc:     "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
-    sub:      '자영업자 · 소상공인',
-    shadow:   'rgba(255,107,53,0.45)',
+    mode:        'business',
+    bg:          'linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%)',
+    imageSrc:    '/images/nureungi-self-employed.png',
+    imageAlt:    '누렁이 치킨 사장님',
+    title:       '언젠가 돈복사 시켜줄',
+    titleAccent: '매장 수명 계산기',
+    desc:        "며칠이나 더 버틸까?\n'존버' 유효기간을 확인해보자!",
+    sub:         '자영업자 · 소상공인',
+    shadow:      'rgba(255,107,53,0.45)',
   },
 ]
 
