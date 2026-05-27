@@ -11,21 +11,19 @@ const TOTAL       = 4
 
 const JOB_TYPES: { key: string; emoji: string; label: string }[] = [
   { key: 'cafe',         emoji: '☕',   label: '카페' },
-  { key: 'chicken_pizza', emoji: '🍗',   label: '치킨/피자' },
-  { key: 'restaurant',   emoji: '🍽️',   label: '음식점' },
   { key: 'convenience',  emoji: '🏪',   label: '편의점' },
-  { key: 'mart',         emoji: '🛒',   label: '마트/유통' },
-  { key: 'logistics',    emoji: '📦',   label: '물류/택배' },
-  { key: 'tutor',        emoji: '🎓',   label: '과외/학원' },
-  { key: 'fitness',      emoji: '🏋️',   label: '헬스/피트니스' },
-  { key: 'hospital',     emoji: '🏥',   label: '병원/약국' },
+  { key: 'restaurant',   emoji: '🍽️',   label: '음식점/서빙' },
+  { key: 'chicken_pizza', emoji: '🍗',   label: '치킨/피자' },
   { key: 'fastfood',     emoji: '🍔',   label: '패스트푸드' },
-  { key: 'cinema',       emoji: '🎬',   label: '영화관/문화' },
-  { key: 'hotel',        emoji: '🏨',   label: '호텔/숙박' },
-  { key: 'retail',       emoji: '📱',   label: '매장판매' },
+  { key: 'logistics',    emoji: '📦',   label: '물류센터' },
+  { key: 'delivery',     emoji: '🛵',   label: '배달' },
+  { key: 'mart',         emoji: '🛒',   label: '마트/매장' },
+  { key: 'cinema_pc',    emoji: '🎬',   label: '영화관/PC방' },
+  { key: 'bar',          emoji: '🍺',   label: '주점/BAR' },
+  { key: 'tutor',        emoji: '📚',   label: '과외/학원' },
+  { key: 'hotel_event',  emoji: '🏨',   label: '호텔/행사' },
   { key: 'construction', emoji: '🏗️',   label: '건설/현장' },
-  { key: 'office',       emoji: '🖥️',   label: '사무보조' },
-  { key: 'other',        emoji: '🎨',   label: '기타' },
+  { key: 'other',        emoji: '✏️',   label: '기타' },
 ]
 
 const AMOUNT_PRESETS = [
