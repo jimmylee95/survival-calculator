@@ -199,7 +199,7 @@ export default function CommunityPage() {
             fontSize: 24, fontWeight: 900, color: '#0F172A',
             margin: '0 0 6px', letterSpacing: '-0.5px',
           }}>
-            게시판
+            유저 이용후기
           </h1>
           <p style={{ fontSize: 13, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
             자유롭게 글을 남겨주세요

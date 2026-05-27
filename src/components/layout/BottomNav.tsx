@@ -50,7 +50,7 @@ export default function BottomNav() {
         />
         <CenterButton onClick={() => router.push('/calculator')} />
         <NavItem
-          icon="💬" label="커뮤니티"
+          icon="💬" label="이용후기"
           active={pathname === '/community'}
           onClick={() => router.push('/community')}
         />
