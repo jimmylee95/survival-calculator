@@ -454,7 +454,7 @@ function Q2Item({
 
   return (
     <div>
-      <QuestionTitle num={2} text={<>알바비 모아서<br />뭐할래?</>}
+      <QuestionTitle num={2} text={<>목표 금액<br />또는 지출 예정 금액은?</>}
         sub="목표 금액을 입력하거나 아이템을 골라봐" />
 
       {/* 상단: 금액 직접 입력 (직장인 AmountInput 패턴) */}
