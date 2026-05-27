@@ -3,7 +3,7 @@
 
 create table if not exists public.feedbacks (
   id          uuid          primary key default gen_random_uuid(),
-  nickname    text          not null default '익명의 누렁이',
+  nickname    text          not null default '익명',
   category    text          not null check (category in ('idea', 'bug', 'comment', 'like')),
   content     text          not null check (char_length(content) between 3 and 100),
   paw_count   integer       not null default 0,

@@ -50,7 +50,7 @@ export async function createFeedback(input: {
   const { data, error } = await supabase
     .from('feedbacks')
     .insert({
-      nickname: input.nickname.trim() || '익명의 누렁이',
+      nickname: input.nickname.trim() || '익명',
       category: input.category,
       content:  input.content.trim(),
     })

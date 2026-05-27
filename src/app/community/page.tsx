@@ -171,10 +171,10 @@ export default function CommunityPage() {
             fontSize: 24, fontWeight: 900, color: '#0F172A',
             margin: '0 0 6px', letterSpacing: '-0.5px',
           }}>
-            누렁이에게 한마디 💬
+            게시판
           </h1>
           <p style={{ fontSize: 13, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
-            여러분의 의견으로 모두의 계산기가 진화합니다
+            자유롭게 글을 남겨주세요
           </p>
         </div>
 
@@ -191,7 +191,7 @@ export default function CommunityPage() {
             type="text"
             value={nickname}
             onChange={e => setNickname(e.target.value.slice(0, 20))}
-            placeholder="닉네임 (선택, 미입력 시 익명의 누렁이)"
+            placeholder="닉네임 (선택, 미입력 시 익명)"
             style={{
               width: '100%',
               padding: '10px 12px',
@@ -232,7 +232,7 @@ export default function CommunityPage() {
           <textarea
             value={content}
             onChange={e => setContent(e.target.value.slice(0, 100))}
-            placeholder="누렁이에게 하고 싶은 말을 남겨주세요"
+            placeholder="내용을 입력해주세요"
             rows={3}
             style={{
               width: '100%',
@@ -270,7 +270,7 @@ export default function CommunityPage() {
               letterSpacing: '-0.2px',
               boxShadow: submitting || content.trim().length < 3 ? 'none' : `0 4px 14px ${ACCENT}30`,
             }}>
-            {submitting ? '보내는 중…' : '보내기'}
+            {submitting ? '등록 중…' : '등록'}
           </button>
         </div>
 
@@ -315,10 +315,10 @@ export default function CommunityPage() {
             background: '#fff', borderRadius: 16,
             border: '1.5px dashed #E2E8F0',
           }}>
-            <p style={{ fontSize: 28, margin: '0 0 8px' }}>🐾</p>
+            <p style={{ fontSize: 28, margin: '0 0 8px' }}>📝</p>
             <p style={{ fontSize: 14, color: '#475569', margin: 0, fontWeight: 700, lineHeight: 1.5 }}>
-              아직 아무도 안 남겼다 멍!<br />
-              첫 번째 피드백의 주인공이 되어봐 🐾
+              아직 작성된 글이 없습니다.<br />
+              첫 번째 글을 남겨보세요!
             </p>
           </div>
         )}
