@@ -7,7 +7,26 @@ import { formatWon } from '@/utils/calculate'
 const ACCENT      = '#22C55E'
 const ACCENT_DARK = '#16A34A'
 const ACCENT_BG   = '#ECFDF5'
-const TOTAL       = 3
+const TOTAL       = 4
+
+const JOB_TYPES: { key: string; emoji: string; label: string }[] = [
+  { key: 'cafe',         emoji: '☕',   label: '카페' },
+  { key: 'chicken_pizza', emoji: '🍗',   label: '치킨/피자' },
+  { key: 'restaurant',   emoji: '🍽️',   label: '음식점' },
+  { key: 'convenience',  emoji: '🏪',   label: '편의점' },
+  { key: 'mart',         emoji: '🛒',   label: '마트/유통' },
+  { key: 'logistics',    emoji: '📦',   label: '물류/택배' },
+  { key: 'tutor',        emoji: '🎓',   label: '과외/학원' },
+  { key: 'fitness',      emoji: '🏋️',   label: '헬스/피트니스' },
+  { key: 'hospital',     emoji: '🏥',   label: '병원/약국' },
+  { key: 'fastfood',     emoji: '🍔',   label: '패스트푸드' },
+  { key: 'cinema',       emoji: '🎬',   label: '영화관/문화' },
+  { key: 'hotel',        emoji: '🏨',   label: '호텔/숙박' },
+  { key: 'retail',       emoji: '📱',   label: '매장판매' },
+  { key: 'construction', emoji: '🏗️',   label: '건설/현장' },
+  { key: 'office',       emoji: '🖥️',   label: '사무보조' },
+  { key: 'other',        emoji: '🎨',   label: '기타' },
+]
 
 const AMOUNT_PRESETS = [
   { label: '50만',   value:    500_000 },
@@ -137,14 +156,16 @@ function ContinueButton({
 /* ═══════════════════════════════════════════════════════════
    알바생 시급 환산기 풀페이지 위저드 (BusinessWizard 패턴)
      step 0 = 시급 입력
-     step 1 = 금액 선택 (직접 입력 or 아이템)
-     step 2 = 결과
+     step 1 = 업종 선택
+     step 2 = 금액 선택 (직접 입력 or 아이템)
+     step 3 = 결과
    ═══════════════════════════════════════════════════════════ */
 export function PartTimeWizard() {
   const router = useRouter()
   const [step, setStep]         = useState(0)
   const [animKey, setAnimKey]   = useState(0)
   const [wage, setWage]         = useState(10_320)
+  const [jobType, setJobType]   = useState<string>('')
   const [amount, setAmount]     = useState(0)
   const [picked, setPicked]     = useState<Item | null>(null)
   const [category, setCategory] = useState<Category>('전체')
@@ -213,7 +234,10 @@ export function PartTimeWizard() {
             <Q1Wage wage={wage} setWage={setWage} onNext={goNext} />
           )}
           {step === 1 && (
-            <Q2Item
+            <Q2Job jobType={jobType} setJobType={setJobType} onNext={goNext} />
+          )}
+          {step === 2 && (
+            <Q3Item
               wage={wage}
               amount={amount} setAmount={setAmount}
               picked={picked} setPicked={setPicked}
@@ -221,8 +245,8 @@ export function PartTimeWizard() {
               onNext={goNext}
             />
           )}
-          {step === 2 && (
-            <Q3Result wage={wage} amount={amount} picked={picked} onRestart={restart} />
+          {step === 3 && (
+            <Q4Result wage={wage} amount={amount} picked={picked} onRestart={restart} />
           )}
         </div>
       </div>
@@ -411,8 +435,59 @@ function Q1Wage({
   )
 }
 
-/* ───── Q2: 목표 금액 입력 + 인기 아이템 그리드 ─────────── */
-function Q2Item({
+/* ───── Q2: 업종 선택 (3열 카드 그리드, 자동 다음) ─────── */
+function Q2Job({
+  jobType, setJobType, onNext,
+}: { jobType: string; setJobType: (v: string) => void; onNext: () => void }) {
+  return (
+    <div>
+      <QuestionTitle num={2} text={<>어떤 알바를<br />하고 있어?</>}
+        sub="알바 업종에 따라 맞춤 분석을 해줄게" />
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 8,
+      }}>
+        {JOB_TYPES.map(j => {
+          const sel = jobType === j.key
+          return (
+            <button key={j.key}
+              onClick={() => {
+                setJobType(j.key)
+                setTimeout(onNext, 220)
+              }}
+              style={{
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 6,
+                padding: '14px 6px',
+                minHeight: 88,
+                borderRadius: 14,
+                border: `2px solid ${sel ? ACCENT : '#E2E8F0'}`,
+                background: sel ? `${ACCENT}0F` : '#fff',
+                cursor: 'pointer', transition: 'all 0.15s',
+                boxShadow: sel ? `0 4px 14px ${ACCENT}20` : 'none',
+              }}>
+              <span style={{ fontSize: 26, lineHeight: 1 }}>{j.emoji}</span>
+              <span style={{
+                fontSize: 12, fontWeight: 800,
+                color: sel ? ACCENT_DARK : '#1A1F5E',
+                lineHeight: 1.25,
+                textAlign: 'center',
+                wordBreak: 'keep-all',
+              }}>
+                {j.label}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/* ───── Q3: 목표 금액 입력 + 인기 아이템 그리드 ─────────── */
+function Q3Item({
   wage, amount, setAmount, picked, setPicked,
   category, setCategory, onNext,
 }: {
@@ -454,7 +529,7 @@ function Q2Item({
 
   return (
     <div>
-      <QuestionTitle num={2} text={<>목표 금액<br />또는 지출 예정 금액은?</>}
+      <QuestionTitle num={3} text={<>목표 금액<br />또는 지출 예정 금액은?</>}
         sub="목표 금액을 입력하거나 아이템을 골라봐" />
 
       {/* 상단: 금액 직접 입력 (직장인 AmountInput 패턴) */}
@@ -607,8 +682,8 @@ function Q2Item({
   )
 }
 
-/* ───── Q3: 결과 카드 ─────────────────────────────────── */
-function Q3Result({
+/* ───── Q4: 결과 카드 ─────────────────────────────────── */
+function Q4Result({
   wage, amount, picked, onRestart,
 }: {
   wage: number; amount: number; picked: Item | null; onRestart: () => void
@@ -640,7 +715,7 @@ function Q3Result({
 
   return (
     <div>
-      <QuestionTitle num={3} text={<>이만큼 일해야 살 수 있어!</>}
+      <QuestionTitle num={4} text={<>이만큼 일해야 살 수 있어!</>}
         sub={`시급 ${wage.toLocaleString('ko-KR')}원 기준`} />
 
       <div style={{
