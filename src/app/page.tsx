@@ -567,7 +567,7 @@ export default function HomePage() {
                   lineHeight:     1.35,
                   textShadow:     '0 1px 2px rgba(0,0,0,0.35)',
                 }}>
-                  {'이거 사려면\n몇 시간 일해야 되는지 계산하기'}
+                  {'알바비로 득템을 위한\n알바 시간 계산기'}
                 </p>
                 <p style={{
                   fontSize:    13,
