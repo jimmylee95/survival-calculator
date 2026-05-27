@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import BoardSection from '@/components/admin/BoardSection'
 
 const NAV_BG = '#1B1E28'
 const ACCENT = '#3182F6'
@@ -123,6 +124,7 @@ export default function AdminPage() {
             <NItem icon="💸" label="유료 전환율" id="conversion" active={activeNav} onClick={setActiveNav} />
           </NGroup>
           <NGroup label="관리">
+            <NItem icon="📝" label="게시판" id="board" active={activeNav} onClick={setActiveNav} />
             <NItem icon="👤" label="고객 관리" id="users" active={activeNav} onClick={setActiveNav} badge="Soon" />
             <NItem icon="💳" label="결제" id="billing" active={activeNav} onClick={setActiveNav} badge="Soon" />
             <NItem icon="⚙️" label="설정" id="settings" active={activeNav} onClick={setActiveNav} badge="Soon" />
@@ -257,6 +259,7 @@ export default function AdminPage() {
           </>}
 
           {activeNav === 'records' && <WCard title="전체 계산 기록"><RecordsTable records={recentCalcs} /></WCard>}
+          {activeNav === 'board'   && <BoardSection secret={secret} />}
           {activeNav === 'analytics' && <><SectionHead title="기간별 분석" /><WCard title="일별 현황"><DailyTable dailyEvents={dailyEvents} /></WCard></>}
           {activeNav === 'viral' && <>
             <SectionHead title="바이럴 현황" />

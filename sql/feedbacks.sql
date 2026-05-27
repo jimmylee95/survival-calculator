@@ -59,3 +59,12 @@ $$;
 
 revoke execute on function public.increment_feedback_paw(uuid) from anon;
 grant  execute on function public.increment_feedback_paw(uuid) to authenticated;
+
+-- 실시간 구독 (어드민 새 글 알림용). 이미 추가되어 있어도 에러 무시.
+do $$
+begin
+  begin
+    alter publication supabase_realtime add table public.feedbacks;
+  exception when duplicate_object then null;
+  end;
+end$$;
