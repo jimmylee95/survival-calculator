@@ -34,7 +34,7 @@ export default function BottomNav() {
     }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         height: 60,
         alignItems: 'center',
       }}>
@@ -48,7 +48,6 @@ export default function BottomNav() {
           active={isHistoryActive}
           onClick={() => router.push('/history')}
         />
-        <CenterButton onClick={() => router.push('/calculator')} />
         <NavItem
           icon="💬" label="이용후기"
           active={pathname === '/community'}
@@ -99,29 +98,5 @@ function NavItem({
         {label}
       </span>
     </button>
-  )
-}
-
-function CenterButton({ onClick }: { onClick: () => void }) {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-      <button
-        onClick={onClick}
-        aria-label="계산하기"
-        style={{
-          width: 56, height: 56, borderRadius: '50%',
-          marginTop: -20,
-          background: 'linear-gradient(135deg, #1A1F5E, #4F46E5)',
-          border: '4px solid #fff',
-          cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#fff',
-          boxShadow: '0 8px 20px rgba(26, 31, 94, 0.35)',
-          transition: 'transform 0.15s ease',
-        }}
-      >
-        <span style={{ fontSize: 24, lineHeight: 1 }}>🧮</span>
-      </button>
-    </div>
   )
 }
