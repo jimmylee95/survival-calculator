@@ -28,7 +28,7 @@ export default function LoginPage() {
           color:        '#1A1F5E',
           marginBottom: 8,
         }}>
-          누렁이 해방 계산기
+          모두의 계산기
         </h1>
         <p style={{
           fontSize:     14,

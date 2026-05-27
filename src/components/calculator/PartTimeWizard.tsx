@@ -622,7 +622,7 @@ function Q3Result({
   async function handleShare() {
     if (amount <= 0) return
     const targetLabel = picked ? picked.name : `${amount.toLocaleString('ko-KR')}원`
-    const text = `'${targetLabel}' 사려면 시급 ${wage.toLocaleString('ko-KR')}원으로 ${time.primary} 일해야 한대 ㄷㄷ\n나의 해방 계산기에서 확인해봐!`
+    const text = `'${targetLabel}' 사려면 시급 ${wage.toLocaleString('ko-KR')}원으로 ${time.primary} 일해야 한대 ㄷㄷ\n모두의 계산기에서 확인해봐!`
 
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
