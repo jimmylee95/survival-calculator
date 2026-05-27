@@ -431,6 +431,11 @@ export default function HomePage() {
                       {'\n'}
                       <span style={{
                         color: card.mode === 'business' ? '#FF6B35' : '#4A7DFF',
+                        textShadow:
+                          '-1px -1px 0 #fff,'
+                          + ' 1px -1px 0 #fff,'
+                          + '-1px  1px 0 #fff,'
+                          + ' 1px  1px 0 #fff',
                       }}>
                         {card.titleAccent}
                       </span>
@@ -581,7 +586,14 @@ export default function HomePage() {
                   textShadow:     '0 1px 2px rgba(0,0,0,0.35)',
                 }}>
                   시급 모아 득템한다{'\n'}
-                  <span style={{ color: '#22C55E' }}>알바 시간 계산기</span>
+                  <span style={{
+                    color: '#22C55E',
+                    textShadow:
+                      '-1px -1px 0 #fff,'
+                      + ' 1px -1px 0 #fff,'
+                      + '-1px  1px 0 #fff,'
+                      + ' 1px  1px 0 #fff',
+                  }}>알바 시간 계산기</span>
                 </p>
                 <p style={{
                   fontSize:    13,
